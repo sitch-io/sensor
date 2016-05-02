@@ -1,4 +1,4 @@
-FROM resin/rpi-raspbian:jessie
+FROM resin/raspberrypi2-debian:jessie-20160117
 MAINTAINER Ash
 
 RUN apt-get update && apt-get upgrade -y && apt-get install -y \
