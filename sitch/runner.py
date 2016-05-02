@@ -5,7 +5,8 @@ SIM808 engineering mode data.
   If log message is GPS, we update the location var for the enrichment
   thread.
 """
-from config import ConfigHelper as config_helper
+from config_helper import ConfigHelper as config_helper
+from enricher import Enricher as enricher_module
 from utility import Utility as utility
 from logger import LogHandler as logger
 from sim808 import FonaReader as sim808
@@ -129,7 +130,7 @@ def enricher(config):
     assembles lines from sim808 into a main doc as well as writing multiple
     lines to the output queue for metadata """
     while True:
-        enr = enricher(config)
+        enr = enricher_module(config)
         try:
             scandoc = scan_results_queue.popleft()
             doctype = enr.determine_scan_type(scandoc)
