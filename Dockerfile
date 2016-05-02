@@ -40,7 +40,7 @@ WORKDIR /app/sitch
 RUN pip install virtualenv && \
     cd /app/sitch && \
     virtualenv . && \
-    . venv/bin/activate && \
+    . ./bin/activate && \
     pip install requests && \
     pip install pyserial && \
     pip install hvac && \
