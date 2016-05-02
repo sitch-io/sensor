@@ -1,3 +1,4 @@
+import io
 import serial
 
 
@@ -50,7 +51,7 @@ class FonaReader(object):
                 processed = FonaReader.process_8(line_parts)
         elif line.startswith('+CIPGSMLOC:'):
             dataz = line.split(' ')[1]
-            line_parts = dataz_split(',')
+            line_parts = dataz.split(',')
             if line_parts[0] == 0:
                 processed = FonaReader.process_gps(line_parts)
         return processed

@@ -7,8 +7,10 @@ SIM808 engineering mode data.
 """
 import config.ConfigHelper as config_helper
 import utility.Utility as utility
-import logger.Logger as logger
+import logger.LogHandler as logger
 import sim808.FonaReader as sim808
+import json
+import kalibrate
 import sys
 import threading
 import time
@@ -98,11 +100,17 @@ def sim808_consumer(config):
 
 def kalibate_consumer(config):
     while True:
+        scan_job_template = {"platform": platform_name,
+                             "scan_results": [],
+                             "scan_start": "",
+                             "scan_finish": "",
+                             "scan_program": "",
+                             "scan_location": {}}
         band = config.kal_band
         gain = config.gain
         kal_scanner = kalibrate.Kal("/usr/local/bin/kal")
         start_time = utility.get_now_string()
-        kal_results = kal_scanner.scan_band(k_band, gain=gain)
+        kal_results = kal_scanner.scan_band(band, gain=gain)
         end_time = utility.get_now_string()
         scan_document = scan_job_template.copy()
         scan_document["scan_start"] = start_time
@@ -132,7 +140,7 @@ def enricher(config):
                 results = enr.enrich_sim808_scan(scandoc)
             elif doctype == 'GPS':
                 results = enr.enrich_gps_scan(scandoc)
-                gps_location = msg
+                gps_location = scandoc
             message_write_queue.append(results)
         except IndexError:
             time.sleep(1)

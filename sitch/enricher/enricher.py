@@ -1,3 +1,6 @@
+import json
+
+
 class Enricher:
     def __init__(self, config):
         self.device_id = config.device_id

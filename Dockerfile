@@ -14,9 +14,6 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y \
     logrotate \
     python \
     python-pip && \
-    pip install pyserial && \
-    pip install hvac && \
-    pip install kalibrate && \
     apt-get clean && \
     apt-get -y autoclean && \
     apt-get -y autoremove
@@ -39,5 +36,12 @@ COPY init/logstash-forwarder /etc/init.d/
 COPY sitch/ /app/sitch
 
 WORKDIR /app/sitch
+
+RUN pip install virtualenv && \
+    cd /app/sitch && \
+    virtualenv . && \
+    pip install pyserial && \
+    pip install hvac && \
+    pip install kalibrate
 
 CMD /usr/bin/python /app/sitch/runner.py

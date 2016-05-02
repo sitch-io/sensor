@@ -1,3 +1,4 @@
+import json
 import os
 
 
@@ -33,8 +34,8 @@ class LogHandler:
     def write_log_message(self, log_file_type, message):
         """You should only ever send a string to this method"""
         log_file = self.get_log_file_name(log_file_type)
-        create_path_if_nonexistent(self.log_prefix)
-        create_file_if_nonexistent(log_file)
+        LogHandler.create_path_if_nonexistent(self.log_prefix)
+        LogHandler.create_file_if_nonexistent(log_file)
         with open(log_file, 'a') as lf:
             lf.write(str(message))
         return
