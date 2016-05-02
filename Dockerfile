@@ -2,7 +2,7 @@ FROM resin/rpi-raspbian:jessie
 MAINTAINER Ash
 
 RUN apt-get update && apt-get install -y \
-    cron
+    cron \
     lshw \
     libfftw3-double3 \
     librtlsdr0 \
