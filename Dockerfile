@@ -14,7 +14,6 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y \
     logrotate \
     python \
     python-pip && \
-    pip install --upgrade requests && \
     pip install pyserial && \
     pip install hvac && \
     pip install kalibrate && \
