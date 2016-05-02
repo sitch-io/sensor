@@ -39,7 +39,7 @@ WORKDIR /app/sitch
 
 RUN pip install virtualenv && \
     cd /app/sitch && \
-    virtualenv . && \
+    virtualenv --clear . && \
     pip install pyserial && \
     pip install hvac && \
     pip install kalibrate
