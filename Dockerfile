@@ -39,10 +39,11 @@ WORKDIR /app/sitch
 
 RUN pip install virtualenv && \
     cd /app/sitch && \
-    virtualenv --clear .
-#    pip install requests && \
-#    pip install pyserial && \
-#    pip install hvac && \
-#    pip install kalibrate
+    virtualenv venv && \
+    source venv/bin/activate && \
+    pip install requests && \
+    pip install pyserial && \
+    pip install hvac && \
+    pip install kalibrate
 
 CMD /usr/bin/python /app/sitch/runner.py
