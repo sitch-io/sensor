@@ -46,4 +46,4 @@ RUN pip install virtualenv && \
     pip install hvac && \
     pip install kalibrate
 
-CMD /usr/bin/python /app/sitch/runner.py
+CMD cd /app/sitch && /usr/bin/python ./runner.py
