@@ -1,7 +1,7 @@
 FROM resin/rpi-raspbian:jessie
 MAINTAINER Ash
 
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get upgrade -y && apt-get install -y \
     cron \
     lshw \
     libfftw3-double3 \
@@ -17,7 +17,6 @@ RUN apt-get update && apt-get install -y \
     pip install pyserial && \
     pip install hvac && \
     pip install kalibrate && \
-    dpkg -r python-pip && \
     apt-get clean && \
     apt-get -y autoclean && \
     apt-get -y autoremove
