@@ -1,4 +1,4 @@
-FROM resin/raspberrypi2-debian:jessie-20160117
+FROM ioft/armhf-ubuntu:15.04
 MAINTAINER Ash
 
 RUN apt-get update && apt-get upgrade -y && apt-get install -y \
