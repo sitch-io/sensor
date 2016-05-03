@@ -39,7 +39,7 @@ WORKDIR /app/sitch
 
 RUN pip install virtualenv && \
     cd /app/sitch && \
-    virtualenv --no-site-packages . && \
+    virtualenv . && \
     . ./bin/activate && \
     pip install requests && \
     pip install pyserial && \
