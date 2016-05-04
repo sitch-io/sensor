@@ -72,7 +72,7 @@ class ConfigHelper:
         return ls_config
 
     @classmethod
-    def get_device_id():
+    def get_device_id(cls):
         device_id = "WHOKNOWS"
         resin = os.getenv('RESIN_DEVICE_UUID')
         override = os.getenv('LOCATION_NAME')

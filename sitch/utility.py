@@ -23,7 +23,7 @@ class Utility:
         return platform_info
 
     @classmethod
-    def start_component(runcmd):
+    def start_component(cls, runcmd):
         try:
             subprocess.Popen(runcmd.split())
         except:
