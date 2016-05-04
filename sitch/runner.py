@@ -100,7 +100,7 @@ def sim808_consumer(config):
             scan_results_queue.append(line)
 
 
-def kalibate_consumer(config):
+def kalibrate_consumer(config):
     while True:
         scan_job_template = {"platform": platform_name,
                              "scan_results": [],
