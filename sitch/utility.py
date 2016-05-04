@@ -37,7 +37,7 @@ class Utility:
             return
         elif os.path.isfile(path):
             os.remove(path)
-        os.mkdir(path)
+        os.mkdir(os.path.dirname(path))
         return
 
     @classmethod
