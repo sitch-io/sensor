@@ -36,7 +36,7 @@ class LogHandler:
         """You should only ever send a string to this method"""
         log_file = self.get_log_file_name(log_file_type)
         utility.create_path_if_nonexistent(self.log_prefix)
-        utility..create_file_if_nonexistent(log_file)
+        utility.create_file_if_nonexistent(log_file)
         with open(log_file, 'a') as lf:
             lf.write(str(message))
         return
