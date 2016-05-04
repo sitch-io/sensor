@@ -27,7 +27,7 @@ class Utility:
     def start_component(cls, runcmd):
         try:
             subprocess.Popen(runcmd.split())
-        except:
+        except KeyError as e:
             return False
         return True
 
