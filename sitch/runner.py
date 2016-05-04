@@ -27,7 +27,6 @@ def main():
     message_write_queue = deque([])
     gps_location = {}
     config = config_helper()
-    ls_cert = config.get_secret_from_vault()
     # Write LS cert
     utility.write_file(config.logstash_cert_path,
                        config.ls_cert)
