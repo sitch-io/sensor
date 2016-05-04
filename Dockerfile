@@ -41,9 +41,8 @@ RUN pip install virtualenv && \
     cd /app/sitch && \
     virtualenv --no-site-packages venv && \
     . ./venv/bin/activate && \
-    pip install requests && \
     pip install pyserial && \
     pip install hvac && \
     pip install kalibrate
 
-CMD cd /app/sitch && /usr/bin/python ./runner.py
+CMD cd /app/sitch && . ./venv/bin/activate && /usr/bin/python ./runner.py
