@@ -16,7 +16,6 @@ class ConfigHelper:
         self.vault_url = ConfigHelper.get_from_env("VAULT_URL")
         self.logstash_cert_path = "/run/dbus/crypto/logstash.crt"
         self.ls_cert = None
-        ConfigHelper.set_secret_from_vault(self)
         return
 
     def build_logrotate_config(self):
