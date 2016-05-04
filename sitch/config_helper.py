@@ -65,7 +65,7 @@ class ConfigHelper:
         log_prefix = self.log_prefix
         cert_file_loc = self.logstash_cert_path
         ls_config["network"]["servers"][0] = log_host
-        ls_config["network"]["ssl ca"][0] = cert_file_loc
+        ls_config["network"]["ssl ca"] = cert_file_loc
         for f in ls_config["files"]:
             f["paths"][0] = f["paths"][0].replace('/var/log', log_prefix)
         return ls_config
