@@ -68,7 +68,7 @@ class ConfigHelper:
         ls_config["network"]["ssl ca"] = cert_file_loc
         for f in ls_config["files"]:
             f["paths"][0] = f["paths"][0].replace('/var/log', log_prefix)
-        return ls_config
+        return json.dumps(ls_config)
 
     @classmethod
     def get_device_id(cls):
