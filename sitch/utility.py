@@ -35,6 +35,8 @@ class Utility:
     def create_path_if_nonexistent(cls, path):
         if os.path.exists(path) and os.path.isdir(path):
             return
+        elif os.path.exists(os.path.dirname(path)):
+            return
         elif os.path.isfile(path):
             os.remove(path)
         os.mkdir(os.path.dirname(path))
