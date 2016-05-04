@@ -3,6 +3,7 @@ MAINTAINER Ash
 
 RUN apt-get update && apt-get upgrade -y && apt-get install -y \
     cron \
+    kmod \
     lshw \
     libfftw3-double3 \
     librtlsdr0 \
