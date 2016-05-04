@@ -2,11 +2,13 @@ import hvac
 import json
 import os
 import sys
+import utility
 
 
 class ConfigHelper:
     def __init__(self):
         self.device_id = ConfigHelper.get_device_id()
+        self.platform_name = utility.get_platform_name()
         self.log_prefix = "/var/log/sitch/"
         self.log_host = ConfigHelper.get_from_env("LOG_HOST")
         self.kal_band = ConfigHelper.get_from_env("KAL_BAND")
