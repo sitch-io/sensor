@@ -15,7 +15,6 @@ class ConfigHelper:
         self.vault_token = ConfigHelper.get_from_env("VAULT_TOKEN")
         self.vault_url = ConfigHelper.get_from_env("VAULT_URL")
         self.logstash_cert_path = "/run/dbus/crypto/logstash.crt"
-        self.ls_cert = None
         return
 
     def build_logrotate_config(self):
@@ -79,12 +78,12 @@ class ConfigHelper:
                 device_id = x
         return device_id
 
-    def set_secret_from_vault(self):
+    def get_secret_from_vault(self):
         client = hvac.Client(url=self.vault_url, token=self.vault_token)
         print "Get secrets from %s, with path %s" % (self.vault_url,
                                                      self.vault_ls_cert_path)
-        self.ls_cert = client.read(self.vault_ls_cert_path)
-        return
+        ls_cert = client.read(self.vault_ls_cert_path)
+        return ls_cert
 
     @classmethod
     def get_from_env(cls, k):
