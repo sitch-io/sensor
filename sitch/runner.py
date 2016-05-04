@@ -109,7 +109,7 @@ def kalibrate_consumer(config):
                              "scan_program": "",
                              "scan_location": {}}
         band = config.kal_band
-        gain = config.gain
+        gain = config.kal_gain
         kal_scanner = kalibrate.Kal("/usr/local/bin/kal")
         start_time = utility.get_now_string()
         kal_results = kal_scanner.scan_band(band, gain=gain)
