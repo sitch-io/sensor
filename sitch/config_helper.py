@@ -14,6 +14,7 @@ class ConfigHelper:
         self.vault_ls_cert_path = ConfigHelper.get_from_env("VAULT_LS_CERT_PATH")
         self.vault_token = ConfigHelper.get_from_env("VAULT_TOKEN")
         self.vault_url = ConfigHelper.get_from_env("VAULT_URL")
+        self.vault_path = ConfigHelper.get_from_env("VAULT_PATH")
         self.logstash_cert_path = "/run/dbus/crypto/logstash.crt"
         self.ls_cert = ConfigHelper.get_secret_from_vault(self.vault_url,
                                                           self.vault_path,
