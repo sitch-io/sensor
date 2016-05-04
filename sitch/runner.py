@@ -45,7 +45,7 @@ def main():
     # Kill interfering driver
     utility.start_component("modprobe -r dvb_usb_rtl28xxu")
     # Start cron
-    cron_success = utility.start_component("/etc/init.d/crontab start")
+    cron_success = utility.start_component("/etc/init.d/cron start")
     if cron_success is False:
         print "Failed to start cron, so no logrotate... keep an eye on your disk!"
     # Configure threads
