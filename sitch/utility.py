@@ -31,6 +31,6 @@ class Utility:
         return True
 
     @classmethod
-    def write_file(location, contents):
+    def write_file(cls, location, contents):
         with open(location, 'w') as fh:
             fh.write(contents)
