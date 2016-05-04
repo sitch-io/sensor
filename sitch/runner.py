@@ -23,7 +23,7 @@ def main():
     global scan_results_queue
     global message_write_queue
     global gps_location
-    scan_results_queue = dequeue([])
+    scan_results_queue = deque([])
     message_write_queue = deque([])
     gps_location = {}
     config = config_helper
