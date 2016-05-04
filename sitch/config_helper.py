@@ -83,7 +83,7 @@ class ConfigHelper:
         client = hvac.Client(url=self.vault_url, token=self.vault_token)
         print "Get secrets from %s, with path %s" % (self.vault_url,
                                                      self.vault_ls_cert_path)
-        secret = client.read(self.path)
+        secret = client.read(self.vault_ls_cert_path)
         return secret
 
     @classmethod
