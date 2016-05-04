@@ -55,12 +55,12 @@ def main():
                                               args=[config])
     enricher_thread = threading.Thread(target=enricher,
                                        args=[config])
-    output_thread = threading.Thread(target=output,
+    writer_thread = threading.Thread(target=output,
                                      args=[config])
     kalibrate_consumer_thread.daemon = True
     sim808_consumer_thread.daemon = True
     enricher_thread.daemon = True
-    output_thread.daemon = True
+    writer_thread.daemon = True
     # Kick off threads
     print "Starting Kalibrate consumer thread..."
     kalibrate_consumer_thread.start()
@@ -69,7 +69,7 @@ def main():
     print "Starting enricher thread..."
     enricher_thread.start()
     print "Starting writer thread..."
-    output_thread.start()
+    writer_thread.start()
     # Periodically check to see if threads are still alive
     while True:
         time.sleep(60)
@@ -102,7 +102,7 @@ def sim808_consumer(config):
 
 def kalibrate_consumer(config):
     while True:
-        scan_job_template = {"platform": platform_name,
+        scan_job_template = {"platform": config.platform_name,
                              "scan_results": [],
                              "scan_start": "",
                              "scan_finish": "",
