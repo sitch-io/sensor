@@ -30,7 +30,7 @@ def main():
     ls_cert = config.get_secret_from_vault()
     # Write LS cert
     utility.write_file(config.logstash_cert_path,
-                       ls_cert)
+                       config.ls_cert)
     # Write LS config
     utility.write_file("/etc/logstash-forwarder",
                        config.build_logstash_config)
