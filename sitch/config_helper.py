@@ -80,7 +80,7 @@ class ConfigHelper:
                 device_id = x
         return device_id
 
-    def get_secret_from_vault(self):
+    def set_secret_from_vault(self):
         client = hvac.Client(url=self.vault_url, token=self.vault_token)
         print "Get secrets from %s, with path %s" % (self.vault_url,
                                                      self.vault_ls_cert_path)
