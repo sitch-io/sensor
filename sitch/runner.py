@@ -119,6 +119,7 @@ def kalibrate_consumer(config):
         scan_document["scan_finish"] = end_time
         scan_document["scan_results"] = kal_results
         scan_document["scan_program"] = "Kalibrate"
+        scan_document["scanner_name"] = config.device_id
         scan_document["scan_location"] = gps_location
         print scan_document
         print "Sending scan to enrichment queue..."

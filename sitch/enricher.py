@@ -19,7 +19,7 @@ class Enricher:
 
     def enrich_kal_scan(self, scan_document):
         results_set = [("scan", scan_document)]
-        platform_name = scan_document["scan_location"]["name"]
+        platform_name = scan_document["scanner_name"]
         if scan_document["scan_results"] == []:
             print "No results found in scan document..."
             return
