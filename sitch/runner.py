@@ -33,10 +33,10 @@ def main():
                        config.ls_cert)
     # Write LS config
     utility.write_file("/etc/logstash-forwarder",
-                       config.build_logstash_config)
+                       config.build_logstash_config())
     # Write logrotate config
     utility.write_file("/etc/logrotate.d/sitch",
-                       config.build_logrotate_config)
+                       config.build_logrotate_config())
     # Start logstash service
     ls_success = utility.start_component("/etc/init.d/logstash-forwarder start")
     if ls_success is False:
