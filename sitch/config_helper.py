@@ -2,7 +2,7 @@ import hvac
 import json
 import os
 import sys
-import utility
+from utility import Utility as utility
 
 
 class ConfigHelper:
