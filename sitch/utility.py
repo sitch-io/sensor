@@ -31,6 +31,25 @@ class Utility:
         return True
 
     @classmethod
+    def create_path_if_nonexistent(cls, path):
+        if os.path.exists(path) and os.path.isdir(path):
+            return
+        elif os.path.isfile(path):
+            os.remove(path)
+        os.mkdir(path)
+        return
+
+    @classmethod
+    def create_file_if_nonexistent(cls, path, lfile):
+        fullpath = os.path.join(path, lfile)
+        if os.path.isfile(fullpath):
+            return
+        else:
+            print "Creating log file: %s" % fullpath
+            open(fullpath, 'a').close()
+        return
+
+    @classmethod
     def write_file(cls, location, contents):
         with open(location, 'w') as fh:
             fh.write(contents)

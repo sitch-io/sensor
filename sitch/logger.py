@@ -1,5 +1,6 @@
 import json
 import os
+import utility
 
 
 class LogHandler:
@@ -34,27 +35,8 @@ class LogHandler:
     def write_log_message(self, log_file_type, message):
         """You should only ever send a string to this method"""
         log_file = self.get_log_file_name(log_file_type)
-        LogHandler.create_path_if_nonexistent(self.log_prefix)
-        LogHandler.create_file_if_nonexistent(log_file)
+        utility.create_path_if_nonexistent(self.log_prefix)
+        utility..create_file_if_nonexistent(log_file)
         with open(log_file, 'a') as lf:
             lf.write(str(message))
-        return
-
-    @classmethod
-    def create_path_if_nonexistent(cls, path):
-        if os.path.exists(path) and os.path.isdir(path):
-            return
-        elif os.path.isfile(path):
-            os.remove(path)
-        os.mkdir(path)
-        return
-
-    @classmethod
-    def create_file_if_nonexistent(cls, path, lfile):
-        fullpath = os.path.join(path, lfile)
-        if os.path.isfile(fullpath):
-            return
-        else:
-            print "Creating log file: %s" % fullpath
-            open(fullpath, 'a').close()
         return

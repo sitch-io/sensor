@@ -28,6 +28,7 @@ def main():
     gps_location = {}
     config = config_helper()
     # Write LS cert
+    utility.create_path_if_nonexistent(config.logstash_cert_path)
     utility.write_file(config.logstash_cert_path,
                        config.ls_cert)
     # Write LS config
