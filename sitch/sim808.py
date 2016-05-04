@@ -22,6 +22,7 @@ class FonaReader(object):
             line = None
             line = self.sio.readline()
             if line is not None:
+                print line
                 processed_line = self.process_line(line)
                 yield processed_line
 
