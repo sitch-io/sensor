@@ -31,7 +31,7 @@ class FonaReader(object):
         #          'AT+SAPBR=1,1',
         #          'AT+SAPBR=2,1',
         #          'AT+CIPGSMLOC=1,1']:
-        write_string = s + 'AT+CGPSINF=0\r\n'
+        write_string = 'AT+CGPSINF=0\r\n'
         self.serconn.write(write_string)
         self.serconn.sendBreak()
 
