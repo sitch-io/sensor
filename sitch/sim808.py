@@ -1,5 +1,5 @@
-import io
 import serial
+import time
 
 
 class FonaReader(object):
@@ -11,11 +11,7 @@ class FonaReader(object):
     def __init__(self, ser_port):
         self.initstring = "AT+CENG=2,1\r\n"
         print "opening serial port: %s" % ser_port
-        self.serconn = serial.Serial(ser_port, 9600, timeout=1)
-        # self.sio = io.TextIOWrapper(io.BufferedRWPair(self.serconn,
-        #                                              self.serconn))
-        # self.sio.write(self.initstring)
-        # self.sio.flush()
+        self.serconn = serial.Serial(ser_port, 9600, timeout=3)
         self.serconn.write(self.initstring)
         self.serconn.sendBreak()
         self.trigger_gps()
@@ -30,8 +26,16 @@ class FonaReader(object):
                 yield processed_line
 
     def trigger_gps(self):
-        self.serconn.write("AT+CIPGSMLOC=1,1\r\n")
-        self.serconn.sendBreak()
+        for s in ['AT+SAPBR=3,1,"Conntype","GPRS"',
+                  'AT+SAPBR=3,1,"APN","CMNET"',
+                  'AT+SAPBR=1,1',
+                  'AT+SAPBR=2,1',
+                  'AT+CIPGSMLOC=1,1']:
+            write_string = s + '\r\n'
+            self.serconn.write(write_string)
+            self.serconn.sendBreak()
+            time.sleep(1)
+
         return None
 
     def set_band(self, band):

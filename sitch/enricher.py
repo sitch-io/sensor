@@ -45,7 +45,7 @@ class Enricher:
 
     def enrich_sim808_scan(self, scan_document):
         results_set = [("cell", scan_document)]
-        platform_name = scan_document["scan_location"]["name"]
+        platform_name = scan_document["scan_location"]
         # Field and logtype association...
         fields_of_interest = {"cell": "arfcn_prio",
                               "rxl": "arfcn_rxl",
