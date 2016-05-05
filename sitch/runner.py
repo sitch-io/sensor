@@ -135,6 +135,7 @@ def enricher(config):
         enr = enricher_module(config)
         try:
             scandoc = scan_results_queue.popleft()
+            print "Attempting to enrich..."
             doctype = enr.determine_scan_type(scandoc)
             results = []
             if doctype == 'Kalibrate':
@@ -145,6 +146,7 @@ def enricher(config):
                 results = enr.enrich_gps_scan(scandoc)
                 gps_location = scandoc
             message_write_queue.append(results)
+            print "Enriched and sent to write queue."
         except IndexError:
             time.sleep(1)
 
@@ -154,7 +156,9 @@ def output(config):
         l = logger(config.log_prefix)
         try:
             msg_type, msg = message_write_queue.popleft()
+            print "Attempting to write %s   %s" % (msg_type, msg)
             l.write_log_message(msg_type, json.dumps(msg))
+            print "Success!!"
         except IndexError:
             time.sleep(1)
         return
