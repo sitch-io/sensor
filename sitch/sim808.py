@@ -9,7 +9,7 @@ class FonaReader(object):
 
     """
     def __init__(self, ser_port):
-        self.initstring = u'AT+CENG=2,1\r\n'
+        self.initstring = "AT+CENG=2,1\r\n"
         self.serconn = serial.Serial(ser_port, 9600, timeout=5)
         # self.sio = io.TextIOWrapper(io.BufferedRWPair(self.serconn,
         #                                              self.serconn))
@@ -29,7 +29,7 @@ class FonaReader(object):
                 yield processed_line
 
     def trigger_gps(self):
-        self.serconn.write(u'AT+CIPGSMLOC=1,1\r\n')
+        self.serconn.write("AT+CIPGSMLOC=1,1\r\n")
         self.serconn.sendBreak()
         return None
 
