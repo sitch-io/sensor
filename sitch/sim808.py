@@ -60,6 +60,9 @@ class FonaReader(object):
             line_parts = dataz.split(',')
             if line_parts[0] == 0:
                 processed = FonaReader.process_gps(line_parts)
+        else:
+            print "Unprocessable line from SIM808!"
+            print line
         return processed
 
     @classmethod
