@@ -11,7 +11,7 @@ class FonaReader(object):
     def __init__(self, ser_port):
         self.initstring = "AT+CENG=2,1\r\n"
         print "opening serial port: %s" % ser_port
-        self.serconn = serial.Serial(ser_port, 9600, timeout=3)
+        self.serconn = serial.Serial(ser_port, 9600, timeout=1)
         self.serconn.write(self.initstring)
         self.serconn.sendBreak()
         self.trigger_gps()
@@ -26,15 +26,14 @@ class FonaReader(object):
                 yield processed_line
 
     def trigger_gps(self):
-        for s in ['AT+SAPBR=3,1,"Conntype","GPRS"',
-                  'AT+SAPBR=3,1,"APN","CMNET"',
-                  'AT+SAPBR=1,1',
-                  'AT+SAPBR=2,1',
-                  'AT+CIPGSMLOC=1,1']:
-            write_string = s + '\r\n'
-            self.serconn.write(write_string)
-            self.serconn.sendBreak()
-            time.sleep(1)
+        # for s in ['AT+SAPBR=3,1,"Conntype","GPRS"',
+        #          'AT+SAPBR=3,1,"APN","CMNET"',
+        #          'AT+SAPBR=1,1',
+        #          'AT+SAPBR=2,1',
+        #          'AT+CIPGSMLOC=1,1']:
+        write_string = s + 'AT+CGPSINF=0\r\n'
+        self.serconn.write(write_string)
+        self.serconn.sendBreak()
 
         return None
 
@@ -117,7 +116,11 @@ class FonaReader(object):
         retval = {"status": parts[0],
                   "lon": parts[1],
                   "lat": parts[2],
-                  "date": parts[3],
-                  "time": parts[4]
+                  "altitude": parts[3],
+                  "time": parts[4],
+                  "ttff": parts[5],
+                  "sat_count": parts[6],
+                  "speed": parts[7],
+                  "heading": parts[8]
                   }
         return retval
