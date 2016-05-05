@@ -92,7 +92,10 @@ def sim808_consumer(config):
     while True:
         tty_port = config.sim808_port
         band = config.sim808_band
-        consumer = sim808(tty_port)
+        try:
+            consumer = sim808(tty_port)
+        except:
+            consumer = sim808(tty_port)
         consumer.set_band(band)
         consumer.trigger_gps()
         for line in consumer:
