@@ -10,7 +10,8 @@ class FonaReader(object):
     """
     def __init__(self, ser_port):
         self.initstring = "AT+CENG=2,1\r\n"
-        self.serconn = serial.Serial(ser_port, 9600, timeout=5)
+        print "opening serial port: %s" % ser_port
+        self.serconn = serial.Serial(ser_port, 9600, timeout=1)
         # self.sio = io.TextIOWrapper(io.BufferedRWPair(self.serconn,
         #                                              self.serconn))
         # self.sio.write(self.initstring)
