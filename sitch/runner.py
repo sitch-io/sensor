@@ -99,7 +99,7 @@ def sim808_consumer(config):
         consumer.set_band(band)
         consumer.trigger_gps()
         for line in consumer:
-            line["scan_location"]["name"] = config.device_id
+            line["scan_location"] = config.device_id
             scan_results_queue.append(line)
 
 
