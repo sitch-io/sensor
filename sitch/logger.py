@@ -1,6 +1,6 @@
 import json
 import os
-import utility.Utility as utility
+from utility import Utility as utility
 
 
 class LogHandler:
