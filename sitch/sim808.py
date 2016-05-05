@@ -22,7 +22,7 @@ class FonaReader(object):
     def __iter__(self):
         while True:
             line = None
-            line = self.sio.readline()
+            line = self.serconn.readline()
             if line is not None:
                 print line
                 processed_line = self.process_line(line)
