@@ -7,6 +7,7 @@ class LogHandler:
     """ Instantiate this class with the log file prefix"""
     def __init__(self, log_prefix):
         self.log_prefix = log_prefix
+        utility.create_path_if_nonexistent(self.log_prefix)
 
     @classmethod
     def get_log_file_name(cls, ltype):
@@ -35,8 +36,7 @@ class LogHandler:
     def write_log_message(self, log_file_type, message):
         """You should only ever send a string to this method"""
         log_file = self.get_log_file_name(log_file_type)
-        utility.create_path_if_nonexistent(self.log_prefix)
-        utility.create_file_if_nonexistent(self.log_prefix, log_file)
+        # utility.create_file_if_nonexistent(self.log_prefix, log_file)
         with open(log_file, 'a') as lf:
             lf.write(str(message))
         return
