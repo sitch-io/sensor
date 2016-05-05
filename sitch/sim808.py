@@ -17,13 +17,21 @@ class FonaReader(object):
         self.trigger_gps()
 
     def __iter__(self):
+        page = []
         while True:
             line = None
             line = self.serconn.readline()
             if line is not None:
                 print line
                 processed_line = self.process_line(line)
-                yield processed_line
+                if "lon" in processed_line:
+                    yield processed_line
+                elif "cell" in processed_line:
+                    if (str(processed_line["cell"]) == str(0) and page != []):
+                        yield page
+                        print page
+                        page = [(processed_line)]
+                    else page.append((processed_line))
 
     def trigger_gps(self):
         # for s in ['AT+SAPBR=3,1,"Conntype","GPRS"',
