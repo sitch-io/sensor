@@ -43,7 +43,7 @@ class Enricher:
                 print msg
         return results_set
 
-    def enrich_sim800_scan(self, scan_document):
+    def enrich_sim808_scan(self, scan_document):
         results_set = [("cell", scan_document)]
         platform_name = scan_document["scan_location"]["name"]
         # Field and logtype association...
