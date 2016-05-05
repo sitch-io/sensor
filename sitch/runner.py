@@ -168,7 +168,6 @@ def output(config):
         except IndexError:
             print "Empty output queue"
             time.sleep(1)
-        return
 
 if __name__ == "__main__":
     main()
