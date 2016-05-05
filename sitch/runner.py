@@ -156,7 +156,7 @@ def output(config):
         l = logger(config.log_prefix)
         try:
             msg_bolus = message_write_queue.popleft()
-            print "Attempting to write %s" % str(msg_bolus)
+            print msg_bolus
             # l.write_log_message(msg_type, json.dumps(msg))
             print "Success!!"
         except IndexError:
