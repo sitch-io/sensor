@@ -162,8 +162,8 @@ def output(config):
         try:
             msg_bolus = message_write_queue.popleft()
             print msg_bolus
-            msg_type = msg_bolus[0]
-            msg = msg_bolus[1]
+            msg_type = msg_bolus[0][0]
+            msg = msg_bolus[0][1]
             if msg is str:
                 writemsg = msg
             else:
