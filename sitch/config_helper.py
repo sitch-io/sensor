@@ -76,11 +76,12 @@ class ConfigHelper:
     @classmethod
     def get_device_id(cls):
         device_id = "WHOKNOWS"
-        resin = os.getenv('RESIN_DEVICE_UUID', None)
-        override = os.getenv('LOCATION_NAME', None)
+        resin = os.getenv('RESIN_DEVICE_UUID', '')
+        override = os.getenv('LOCATION_NAME', '')
         for x in [resin, override]:
-            if x is not None:
+            if x != '':
                 device_id = x
+                print "Detected device_id: %s" % x
         return device_id
 
     def get_secret_from_vault(self):
