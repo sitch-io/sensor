@@ -63,6 +63,7 @@ class FonaReader(object):
         else:
             print "Unprocessable line from SIM808!"
             print line
+            processed = {}
         return processed
 
     @classmethod
