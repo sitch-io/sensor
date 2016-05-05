@@ -10,12 +10,13 @@ class FonaReader(object):
     """
     def __init__(self, ser_port):
         self.initstring = u'AT+CENG=2,1\r\n'
-        self.serconn = serial.Serial(port=ser_port,
-                                     baudrate=115200)
-        self.sio = io.TextIOWrapper(io.BufferedRWPair(self.serconn,
-                                                      self.serconn))
-        self.sio.write(self.initstring)
-        self.sio.flush()
+        self.serconn = serial.Serial(ser_port, 9600, timeout=5)
+        # self.sio = io.TextIOWrapper(io.BufferedRWPair(self.serconn,
+        #                                              self.serconn))
+        # self.sio.write(self.initstring)
+        # self.sio.flush()
+        self.serconn.write(self.initstring)
+        self.serconn.sendBreak()
         self.trigger_gps()
 
     def __iter__(self):
@@ -28,8 +29,8 @@ class FonaReader(object):
                 yield processed_line
 
     def trigger_gps(self):
-        self.sio.write(u'AT+CIPGSMLOC=1,1\r\n')
-        self.sio.flush()
+        self.serconn.write(u'AT+CIPGSMLOC=1,1\r\n')
+        self.serconn.sendBreak()
         return None
 
     def set_band(self, band):
