@@ -101,6 +101,10 @@ def sim808_consumer(config):
         for line in consumer:
             if line != {}:
                 line["scan_location"] = config.device_id
+                if "cell" in line:
+                    line["scan_program"] = "SIM808"
+                else:
+                    line["scan_program"] = "GPS"
                 scan_results_queue.append(line)
 
 
