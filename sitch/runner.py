@@ -146,14 +146,17 @@ def enricher(config):
                 results = enr.enrich_gps_scan(scandoc)
                 gps_location = scandoc
             message_write_queue.append(results)
-            print "Enriched and sent to write queue.""
+            print "Enriched and sent to write queue."
         except IndexError:
             time.sleep(1)
 
 
 def output(config):
     while True:
+        time.sleep(10)
+        print "Attempt to instantiate output module..."
         l = logger(config.log_prefix)
+        print "Output module instantiated."
         try:
             print "Get message from output queue"
             msg_bolus = message_write_queue.popleft()
