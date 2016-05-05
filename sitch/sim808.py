@@ -38,7 +38,9 @@ class FonaReader(object):
                     "PCS_MODE", "EGSM_DCS_MODE", "GSM850_PCS_MODE",
                     "EGSM_PCS_MODE", "ALL_BAND"]:
             term_command = "AT+CBAND=\"%s\"" % band
-            self.sio.write(unicode(term_command))
+            self.serconn.write(term_command)
+        else:
+            print "Not setting band, unrecognized value: %s" % band
 
     @classmethod
     def process_line(cls, line):

@@ -157,7 +157,6 @@ def output(config):
     print "Output module instantiated."
     while True:
         try:
-            print "Get message from output queue"
             msg_bolus = message_write_queue.popleft()
             print msg_bolus
             msg_type = msg_bolus[0]
@@ -167,10 +166,9 @@ def output(config):
             else:
                 writemsg = json.dumps(msg)
             l.write_log_message(msg_type, writemsg)
-            print "Success!!"
         except IndexError:
             print "Empty output queue"
-            time.sleep(1)
+            time.sleep(3)
 
 if __name__ == "__main__":
     main()
