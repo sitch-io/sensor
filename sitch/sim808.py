@@ -16,6 +16,7 @@ class FonaReader(object):
                                                       self.serconn))
         self.sio.write(self.initstring)
         self.sio.flush()
+        self.trigger_gps()
 
     def __iter__(self):
         while True:

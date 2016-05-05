@@ -152,18 +152,21 @@ def enricher(config):
 
 
 def output(config):
+    print "Attempt to instantiate output module..."
+    l = logger(config.log_prefix)
+    print "Output module instantiated."
     while True:
-        time.sleep(10)
-        print "Attempt to instantiate output module..."
-        l = logger(config.log_prefix)
-        print "Output module instantiated."
         try:
             print "Get message from output queue"
             msg_bolus = message_write_queue.popleft()
             print msg_bolus
             msg_type = msg_bolus[0]
             msg = msg_bolus[1]
-            # l.write_log_message(msg_type, json.dumps(msg))
+            if msg is str:
+                writemsg = msg
+            else:
+                writemsg = json.dumps(msg)
+            l.write_log_message(msg_type, writemsg)
             print "Success!!"
         except IndexError:
             print "Empty output queue"
