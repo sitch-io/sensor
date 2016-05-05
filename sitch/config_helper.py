@@ -76,8 +76,8 @@ class ConfigHelper:
     @classmethod
     def get_device_id(cls):
         device_id = "WHOKNOWS"
-        resin = os.getenv('RESIN_DEVICE_UUID')
-        override = os.getenv('LOCATION_NAME')
+        resin = os.getenv('RESIN_DEVICE_UUID', None)
+        override = os.getenv('LOCATION_NAME', None)
         for x in [resin, override]:
             if x is not None:
                 device_id = x
