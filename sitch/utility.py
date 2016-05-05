@@ -37,8 +37,8 @@ class Utility:
             return
         elif os.path.exists(os.path.dirname(path)):
             return
-        elif os.path.isfile(path):
-            os.remove(path)
+        # elif os.path.isfile(path):
+        #    os.remove(path)
         os.mkdir(os.path.dirname(path))
         return
 
