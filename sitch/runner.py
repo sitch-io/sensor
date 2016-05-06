@@ -180,6 +180,7 @@ def output(config):
     while True:
         try:
             msg_bolus = message_write_queue.popleft()
+            print msg_bolus
             msg_type = msg_bolus[0][0]
             msg = msg_bolus[0][1]
             if msg is str:
