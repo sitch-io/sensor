@@ -39,7 +39,7 @@ class Enricher:
                     msg["scan_program"] = scan_document["scan_program"]
                     results_set.append(("arfcn_power", json.dumps(msg)))
             except:
-                print "Failed to enrich message: "
+                print "Failed to enrich KAL message: "
                 print msg
         return results_set
 
@@ -78,7 +78,7 @@ class Enricher:
                             result["value"] = str(scan_document[k])
                     results_set.append((v, result))
         except:
-            print "Failed to enrich message: "
+            print "Failed to enrich SIM808 message: "
             print str(scan_document)
         return results_set
 

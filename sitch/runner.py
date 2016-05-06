@@ -148,7 +148,6 @@ def kalibrate_consumer(config):
         scan_document["scan_program"] = "Kalibrate"
         scan_document["scanner_name"] = config.device_id
         scan_document["scan_location"] = gps_location
-        print "Sending scan to enrichment queue..."
         scan_results_queue.append(scan_document)
     return
 
@@ -176,13 +175,11 @@ def enricher(config):
 
 
 def output(config):
-    print "Attempt to instantiate output module..."
     l = logger(config.log_prefix)
     print "Output module instantiated."
     while True:
         try:
             msg_bolus = message_write_queue.popleft()
-            print msg_bolus
             msg_type = msg_bolus[0][0]
             msg = msg_bolus[0][1]
             if msg is str:
@@ -191,7 +188,6 @@ def output(config):
                 writemsg = json.dumps(msg)
             l.write_log_message(msg_type, writemsg)
         except IndexError:
-            print "Empty output queue"
             time.sleep(3)
 
 if __name__ == "__main__":
