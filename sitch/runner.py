@@ -89,6 +89,12 @@ def main():
 
 
 def sim808_consumer(config):
+    scan_job_template = {"platform": config.platform_name,
+                         "scan_results": [],
+                         "scan_start": "",
+                         "scan_finish": "",
+                         "scan_program": "",
+                         "scan_location": {}}
     while True:
         tty_port = config.sim808_port
         band = config.sim808_band
@@ -98,14 +104,19 @@ def sim808_consumer(config):
             consumer = sim808(tty_port)
         consumer.set_band(band)
         consumer.trigger_gps()
-        for line in consumer:
-            if line != {}:
-                line["scan_location"] = config.device_id
+        for report in consumer:
+            if report != {}:
+                report.append({"scan_location": str(config.device_id)})
                 if "cell" in line:
-                    line["scan_program"] = "SIM808"
+                    retval = dict(scan_job_template)
+                    retval["scan_results"] = report
+                    retval["scan_finish"] = utility.get_now_string()
+                    retval["scan_location"] = str(config.device_id)
+                    retval["scan_program"] = "SIM808"
                 else:
-                    line["scan_program"] = "GPS"
-                scan_results_queue.append(line)
+                    retval = dict(report)
+                    retval["scan_program"] = "GPS"
+                scan_results_queue.append(retval)
 
 
 def kalibrate_consumer(config):
