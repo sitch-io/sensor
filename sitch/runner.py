@@ -113,6 +113,8 @@ def sim808_consumer(config):
                     retval["scan_location"] = str(config.device_id)
                     retval["scan_program"] = "SIM808"
                     scan_results_queue.append(retval)
+                    print "Sent scan results to enricher queue:"
+                    print retval
                 elif "lon" in report[0]:
                     retval = dict(scan_job_template)
                     retval["scan_results"] = report
@@ -176,6 +178,7 @@ def enricher(config):
                 print scandoc
             print scandoc
         except IndexError:
+            print "Enricher queue empty"
             time.sleep(1)
 
 
@@ -194,6 +197,7 @@ def output(config):
                 writemsg = json.dumps(msg)
             l.write_log_message(msg_type, writemsg)
         except IndexError:
+            print "Output queue empty"
             time.sleep(3)
 
 if __name__ == "__main__":
