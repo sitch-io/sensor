@@ -58,29 +58,14 @@ class Enricher:
                               "txp": "arfcn_txp",
                               "lac": "arfcn_lac",
                               "ta": "arfcn_ta"}
-        try:
-            for k, v in fields_of_interest:
-                if k in scan_document:
-                    result = {}
-                    result["scan_program"] = "SIM808"
-                    result["location"] = platform_name
-                    if k in ("lac", "cellid"):  # These are in hex...
-                        try:
-                            cleaned = str(k).replace('\r\n', '')
-                            result["value"] = str(int(scan_document[cleaned], 16))
-                        except:
-                            errline = "Failed to convert from hex: " + str(v)
-                            print errline
-                    elif k == "cell":
-                        result["value"] = (str(scan_document["cell"]),
-                                           str(scan_document["arfcn"]))
-                    else:  # Everything else is taken as is
-                        if scan_document[k] is not None:
-                            result["value"] = str(scan_document[k])
-                    results_set.append((v, result))
-        except:
-            print "Failed to enrich SIM808 message: "
-            print str(scan_document)
+        scan_items = scan_document["scan_results"]
+        cleaned = []
+        for item in scan_items:
+            if "cellid" in item:
+                item["cellid"] = int(item["cellid"], 16)
+            item["lac"] = int(item["lac"], 16)
+            cleaned.append(item)
+        results_set[1]["scan_results"] = cleaned
         return results_set
 
     def enrich_gps_scan(self, scan_document):

@@ -58,7 +58,7 @@ class FonaReader(object):
     def process_line(cls, line):
         processed = None
         if line.startswith('+CENG: '):
-            dataz = line.split(' ')[1].replace('"', '')
+            dataz = line.split(' ')[1].replace('"', '').replace('\r\n', '')
             line_parts = dataz.split(',')
             if len(line_parts) == 12:
                 processed = FonaReader.process_12(line_parts)
@@ -67,7 +67,7 @@ class FonaReader(object):
             if len(line_parts) == 8:
                 processed = FonaReader.process_8(line_parts)
         elif line.startswith('+CIPGSMLOC:'):
-            dataz = line.split(' ')[1]
+            dataz = line.replace('\r\n', '').split(' ')[1]
             line_parts = dataz.split(',')
             if line_parts[0] == 0:
                 processed = FonaReader.process_gps(line_parts)
