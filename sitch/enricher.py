@@ -66,12 +66,12 @@ class Enricher:
                               "ta": "arfcn_ta"}
         scan_items = scan_document["scan_results"]
         cleaned = []
-        for item in scan_items:
-            if "cellid" in item:
-                item["cellid"] = int(item["cellid"], 16)
-            item["lac"] = int(item["lac"], 16)
-            cleaned.append(item)
-        results_set[1]["scan_results"] = cleaned
+        # for item in scan_items:
+        #    if "cellid" in item:
+        #        item["cellid"] = int(item["cellid"], 16)
+        #    item["lac"] = int(item["lac"], 16)
+        #    cleaned.append(item)
+        # results_set[1]["scan_results"] = cleaned
         return results_set
 
     def enrich_gps_scan(self, scan_document):
