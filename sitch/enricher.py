@@ -9,13 +9,16 @@ class Enricher:
     @classmethod
     def determine_scan_type(cls, scan):
         scan_type = None
-        if scan["scan_program"] == 'Kalibrate':
-            scan_type = 'Kalibrate'
-        if scan["scan_program"] == 'SIM808':
-            scan_type = 'SIM808'
-        if scan["scan_program"] == 'GPS':
-            scan_type = 'GPS'
-        return scan_type
+        if scan is str:
+            scan = json.loads(str)
+        try:
+            if scan["scan_program"] == 'Kalibrate':
+                scan_type = 'Kalibrate'
+            if scan["scan_program"] == 'SIM808':
+                scan_type = 'SIM808'
+            if scan["scan_program"] == 'GPS':
+                scan_type = 'GPS'
+            return scan_type
 
     def enrich_kal_scan(self, scan_document):
         results_set = [("scan", scan_document)]
