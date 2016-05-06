@@ -118,6 +118,8 @@ def sim808_consumer(config):
                     retval["scan_finish"] = utility.get_now_string()
                     retval["scan_location"] = str(config.device_id)
                     retval["scan_program"] = "GPS"
+                else:
+                    print report
                 scan_results_queue.append(retval)
 
 
