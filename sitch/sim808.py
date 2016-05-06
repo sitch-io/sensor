@@ -25,7 +25,7 @@ class FonaReader(object):
                 print line
                 processed_line = self.process_line(line)
                 if "lon" in processed_line:
-                    yield processed_line
+                    yield [processed_line]
                 elif "cell" in processed_line:
                     if (str(processed_line["cell"]) == str(0) and page != []):
                         yield page

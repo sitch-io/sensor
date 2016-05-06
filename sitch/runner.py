@@ -107,14 +107,14 @@ def sim808_consumer(config):
         for report in consumer:
             if report != {}:
                 report.append({"scan_location": str(config.device_id)})
-                if "cell" in report:
+                if "cell" in report[0]:
                     retval = dict(scan_job_template)
                     retval["scan_results"] = report
                     retval["scan_finish"] = utility.get_now_string()
                     retval["scan_location"] = str(config.device_id)
                     retval["scan_program"] = "SIM808"
                 else:
-                    retval = dict(report)
+                    retval = dict(report[0])
                     retval["scan_program"] = "GPS"
                 scan_results_queue.append(retval)
 
