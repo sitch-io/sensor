@@ -120,7 +120,10 @@ def sim808_consumer(config):
                     retval["scan_program"] = "GPS"
                 else:
                     print "No match!"
-                print report
+                    retval = dict(scan_job_template)
+                    retval["scan_results"] = report
+                    print retval
+                print retval
                 scan_results_queue.append(retval)
 
 
@@ -145,7 +148,6 @@ def kalibrate_consumer(config):
         scan_document["scan_program"] = "Kalibrate"
         scan_document["scanner_name"] = config.device_id
         scan_document["scan_location"] = gps_location
-        print scan_document
         print "Sending scan to enrichment queue..."
         scan_results_queue.append(scan_document)
     return
@@ -159,7 +161,6 @@ def enricher(config):
         enr = enricher_module(config)
         try:
             scandoc = scan_results_queue.popleft()
-            print "Attempting to enrich..."
             doctype = enr.determine_scan_type(scandoc)
             results = []
             if doctype == 'Kalibrate':
@@ -170,7 +171,6 @@ def enricher(config):
                 results = enr.enrich_gps_scan(scandoc)
                 gps_location = scandoc
             message_write_queue.append(results)
-            print "Enriched and sent to write queue."
         except IndexError:
             time.sleep(1)
 
