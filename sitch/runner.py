@@ -161,6 +161,8 @@ def enricher(config):
     while True:
         enr = enricher_module(config)
         try:
+            print "Enriching: "
+            print scandoc
             scandoc = scan_results_queue.popleft()
             doctype = enr.determine_scan_type(scandoc)
             results = []
@@ -176,8 +178,7 @@ def enricher(config):
             else:
                 print "Can't determine scan type for: "
                 print scandoc
-            print "Enriched: "
-            print scandoc
+            print "Done enriching..."
         except IndexError:
             print "Enricher queue empty"
             time.sleep(1)
