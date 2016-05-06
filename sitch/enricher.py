@@ -9,9 +9,9 @@ class Enricher:
     @classmethod
     def determine_scan_type(cls, scan):
         scan_type = None
-        if scan is str:
-            scan = json.loads(str)
         try:
+            if scan is str:
+                scan = json.loads(str)
             if scan["scan_program"] == 'Kalibrate':
                 scan_type = 'Kalibrate'
             if scan["scan_program"] == 'SIM808':
