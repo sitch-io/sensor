@@ -106,20 +106,20 @@ def sim808_consumer(config):
         consumer.trigger_gps()
         for report in consumer:
             if report != {}:
-                if "cell" in report[0][0]:
+                if "cell" in report[0]:
                     retval = dict(scan_job_template)
                     retval["scan_results"] = report
                     retval["scan_finish"] = utility.get_now_string()
                     retval["scan_location"] = str(config.device_id)
                     retval["scan_program"] = "SIM808"
-                elif "lon" in report[0][0]:
+                elif "lon" in report[0]:
                     retval = dict(scan_job_template)
                     retval["scan_results"] = report
                     retval["scan_finish"] = utility.get_now_string()
                     retval["scan_location"] = str(config.device_id)
                     retval["scan_program"] = "GPS"
                 else:
-                    print report
+                print report
                 scan_results_queue.append(retval)
 
 
