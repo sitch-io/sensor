@@ -176,6 +176,7 @@ def enricher(config):
             else:
                 print "Can't determine scan type for: "
                 print scandoc
+            print "Enriched: "
             print scandoc
         except IndexError:
             print "Enricher queue empty"
