@@ -112,8 +112,10 @@ def sim808_consumer(config):
                     retval["scan_finish"] = utility.get_now_string()
                     retval["scan_location"] = str(config.device_id)
                     retval["scan_program"] = "SIM808"
-                else:
-                    retval = dict(report)
+                elif "lon" in report[0]:
+                    retval = dict(scan_job_template)
+                    retval["scan_results"] = report
+                    retval["scan_finish"] = utility.get_now_string()
                     retval["scan_location"] = str(config.device_id)
                     retval["scan_program"] = "GPS"
                 scan_results_queue.append(retval)
