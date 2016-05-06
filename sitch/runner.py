@@ -112,14 +112,14 @@ def sim808_consumer(config):
                     retval["scan_finish"] = utility.get_now_string()
                     retval["scan_location"] = str(config.device_id)
                     retval["scan_program"] = "SIM808"
-                    scan_results_queue.append(retval)
+                    scan_results_queue.extend(retval)
                 elif "lon" in report[0]:
                     retval = dict(scan_job_template)
                     retval["scan_results"] = report
                     retval["scan_finish"] = utility.get_now_string()
                     retval["scan_location"] = str(config.device_id)
                     retval["scan_program"] = "GPS"
-                    scan_results_queue.append(retval)
+                    scan_results_queue.extend(retval)
                 else:
                     print "No match!"
                     retval = dict(scan_job_template)
@@ -164,16 +164,17 @@ def enricher(config):
             results = []
             if doctype == 'Kalibrate':
                 results = enr.enrich_kal_scan(scandoc)
-                message_write_queue.append(results)
+                message_write_queue.extend(results)
             elif doctype == 'SIM808':
                 results = enr.enrich_sim808_scan(scandoc)
-                message_write_queue.append(results)
+                message_write_queue.extend(results)
             elif doctype == 'GPS':
                 results = enr.enrich_gps_scan(scandoc)
                 gps_location = scandoc
             else:
                 print "Can't determine scan type for: "
                 print scandoc
+            print scandoc
         except IndexError:
             time.sleep(1)
 
