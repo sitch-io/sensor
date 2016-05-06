@@ -18,7 +18,10 @@ class Enricher:
                 scan_type = 'SIM808'
             if scan["scan_program"] == 'GPS':
                 scan_type = 'GPS'
-            return scan_type
+        except:
+            print "Failure to determine scan type"
+            print scan
+        return scan_type
 
     def enrich_kal_scan(self, scan_document):
         results_set = [("scan", scan_document)]
