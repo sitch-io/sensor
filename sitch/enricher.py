@@ -66,7 +66,8 @@ class Enricher:
                     result["location"] = platform_name
                     if k in ("lac", "cellid"):  # These are in hex...
                         try:
-                            result["value"] = str(int(scan_document[k], 16))
+                            cleaned = str(k).replace('\r\n', '')
+                            result["value"] = str(int(scan_document[cleaned], 16))
                         except:
                             errline = "Failed to convert from hex: " + str(v)
                             print errline
