@@ -161,10 +161,12 @@ def enricher(config):
     while True:
         enr = enricher_module(config)
         try:
+            scandoc = scan_results_queue.popleft()
             print "Enriching: "
             print scandoc
-            scandoc = scan_results_queue.popleft()
             doctype = enr.determine_scan_type(scandoc)
+            print "Type: "
+            print doctype
             results = []
             if doctype == 'Kalibrate':
                 results = enr.enrich_kal_scan(scandoc)
