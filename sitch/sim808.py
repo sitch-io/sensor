@@ -31,7 +31,8 @@ class FonaReader(object):
                         yield page
                         print page
                         page = [(processed_line)]
-                    else page.append((processed_line))
+                    else:
+                        page.append((processed_line))
 
     def trigger_gps(self):
         # for s in ['AT+SAPBR=3,1,"Conntype","GPRS"',
