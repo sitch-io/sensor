@@ -116,7 +116,7 @@ def sim808_consumer(config):
                     retval["scan_finish"] = utility.get_now_string()
                     retval["scan_location"] = str(config.device_id)
                     retval["scan_program"] = "SIM808"
-                    scan_results_queue.append(retval)
+                    scan_results_queue.append(retval.copy())
                     print "SIM808 results sent for enrichment..."
                 elif "lon" in report[0]:
                     retval = dict(scan_job_template)
@@ -124,12 +124,10 @@ def sim808_consumer(config):
                     retval["scan_finish"] = utility.get_now_string()
                     retval["scan_location"] = str(config.device_id)
                     retval["scan_program"] = "GPS"
-                    scan_results_queue.append(retval)
+                    scan_results_queue.append(retval.copy())
                 else:
                     print "No match!"
-                    retval = dict(scan_job_template)
-                    retval["scan_results"] = report
-                    print retval
+                    print report
 
 
 def kalibrate_consumer(config):
@@ -153,7 +151,7 @@ def kalibrate_consumer(config):
         scan_document["scan_program"] = "Kalibrate"
         scan_document["scanner_name"] = config.device_id
         scan_document["scan_location"] = gps_location
-        scan_results_queue.append(scan_document)
+        scan_results_queue.append(scan_document.copy())
         print "Kalibrate results sent for enrichment..."
     return
 
@@ -169,13 +167,17 @@ def enricher(config):
             doctype = enr.determine_scan_type(scandoc)
             results = []
             if doctype == 'Kalibrate':
+                print "Processing Kalibrate scan"
                 results = enr.enrich_kal_scan(scandoc)
-                message_write_queue.append(results)
+                message_write_queue.append(results.copy())
             elif doctype == 'SIM808':
+                print "Processing SIM808 scan"
                 results = enr.enrich_sim808_scan(scandoc)
-                message_write_queue.append(results)
+                message_write_queue.append(results.copy())
             elif doctype == 'GPS':
-                results = enr.enrich_gps_scan(scandoc)
+                print "Updating GPS coordinates"
+                print results
+                results = enr.enrich_gps_scan(scandoc.copy())
                 gps_location = scandoc
             else:
                 print "Can't determine scan type for: "
@@ -194,6 +196,7 @@ def output(config):
             print msg_bolus
             l.record_log_message(msg_type, writemsg)
             print writemsg
+            del msg_bolus
         except IndexError:
             print "Output queue empty"
             time.sleep(3)
