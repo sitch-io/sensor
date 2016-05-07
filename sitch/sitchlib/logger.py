@@ -73,7 +73,7 @@ class LogHandler:
             lf.write(str(message))
         return
 
-    def transmit_log_message(self, log_file_type, message):
+    def transmit_log_message(self, message):
         """You should only ever send a dict to this method"""
         try:
             self.ls_logger.info(message)
