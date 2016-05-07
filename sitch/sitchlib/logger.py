@@ -12,7 +12,7 @@ class LogHandler:
         self.log_prefix = config.log_prefix
         self.log_method = config.log_method
         self.logstash_host = config.log_host.split(':')[0]
-        self.logstash_port = config.log_host.splig(':')[1]
+        self.logstash_port = config.log_host.split(':')[1]
         self.logstash_cert_path = config.logstash_cert_path
         self.ls_logger = logging.getLogger()
         self.ls_handler = LogstashHandler(self.logstash_host,
