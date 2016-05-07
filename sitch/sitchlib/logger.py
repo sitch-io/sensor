@@ -20,8 +20,8 @@ class LogHandler:
                                           ssl=True,
                                           ca_certs=self.logstash_cert_path)
         self.ls_formatter = LogstashFormatter()
-        self.ls_handler.setFormatter(ls_formatter)
-        self.ls_logger.addHandler(ls_handler)
+        self.ls_handler.setFormatter(self.ls_formatter)
+        self.ls_logger.addHandler(self.ls_handler)
         utility.create_path_if_nonexistent(self.log_prefix)
 
     @classmethod
