@@ -67,6 +67,8 @@ class Enricher:
             channel = self.convert_hex_targets(channel)
             chan_enriched = ('sim808_channel', channel)
             results_set.append(chan_enriched)
+        print "Enriched SIM808 scan:"
+        print results_set
         return results_set
 
     def enrich_gps_scan(self, scan_document):

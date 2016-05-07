@@ -116,6 +116,11 @@ def sim808_consumer(config):
         except:
             consumer = sim808(tty_port)
         consumer.set_band(band)
+        time.sleep(2)
+        # consumer.trigger_gps()
+        time.sleep(2)
+        consumer.set_eng_mode()
+        time.sleep(2)
         for report in consumer:
             if report != {}:
                 if "cell" in report[0]:
@@ -175,13 +180,15 @@ def enricher(config):
             doctype = enr.determine_scan_type(scandoc)
             results = []
             if doctype == 'Kalibrate':
-                print "Processing Kalibrate scan"
+                print "Enriching Kalibrate scan"
                 results = enr.enrich_kal_scan(scandoc)
                 message_write_queue.append(results.copy())
+                print results
             elif doctype == 'SIM808':
-                print "Processing SIM808 scan"
+                print "Enriching SIM808 scan"
                 results = enr.enrich_sim808_scan(scandoc)
                 message_write_queue.append(results.copy())
+                print results
             elif doctype == 'GPS':
                 print "Updating GPS coordinates"
                 print results

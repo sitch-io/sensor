@@ -17,7 +17,7 @@ class FonaReader(object):
     def __iter__(self):
         page = []
         # self.serconn.write(self.gps_init)
-        self.serconn.write(self.eng_init)
+        # self.serconn.write(self.eng_init)
         while True:
             line = None
             line = self.serconn.readline()
@@ -34,12 +34,26 @@ class FonaReader(object):
                 else:
                     page.append(processed_line)
 
+    def trigger_gps(self):
+        self.serconn.write(self.gps_init)
+        self.serconn.flushInput()
+        self.serconn.flushOutput()
+        return
+
+    def set_eng_mode(self):
+        self.serconn.write(self.eng_init)
+        self.serconn.flushInput()
+        self.serconn.flushOutput()
+        return
+
     def set_band(self, band):
         if band in ["EGSM_MODE", "PGSM_MODE", "DCS_MODE", "GSM850_MODE",
                     "PCS_MODE", "EGSM_DCS_MODE", "GSM850_PCS_MODE",
                     "EGSM_PCS_MODE", "ALL_BAND"]:
             term_command = "AT+CBAND=\"%s\"\r\n" % band
             self.serconn.write(term_command)
+            self.serconn.flushInput()
+            self.serconn.flushOutput()
         else:
             print "Not setting band, unrecognized value: %s" % band
 
