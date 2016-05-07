@@ -44,6 +44,7 @@ RUN pip install virtualenv && \
     . ./venv/bin/activate && \
     pip install pyserial && \
     pip install hvac && \
+    pip install logstash_handler && \
     pip install kalibrate
 
 # CMD cd /app/sitch && . ./venv/bin/activate && /app/sitch/venv/bin/python ./runner.py

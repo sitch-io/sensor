@@ -11,6 +11,7 @@ class ConfigHelper:
         self.platform_name = utility.get_platform_name()
         self.log_prefix = "/var/log/sitch/"
         self.log_host = ConfigHelper.get_from_env("LOG_HOST")
+        self.log_method = ConfigHelper.get_from_env("LOG_METHOD")
         self.kal_band = ConfigHelper.get_from_env("KAL_BAND")
         self.kal_gain = ConfigHelper.get_from_env("KAL_GAIN")
         self.sim808_band = ConfigHelper.get_from_env("SIM808_BAND")

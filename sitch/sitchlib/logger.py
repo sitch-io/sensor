@@ -1,12 +1,27 @@
 import json
+import logging
+from logstash_formatter import LogstashFormatter
+from logstash_handler import LogstashHandler
 import os
 from utility import Utility as utility
 
 
 class LogHandler:
     """ Instantiate this class with the log file prefix"""
-    def __init__(self, log_prefix):
-        self.log_prefix = log_prefix
+    def __init__(self, config):
+        self.log_prefix = config.log_prefix
+        self.log_method = config.log_method
+        self.logstash_host = config.log_host.split(':')[0]
+        self.logstash_port = config.log_host.splig(':')[1]
+        self.logstash_cert_path = config.logstash_cert_path
+        self.ls_logger = logging.getLogger()
+        self.ls_handler = LogstashHandler(self.logstash_host,
+                                          self.logstash_port,
+                                          ssl=True,
+                                          ca_certs=self.logstash_cert_path)
+        self.ls_formatter = LogstashFormatter()
+        self.ls_handler.setFormatter(ls_formatter)
+        self.ls_logger.addHandler(ls_handler)
         utility.create_path_if_nonexistent(self.log_prefix)
 
     @classmethod
@@ -35,9 +50,27 @@ class LogHandler:
             log_file = None
         return log_file
 
+    def record_log_message(self, bolus):
+        msg_type = bolus[0]
+        msg_body = bolus[1]
+        if type(msg_body) == dict:
+            msg_string = json.dumps(msg_body)
+            msg_json = msg_body
+        elif type(msg_body) is str:
+            msg_string = msg_body
+            msg_json = json.loads(msg_body)
+        if self.log_method == 'local_file':
+            self.write_log_message(bolus[0], msg_string)
+        elif self.log_method == 'direct':
+            self.transmit_log_message(msg_json)
+
     def write_log_message(self, log_file_type, message):
         """You should only ever send a string to this method"""
         log_file = self.get_log_file_name(log_file_type)
         with open(log_file, 'a') as lf:
             lf.write(str(message))
         return
+
+    def transmit_log_message(self, log_file_type, message):
+        """You should only ever send a string to this method"""
+        self.ls_logger.info(message)
