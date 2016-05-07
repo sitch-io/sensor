@@ -31,10 +31,6 @@ COPY binaries/kal /usr/local/bin/
 # Get Kalibrate source for posterity
 ADD https://github.com/hainn8x/kalibrate-rtl/archive/master.zip /app/source
 
-# Get and install python logstash-handler module...
-RUN mkdir /source && cd /source && \
-    git clone https://github.com/klynch/python-logstash-handler:c5574624c8cb4fdba14bef33303e8650eb2f3487
-    cd python-logstash-handler
 
 # Place the Logstash init script
 COPY init/logstash-forwarder /etc/init.d/
