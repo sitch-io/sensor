@@ -57,7 +57,7 @@ class Enricher:
         return results_set
 
     def enrich_sim808_scan(self, scan_document):
-        results_set = ("cell", scan_document)
+        results_set = [("cell", scan_document)]
         results_channels = []
         platform_name = scan_document["scan_location"]
         scan_items = scan_document["scan_results"]
