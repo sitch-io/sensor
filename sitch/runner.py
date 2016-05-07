@@ -42,16 +42,19 @@ def main():
     utility.write_file("/etc/logrotate.d/sitch",
                        config.build_logrotate_config())
     # Start logstash service
-    ls_success = utility.start_component("/etc/init.d/logstash-forwarder start")
-    if ls_success is False:
-        print "Failed to start logstash-forwarder!!!\nExiting!"
-        sys.exit(2)
+    # ls_success = utility.start_component("/etc/init.d/logstash-forwarder start")
+    # if ls_success is False:
+    #    print "Failed to start logstash-forwarder!!!\nExiting!"
+    #    sys.exit(2)
     # Kill interfering driver
-    utility.start_component("modprobe -r dvb_usb_rtl28xxu")
+    try:
+        utility.start_component("modprobe -r dvb_usb_rtl28xxu")
+    except:
+        print "Error trying to unload stock driver"
     # Start cron
-    cron_success = utility.start_component("/etc/init.d/cron start")
-    if cron_success is False:
-        print "Failed to start cron, so no logrotate... keep an eye on your disk!"
+    # cron_success = utility.start_component("/etc/init.d/cron start")
+    # if cron_success is False:
+    #    print "Failed to start cron, so no logrotate... keep an eye on your disk!"
     # Configure threads
     kalibrate_consumer_thread = threading.Thread(target=kalibrate_consumer,
                                                  args=[config])
