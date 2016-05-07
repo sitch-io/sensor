@@ -178,7 +178,7 @@ def enricher(config):
         try:
             scandoc = scan_results_queue.popleft()
             doctype = enr.determine_scan_type(scandoc)
-            results = []
+            results = {}
             if doctype == 'Kalibrate':
                 print "Enriching Kalibrate scan"
                 results = enr.enrich_kal_scan(scandoc)
