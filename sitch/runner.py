@@ -78,16 +78,20 @@ def main():
     while True:
         time.sleep(60)
         print "heartbeat..."
-        # if kalibrate_consumer_thread.is_alive is False:
+        if kalibrate_consumer_thread.is_alive is False:
+            print "Kalibrate consumer is dead..."
         #    print "Kalibrate thread died... restarting!"
         #    kalibrate_consumer_thread.start()
-        # if sim808_consumer_thread.is_alive is False:
+        if sim808_consumer_thread.is_alive is False:
+            print "SIM808 consumer is dead..."
         #    print "SIM808 consumer thread died... restarting!"
         #    sim808_consumer_thread.start()
-        # if enricher_thread.is_alive is False:
+         if enricher_thread.is_alive is False:
+             print "Enricher thread is dead..."
         #    print "Enricher thread died... restarting!"
         #    enricher_thread.start()
-        # if writer_thread.is_alive is False:
+         if writer_thread.is_alive is False:
+             print "Writer thread is dead..."
         #    print "Writer thread died... restarting!"
         #    writer_thread.start()
     return
