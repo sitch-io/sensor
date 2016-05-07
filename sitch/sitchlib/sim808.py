@@ -38,7 +38,7 @@ class FonaReader(object):
         if band in ["EGSM_MODE", "PGSM_MODE", "DCS_MODE", "GSM850_MODE",
                     "PCS_MODE", "EGSM_DCS_MODE", "GSM850_PCS_MODE",
                     "EGSM_PCS_MODE", "ALL_BAND"]:
-            term_command = "AT+CBAND=\"%s\"" % band
+            term_command = "AT+CBAND=\"%s\"\r\n" % band
             self.serconn.write(term_command)
         else:
             print "Not setting band, unrecognized value: %s" % band
