@@ -7,6 +7,13 @@ class Enricher:
         return
 
     @classmethod
+    def convert_hex_targets(cls, channel):
+        for target in ['lac', 'cellid']:
+            if target in channel:
+                channel[target] = Enricher.hex_to_dec(channel[target])
+        return channel
+
+    @classmethod
     def determine_scan_type(cls, scan):
         scan_type = None
         try:
@@ -43,7 +50,7 @@ class Enricher:
                     msg["scan_start"] = scan_document["scan_start"]
                     msg["scan_finish"] = scan_document["scan_finish"]
                     msg["scan_program"] = scan_document["scan_program"]
-                    results_set.append(("arfcn_power", json.dumps(msg)))
+                    results_set.append(("kal_channel", json.dumps(msg)))
             except:
                 print "Failed to enrich KAL message: "
                 print msg
@@ -51,22 +58,22 @@ class Enricher:
 
     def enrich_sim808_scan(self, scan_document):
         results_set = [("cell", scan_document)]
+        results_channels = []
         platform_name = scan_document["scan_location"]
-        # Field and logtype association...
-        fields_of_interest = {"cell": "arfcn_prio",
-                              "rxl": "arfcn_rxl",
-                              "rxq": "arfcn_rxq",
-                              "mcc": "arfcn_mcc",
-                              "mnc": "arfcn_mnc",
-                              "bsic": "arfcn_bsic",
-                              "cellid": "arfcn_cellid",
-                              "rla": "arfcn_rla",
-                              "txp": "arfcn_txp",
-                              "lac": "arfcn_lac",
-                              "ta": "arfcn_ta"}
         scan_items = scan_document["scan_results"]
+        for channel in scan_items:
+            channel["scan_finish"] = scan_document["scan_finish"]
+            channel["scan_location"] = scan_document["scan_location"]
+            channel = self.convert_hex_targets(channel)
+            chan_enriched = ('sim808_channel', channel)
+            results_set.append(chan_enriched)
         return results_set
 
     def enrich_gps_scan(self, scan_document):
         retval = ("gps", scan_document)
         return retval
+
+    @classmethod
+    def hex_to_dec(cls, hx):
+        integer = int(hx, 16)
+        return str(integer)

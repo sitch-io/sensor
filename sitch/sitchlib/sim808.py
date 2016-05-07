@@ -9,39 +9,34 @@ class FonaReader(object):
 
     """
     def __init__(self, ser_port):
-        self.initstring = "AT+CENG=2,1\r\n"
+        self.eng_init = "AT+CENG=2,1\r\n"
+        self.gps_init = 'AT+CGPSINF=0\r\n'
         print "opening serial port: %s" % ser_port
         self.serconn = serial.Serial(ser_port, 9600, timeout=1)
-        self.serconn.write(self.initstring)
-        self.serconn.sendBreak()
-        self.trigger_gps()
 
     def __iter__(self):
         page = []
+        self.serconn.write(self.gps_init)
+        self.serconn.write(self.eng.init)
         while True:
             line = None
             line = self.serconn.readline()
-            if line is not None:
-                processed_line = self.process_line(line)
-                if "lon" in processed_line:
-                    yield [processed_line]
-                elif "cell" in processed_line:
-                    if (str(processed_line["cell"]) == str(0) and page != []):
-                        yield page
-                        page = []
-                        page.append(processed_line)
-                    else:
-                        page.append(processed_line)
+            processed_line = self.process_line(line)
+            if line is None:
+                pass
+            elif "lon" in processed_line:
+                yield [processed_line]
+            elif "cell" in processed_line:
+                if (str(processed_line["cell"]) == str(0) and page != []):
+                    yield page
+                    page = []
+                    page.append(processed_line)
+                else:
+                    page.append(processed_line)
 
     def trigger_gps(self):
-        # for s in ['AT+SAPBR=3,1,"Conntype","GPRS"',
-        #          'AT+SAPBR=3,1,"APN","CMNET"',
-        #          'AT+SAPBR=1,1',
-        #          'AT+SAPBR=2,1',
-        #          'AT+CIPGSMLOC=1,1']:
         write_string = 'AT+CGPSINF=0\r\n'
         self.serconn.write(write_string)
-        self.serconn.sendBreak()
 
         return None
 

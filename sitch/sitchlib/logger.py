@@ -25,6 +25,8 @@ class LogHandler:
                         "arfcn_txp": "arfcn_txp.log",  # sim808
                         "arfcn_lac": "arfcn_lac.log",  # sim808
                         "arfcn_ta": "arfcn_ta.log",  # sim808
+                        "kal_channel": "kal_channel.log",  # individual cells from Kal
+                        "sim808_channel": "sim808_channel",  # individual cells from sim808
                         "gps": "gps.log"}
         if ltype in type_to_file:
             log_file = type_to_file[ltype]
