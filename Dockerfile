@@ -3,6 +3,7 @@ MAINTAINER Ash
 
 RUN apt-get update && apt-get upgrade -y && apt-get install -y \
     cron \
+    git \
     kmod \
     lshw \
     libfftw3-double3 \
@@ -30,6 +31,11 @@ COPY binaries/kal /usr/local/bin/
 # Get Kalibrate source for posterity
 ADD https://github.com/hainn8x/kalibrate-rtl/archive/master.zip /app/source
 
+# Get and install python logstash-handler module...
+RUN mkdir /source && cd /source && \
+    git clone https://github.com/klynch/python-logstash-handler:c5574624c8cb4fdba14bef33303e8650eb2f3487
+    cd python-logstash-handler
+
 # Place the Logstash init script
 COPY init/logstash-forwarder /etc/init.d/
 
@@ -44,8 +50,10 @@ RUN pip install virtualenv && \
     . ./venv/bin/activate && \
     pip install pyserial && \
     pip install hvac && \
-    pip install logstash_handler && \
-    pip install kalibrate
+    pip install kalibrate && \
+    git clone https://github.com/klynch/python-logstash-handler:c5574624c8cb4fdba14bef33303e8650eb2f3487 && \
+    cd python-logstash-handler && \
+    pip install .
 
 # CMD cd /app/sitch && . ./venv/bin/activate && /app/sitch/venv/bin/python ./runner.py
 CMD /app/sitch/venv/bin/python ./runner.py
