@@ -150,6 +150,7 @@ def kalibrate_consumer(config):
         scan_document["scan_program"] = "Kalibrate"
         scan_document["scanner_name"] = config.device_id
         scan_document["scan_location"] = gps_location
+        print scan_document
         scan_results_queue.append(scan_document)
     return
 
@@ -162,11 +163,7 @@ def enricher(config):
         enr = enricher_module(config)
         try:
             scandoc = scan_results_queue.popleft()
-            print "Enriching: "
-            print scandoc
             doctype = enr.determine_scan_type(scandoc)
-            print "Type: "
-            print doctype
             results = []
             if doctype == 'Kalibrate':
                 results = enr.enrich_kal_scan(scandoc)
@@ -180,7 +177,6 @@ def enricher(config):
             else:
                 print "Can't determine scan type for: "
                 print scandoc
-            print "Done enriching..."
         except IndexError:
             print "Enricher queue empty"
             time.sleep(1)
