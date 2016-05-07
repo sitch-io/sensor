@@ -5,11 +5,11 @@ SIM808 engineering mode data.
   If log message is GPS, we update the location var for the enrichment
   thread.
 """
-from config_helper import ConfigHelper as config_helper
-from enricher import Enricher as enricher_module
-from utility import Utility as utility
-from logger import LogHandler as logger
-from sim808 import FonaReader as sim808
+from sitchlib import ConfigHelper as config_helper
+from sitchlib import Enricher as enricher_module
+from sitchlib import Utility as utility
+from sitchlib import LogHandler as logger
+from sitchlib import FonaReader as sim808
 import json
 import kalibrate
 import sys
