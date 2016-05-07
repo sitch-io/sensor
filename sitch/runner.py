@@ -86,12 +86,12 @@ def main():
             print "SIM808 consumer is dead..."
         #    print "SIM808 consumer thread died... restarting!"
         #    sim808_consumer_thread.start()
-         if enricher_thread.is_alive is False:
-             print "Enricher thread is dead..."
+        if enricher_thread.is_alive is False:
+            print "Enricher thread is dead..."
         #    print "Enricher thread died... restarting!"
         #    enricher_thread.start()
-         if writer_thread.is_alive is False:
-             print "Writer thread is dead..."
+        if writer_thread.is_alive is False:
+            print "Writer thread is dead..."
         #    print "Writer thread died... restarting!"
         #    writer_thread.start()
     return
