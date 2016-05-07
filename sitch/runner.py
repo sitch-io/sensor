@@ -209,8 +209,8 @@ def output(config):
             print msg_bolus
             msg_type = msg_bolus[0]
             msg_body = msg_bolus[1]
-            l.record_log_message(msg_type, msg_body)
-            print writemsg
+            l.record_log_message(msg_bolus)
+            print msg_bolus
             del msg_bolus
         except IndexError:
             print "Output queue empty"
