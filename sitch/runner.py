@@ -98,12 +98,12 @@ def sim808_consumer(config):
     while True:
         tty_port = config.sim808_port
         band = config.sim808_band
+        # Sometimes the buffer is full and causes a failed instantiation the first time
         try:
             consumer = sim808(tty_port)
         except:
             consumer = sim808(tty_port)
         consumer.set_band(band)
-        consumer.trigger_gps()
         for report in consumer:
             if report != {}:
                 if "cell" in report[0]:
