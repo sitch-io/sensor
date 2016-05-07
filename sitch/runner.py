@@ -185,7 +185,7 @@ def enricher(config):
                 print results
             elif doctype == 'SIM808':
                 print "Enriching SIM808 scan"
-                results = enr.enrich_sim808_scan(scandoc.copy)
+                results = enr.enrich_sim808_scan(scandoc)
                 message_write_queue.append(results.copy())
                 print results
             elif doctype == 'GPS':
