@@ -31,7 +31,7 @@ class Enricher:
         return scan_type
 
     def enrich_kal_scan(self, scan_document):
-        results_set = [("scan", scan_document)]
+        results_set = ("scan", scan_document)
         platform_name = scan_document["scanner_name"]
         if scan_document["scan_results"] == []:
             print "No results found in scan document..."
@@ -57,7 +57,7 @@ class Enricher:
         return results_set
 
     def enrich_sim808_scan(self, scan_document):
-        results_set = [("cell", scan_document)]
+        results_set = ("cell", scan_document)
         results_channels = []
         platform_name = scan_document["scan_location"]
         scan_items = scan_document["scan_results"]
