@@ -2,8 +2,8 @@ FROM ioft/armhf-ubuntu:15.04
 MAINTAINER Ash
 
 RUN apt-get update && apt-get upgrade -y && apt-get install -y \
-    # cron \
     git \
+    vim \
     kmod \
     lshw \
     libfftw3-double3 \
@@ -13,7 +13,6 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y \
     libstdc++6 \
     libgcc1 \
     libudev1 \
-    # logrotate \
     python \
     python-pip && \
     apt-get clean && \
