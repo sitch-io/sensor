@@ -70,3 +70,11 @@ class Utility:
         except:
             platform_name = "Unspecified"
         return platform_name
+
+    @classmethod
+    def strip_list(cls, raw_struct):
+        """Strips contents from single-item list"""
+        if (type(raw_struct) is list and len(raw_struct)) == 1:
+            return raw_struct[0]
+        else:
+            return raw_struct

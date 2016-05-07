@@ -178,21 +178,19 @@ def enricher(config):
         try:
             scandoc = scan_results_queue.popleft()
             doctype = enr.determine_scan_type(scandoc)
-            results = {}
             if doctype == 'Kalibrate':
                 print "Enriching Kalibrate scan"
-                results = enr.enrich_kal_scan(scandoc)
+                results = enr.enrich_kal_scan(utility.strip_list(scandoc))
                 message_write_queue.append(results.copy())
                 print results
             elif doctype == 'SIM808':
                 print "Enriching SIM808 scan"
-                results = enr.enrich_sim808_scan(scandoc)
+                results = enr.enrich_sim808_scan(utility.strip_list(scandoc))
                 message_write_queue.append(results.copy())
                 print results
             elif doctype == 'GPS':
                 print "Updating GPS coordinates"
-                print results
-                results = enr.enrich_gps_scan(scandoc.copy())
+                results = enr.enrich_gps_scan(utility.strip_list(scandoc))
                 gps_location = scandoc
             else:
                 print "Can't determine scan type for: "
