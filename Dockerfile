@@ -2,7 +2,7 @@ FROM ioft/armhf-ubuntu:15.04
 MAINTAINER Ash
 
 RUN apt-get update && apt-get upgrade -y && apt-get install -y \
-    cron \
+    # cron \
     git \
     kmod \
     lshw \
@@ -13,7 +13,7 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y \
     libstdc++6 \
     libgcc1 \
     libudev1 \
-    logrotate \
+    # logrotate \
     python \
     python-pip && \
     apt-get clean && \
@@ -51,8 +51,9 @@ RUN pip install virtualenv && \
     pip install pyserial && \
     pip install hvac && \
     pip install kalibrate && \
-    git clone https://github.com/klynch/python-logstash-handler:c5574624c8cb4fdba14bef33303e8650eb2f3487 && \
+    git clone https://github.com/klynch/python-logstash-handler && \
     cd python-logstash-handler && \
+    git checkout c5574624c8cb4fdba14bef33303e8650eb2f3487 && \
     pip install .
 
 # CMD cd /app/sitch && . ./venv/bin/activate && /app/sitch/venv/bin/python ./runner.py
