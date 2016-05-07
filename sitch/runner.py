@@ -113,8 +113,7 @@ def sim808_consumer(config):
                     retval["scan_location"] = str(config.device_id)
                     retval["scan_program"] = "SIM808"
                     scan_results_queue.append(retval)
-                    print "Sent scan results to enricher queue:"
-                    print retval
+                    print "SIM808 results sent for enrichment..."
                 elif "lon" in report[0]:
                     retval = dict(scan_job_template)
                     retval["scan_results"] = report
@@ -151,6 +150,7 @@ def kalibrate_consumer(config):
         scan_document["scanner_name"] = config.device_id
         scan_document["scan_location"] = gps_location
         scan_results_queue.append(scan_document)
+        print "Kalibrate results sent for enrichment..."
     return
 
 
