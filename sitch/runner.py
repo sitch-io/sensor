@@ -136,7 +136,7 @@ def kalibrate_consumer(config):
                              "scan_start": "",
                              "scan_finish": "",
                              "scan_program": "",
-                             "scan_location": {}}
+                             "scan_location": str(config.device_id)}
         band = config.kal_band
         gain = config.kal_gain
         kal_scanner = kalibrate.Kal("/usr/local/bin/kal")
@@ -150,7 +150,6 @@ def kalibrate_consumer(config):
         scan_document["scan_program"] = "Kalibrate"
         scan_document["scanner_name"] = config.device_id
         scan_document["scan_location"] = gps_location
-        print scan_document
         scan_results_queue.append(scan_document)
     return
 
@@ -188,7 +187,6 @@ def output(config):
     while True:
         try:
             msg_bolus = message_write_queue.popleft()
-            print msg_bolus
             msg_type = msg_bolus[0][0]
             msg = msg_bolus[0][1]
             if msg is str:

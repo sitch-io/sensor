@@ -28,6 +28,26 @@ samp_sim = {'platform': u'AMLOGIC',
             'scan_start': '',
             'scan_program': 'SIM808'}
 
+samp_kal = {'platform': u'AMLOGIC',
+            'scan_finish': '2016-05-07 04:14:30',
+            'scan_location': 'test_site',
+            'scan_results': [
+                {'channel_detect_threshold': '279392.605625', 'power': '599624.47', 'final_freq': '869176168',
+                    'mod_freq': 23832.0, 'band': 'GSM-850', 'sample_rate': '270833.002142', 'gain': '80.0',
+                    'base_freq': 869200000.0, 'device': '0: Generic RTL2832U OEM', 'modifier': '-', 'channel': '128'},
+                {'channel_detect_threshold': '279392.605625', 'power': '400160.02', 'final_freq': '874376406',
+                    'mod_freq': 23594.0, 'band': 'GSM-850', 'sample_rate': '270833.002142', 'gain': '80.0',
+                    'base_freq': 874400000.0, 'device': '0: Generic RTL2832U OEM', 'modifier': '-', 'channel': '154'},
+                {'channel_detect_threshold': '279392.605625', 'power': '401880.05', 'final_freq': '889829992',
+                    'mod_freq': 29992.0, 'band': 'GSM-850', 'sample_rate': '270833.002142', 'gain': '80.0',
+                    'base_freq': 889800000.0, 'device': '0: Generic RTL2832U OEM', 'modifier': '+', 'channel': '231'},
+                {'channel_detect_threshold': '279392.605625', 'power': '397347.54', 'final_freq': '891996814',
+                    'mod_freq': 3186.0, 'band': 'GSM-850', 'sample_rate': '270833.002142', 'gain': '80.0',
+                    'base_freq': 892000000.0, 'device': '0: Generic RTL2832U OEM', 'modifier': '-', 'channel': '242'}],
+            'scan_start': '2016-05-07 04:10:35',
+            'scan_program': 'Kalibrate',
+            'scanner_name': 'test_site'}
+
 
 class TestEnricher:
     def create_config(self):
@@ -60,5 +80,13 @@ class TestEnricher:
         desired_cell6_cellid = '65535'
         assert len(result) == desired_item_count
         assert result[7][1]['cellid'] == desired_cell6_cellid
+        for item in result:
+            assert type(item) is tuple
+
+    def test_enrich_kal(self):
+        enricher = self.create_enricher()
+        result = enricher.enrich_kal_scan(samp_kal)
+        desired_item_count = 5
+        assert len(result) == desired_item_count
         for item in result:
             assert type(item) is tuple
