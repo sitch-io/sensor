@@ -27,6 +27,10 @@ def main():
     message_write_queue = deque([])
     gps_location = {}
     config = config_helper()
+    if config.mode == 'clutch':
+        while True:
+            time.sleep(30)
+            print "Mode is clutch.  Ain't doin' nothin'"
     # Write LS cert
     utility.create_path_if_nonexistent(config.logstash_cert_path)
     utility.write_file(config.logstash_cert_path,
