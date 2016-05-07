@@ -17,6 +17,7 @@ class FonaReader(object):
     def __iter__(self):
         page = []
         self.serconn.write(self.gps_init)
+        self.serconn.sendbreak
         self.serconn.write(self.eng_init)
         while True:
             line = None
@@ -33,12 +34,6 @@ class FonaReader(object):
                     page.append(processed_line)
                 else:
                     page.append(processed_line)
-
-    def trigger_gps(self):
-        write_string = 'AT+CGPSINF=0\r\n'
-        self.serconn.write(write_string)
-
-        return None
 
     def set_band(self, band):
         if band in ["EGSM_MODE", "PGSM_MODE", "DCS_MODE", "GSM850_MODE",
