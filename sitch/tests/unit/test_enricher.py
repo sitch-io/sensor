@@ -9,7 +9,7 @@ fixturepath = os.path.join(os.path.dirname(os.path.abspath(__file__)),
 sitchlib = imp.load_module(modulename, file, pathname, description)
 samp_sim = {'platform': u'AMLOGIC',
             'scan_finish': '2016-05-07 02:36:50',
-            'scan_location': 'test_site',
+            'scan_location': {'name': 'test_site'},
             'scan_results': [
                 {'bsic': '12', 'mcc': '310', 'rla': '00', 'lac': '178d', 'mnc': '411', 'txp': '05', 'rxl': '33',
                     'cell': '0', 'rxq': '00', 'ta': '255', 'cellid': '000f', 'arfcn': '0154'},
