@@ -51,10 +51,10 @@ def main():
     except:
         print "Error trying to unload stock driver"
 
+    # Give everything a few seconds to catch up (writing files, etc...)
+    time.sleep(5)
     # Start cron
-    cron_success = utility.start_component("/etc/init.d/cron start")
-    if cron_success is False:
-        print "Failed to start cron, so no logrotate... keep an eye on your disk!"
+    utility.start_component("/etc/init.d/cron start")
 
     # Configure threads
     kalibrate_consumer_thread = threading.Thread(target=kalibrate_consumer,
