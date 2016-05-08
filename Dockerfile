@@ -4,6 +4,8 @@ MAINTAINER Ash
 RUN apt-get update && apt-get upgrade -y && apt-get install -y \
     git \
     vim \
+    logrotate \
+    cron \
     kmod \
     lshw \
     libfftw3-double3 \

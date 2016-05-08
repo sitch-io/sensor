@@ -41,7 +41,7 @@ class LogHandler:
                         "arfcn_lac": "arfcn_lac.log",  # sim808
                         "arfcn_ta": "arfcn_ta.log",  # sim808
                         "kal_channel": "kal_channel.log",  # individual cells from Kal
-                        "sim808_channel": "sim808_channel",  # individual cells from sim808
+                        "sim808_channel": "sim808_channel.log",  # individual cells from sim808
                         "gps": "gps.log"}
         if ltype in type_to_file:
             log_file = type_to_file[ltype]
@@ -68,9 +68,10 @@ class LogHandler:
 
     def write_log_message(self, log_file_type, message):
         """You should only ever send a string to this method"""
-        log_file = self.get_log_file_name(log_file_type)
+        log_file = os.path.join(self.log_prefix,
+                                self.get_log_file_name(log_file_type))
         with open(log_file, 'a') as lf:
-            lf.write(str(message))
+            lf.write(str(str(message) + '\n'))
         return
 
     def transmit_log_message(self, message):
