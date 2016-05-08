@@ -22,6 +22,7 @@ class ConfigHelper:
         self.mode = ConfigHelper.get_from_env("MODE")
         self.logstash_cert_path = "/run/dbus/crypto/logstash.crt"
         self.ls_cert = str(self.get_secret_from_vault())
+        self.public_ip = str(utility.get_public_ip())
         return
 
     def build_logrotate_config(self):

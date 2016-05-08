@@ -50,6 +50,7 @@ class Enricher:
                     msg["scan_start"] = scan_document["scan_start"]
                     msg["scan_finish"] = scan_document["scan_finish"]
                     msg["scan_program"] = scan_document["scan_program"]
+                    msg["scanner_public_ip"] = scan_document["scanner_public_ip"]
                     results_set.append(("kal_channel", json.dumps(msg)))
             except:
                 print "Failed to enrich KAL message: "
@@ -65,6 +66,7 @@ class Enricher:
             channel["band"] = scan_document["band"]
             channel["scan_finish"] = scan_document["scan_finish"]
             channel["site_name"] = scan_document["scan_location"]["name"]
+            channel["scanner_public_ip"] = scan_document["scanner_public_ip"]
             channel = self.convert_hex_targets(channel)
             chan_enriched = ('sim808_channel', channel)
             results_set.append(chan_enriched)

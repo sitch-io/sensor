@@ -2,6 +2,7 @@ import datetime
 import json
 import os
 import subprocess
+import requests
 
 
 class Utility:
@@ -78,3 +79,9 @@ class Utility:
             return raw_struct[0]
         else:
             return raw_struct
+
+    @classmethod
+    def get_public_ip(cls):
+        url = 'https://api.ipify.org/?format=json'
+        result = (requests.get(url).json())['ip']
+        return result

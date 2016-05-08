@@ -107,7 +107,8 @@ def sim808_consumer(config):
                          "scan_start": "",
                          "scan_finish": "",
                          "scan_program": "",
-                         "scan_location": {}}
+                         "scan_location": {},
+                         "scanner_public_ip": config.public_ip}
     while True:
         tty_port = config.sim808_port
         band = config.sim808_band
@@ -131,6 +132,7 @@ def sim808_consumer(config):
                     retval["scan_location"]["name"] = str(config.device_id)
                     retval["scan_program"] = "SIM808"
                     retval["band"] = config.sim808_band
+                    retval["scanner_public_ip"] = config.public_ip
                     scan_results_queue.append(retval.copy())
                     print "SIM808 results sent for enrichment..."
                 elif "lon" in report[0]:
