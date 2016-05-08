@@ -30,7 +30,7 @@ samp_sim = {'platform': u'AMLOGIC',
 
 samp_kal = {'platform': u'AMLOGIC',
             'scan_finish': '2016-05-07 04:14:30',
-            'scan_location': 'test_site',
+            'scan_location': {'name': 'test_site'},
             'scan_results': [
                 {'channel_detect_threshold': '279392.605625', 'power': '599624.47', 'final_freq': '869176168',
                     'mod_freq': 23832.0, 'band': 'GSM-850', 'sample_rate': '270833.002142', 'gain': '80.0',

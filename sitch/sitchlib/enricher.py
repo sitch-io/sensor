@@ -46,7 +46,7 @@ class Enricher:
                     msg["final_freq"] = result["final_freq"]
                     msg["channel"] = result["channel"]
                     msg["gain"] = result["gain"]
-                    msg["location"] = scan_document["scan_location"]
+                    msg["location"] = scan_document["scan_location"]["name"]
                     msg["scan_start"] = scan_document["scan_start"]
                     msg["scan_finish"] = scan_document["scan_finish"]
                     msg["scan_program"] = scan_document["scan_program"]
@@ -63,7 +63,7 @@ class Enricher:
         scan_items = scan_document["scan_results"]
         for channel in scan_items:
             channel["scan_finish"] = scan_document["scan_finish"]
-            channel["scan_location"] = scan_document["scan_location"]
+            channel["location"] = scan_document["scan_location"]["name"]
             channel = self.convert_hex_targets(channel)
             chan_enriched = ('sim808_channel', channel)
             results_set.append(chan_enriched)
