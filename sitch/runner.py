@@ -130,6 +130,7 @@ def sim808_consumer(config):
                     retval["scan_finish"] = utility.get_now_string()
                     retval["scan_location"]["name"] = str(config.device_id)
                     retval["scan_program"] = "SIM808"
+                    retval["band"] = config.sim808_band
                     scan_results_queue.append(retval.copy())
                     print "SIM808 results sent for enrichment..."
                 elif "lon" in report[0]:

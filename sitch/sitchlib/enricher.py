@@ -62,6 +62,7 @@ class Enricher:
         platform_name = scan_document["scan_location"]["name"]
         scan_items = scan_document["scan_results"]
         for channel in scan_items:
+            channel["band"] = scan_document["band"]
             channel["scan_finish"] = scan_document["scan_finish"]
             channel["site_name"] = scan_document["scan_location"]["name"]
             channel = self.convert_hex_targets(channel)

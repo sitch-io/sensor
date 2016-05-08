@@ -8,6 +8,7 @@ fixturepath = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                            "../fixture/ceng.txt")
 sitchlib = imp.load_module(modulename, file, pathname, description)
 samp_sim = {'platform': u'AMLOGIC',
+            'band': 'GSM850_MODE',
             'scan_finish': '2016-05-07 02:36:50',
             'scan_location': {'name': 'test_site'},
             'scan_results': [
