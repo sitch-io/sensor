@@ -59,7 +59,7 @@ class Enricher:
     def enrich_sim808_scan(self, scan_document):
         results_set = [("cell", scan_document)]
         results_channels = []
-        platform_name = scan_document["scan_location"]
+        platform_name = scan_document["scan_location"]["name"]
         scan_items = scan_document["scan_results"]
         for channel in scan_items:
             channel["scan_finish"] = scan_document["scan_finish"]

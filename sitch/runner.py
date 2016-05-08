@@ -128,7 +128,7 @@ def sim808_consumer(config):
                     retval = dict(scan_job_template)
                     retval["scan_results"] = report
                     retval["scan_finish"] = utility.get_now_string()
-                    retval["scan_location"] = str(config.device_id)
+                    retval["scan_location"]["name"] = str(config.device_id)
                     retval["scan_program"] = "SIM808"
                     scan_results_queue.append(retval.copy())
                     print "SIM808 results sent for enrichment..."
@@ -136,7 +136,7 @@ def sim808_consumer(config):
                     retval = dict(scan_job_template)
                     retval["scan_results"] = report
                     retval["scan_finish"] = utility.get_now_string()
-                    retval["scan_location"] = str(config.device_id)
+                    retval["scan_location"]["name"] = str(config.device_id)
                     retval["scan_program"] = "GPS"
                     scan_results_queue.append(retval.copy())
                 else:
@@ -151,7 +151,7 @@ def kalibrate_consumer(config):
                              "scan_start": "",
                              "scan_finish": "",
                              "scan_program": "",
-                             "scan_location": str(config.device_id)}
+                             "scan_location": {}}
         band = config.kal_band
         gain = config.kal_gain
         kal_scanner = kalibrate.Kal("/usr/local/bin/kal")
@@ -164,7 +164,7 @@ def kalibrate_consumer(config):
         scan_document["scan_results"] = kal_results
         scan_document["scan_program"] = "Kalibrate"
         scan_document["scanner_name"] = config.device_id
-        scan_document["scan_location"] = gps_location
+        scan_document["scan_location"]["name"] = str(config.device_id)
         scan_results_queue.append(scan_document.copy())
         print "Kalibrate results sent for enrichment..."
     return
