@@ -45,12 +45,6 @@ def main():
     utility.write_file("/etc/logrotate.d/sitch",
                        config.build_logrotate_config())
 
-    # Start logstash service
-    ls_success = utility.start_component("/etc/init.d/logstash-forwarder start")
-    if ls_success is False:
-        print "Failed to start logstash-forwarder!!!\nExiting!"
-        sys.exit(2)
-
     # Kill interfering driver
     try:
         utility.start_component("modprobe -r dvb_usb_rtl28xxu")
@@ -210,6 +204,8 @@ def enricher(config):
 def output(config):
     l = logger(config)
     print "Output module instantiated."
+    print "Starting Logstash forwarder..."
+    utility.start_component("/etc/init.d/logstash-forwarder start")
     while True:
         try:
             msg_bolus = message_write_queue.popleft()

@@ -76,22 +76,5 @@ class LogHandler:
 
     def transmit_log_message(self, message):
         """You should only ever send a dict to this method"""
-        # try:
-        #    self.ls_logger.info(message)
-        #    return
-        # except:
-        #    print "Unsble to send message.  Retrying in a few seconds..."
-        #    time.sleep(3)
-        # try:
-        #    self.ls_logger.info(message)
-        #    return
-        # except:
-        #    print "Failed again, gonna try one more time..."
-        #    time.sleep(3)
-        # try:
-        #    self.ls_logger.info(message)
-        #    return
-        # except:
-        #    print sys.exc_info()[0]
         self.ls_logger.info(message)
         return
