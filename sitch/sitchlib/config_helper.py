@@ -23,6 +23,9 @@ class ConfigHelper:
         self.logstash_cert_path = "/run/dbus/crypto/logstash.crt"
         self.ls_cert = str(self.get_secret_from_vault())
         self.public_ip = str(utility.get_public_ip())
+        self.feed_dir = "/data/"
+        self.feed_url_prefix = ConfigHelp.get_from_env("FEED_URL_BASE")
+        self.mcc_list = ConfigHelper.get_list_from_env("MCC_LIST")
         return
 
     def build_logrotate_config(self):
@@ -102,6 +105,15 @@ class ConfigHelper:
     @classmethod
     def get_from_env(cls, k):
         retval = os.getenv(k)
+        if retval is None:
+            print "Required config variable not set: %s" % k
+            print "Unable to continue.  Exiting."
+            sys.exit(2)
+        return retval
+
+    @classmethod
+    def get_list_from_env(cls, k):
+        retval = os.getenv(k).split(',')
         if retval is None:
             print "Required config variable not set: %s" % k
             print "Unable to continue.  Exiting."

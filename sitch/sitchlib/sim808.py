@@ -112,13 +112,16 @@ class FonaReader(object):
 
     @classmethod
     def process_7(cls, parts):
+        # In a 7-item line, cellid is not provided.  We set
+        # it to 0 to prevent barfing elsewhere.
         retval = {"cell": parts[0],
                   "arfcn": parts[1],
                   "rxl": parts[2],
                   "bsic": parts[3],
                   "mcc": parts[4],
                   "mnc": parts[5],
-                  "lac": parts[6]
+                  "lac": parts[6],
+                  "cellid": 0
                   }
         return retval
 

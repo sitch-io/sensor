@@ -10,6 +10,7 @@ from sitchlib import Enricher as enricher_module
 from sitchlib import Utility as utility
 from sitchlib import LogHandler as logger
 from sitchlib import FonaReader as sim808
+import datetime
 import json
 import kalibrate
 import sys
@@ -65,10 +66,13 @@ def main():
                                        args=[config])
     writer_thread = threading.Thread(target=output,
                                      args=[config])
+    feed_updater_thread = threading.Thread(target=feed_updater,
+                                           args=[config])
     kalibrate_consumer_thread.daemon = True
     sim808_consumer_thread.daemon = True
     enricher_thread.daemon = True
     writer_thread.daemon = True
+    feed_updater_thread.daemon = True
     # Kick off threads
     print "Starting Kalibrate consumer thread..."
     kalibrate_consumer_thread.start()
@@ -78,6 +82,8 @@ def main():
     enricher_thread.start()
     print "Starting writer thread..."
     writer_thread.start()
+    print "Starting feed updater thread..."
+    feed_updater_thread.start()
     # Periodically check to see if threads are still alive
     while True:
         time.sleep(60)
@@ -101,6 +107,18 @@ def main():
     return
 
 
+def feed_updater(config):
+    feed = sitchlib.FeedManager(config)
+    while True:
+        try:
+            if (abs((datetime.now() - feed.born_on_date).hours) > 6):
+                print "Feed data is expired.  Updating feed from web..."
+                feed = sitchlib.FeedManager(config)
+                print "Finished updating feed!"
+        except:
+            print "Failed to update feed!"
+
+
 def sim808_consumer(config):
     scan_job_template = {"platform": config.platform_name,
                          "scan_results": [],
@@ -112,6 +130,10 @@ def sim808_consumer(config):
     while True:
         tty_port = config.sim808_port
         band = config.sim808_band
+        if band == "nope":
+            print "Disabling SIM808 scanning..."
+            while True:
+                time.sleep(120)
         # Sometimes the buffer is full and causes a failed instantiation the first time
         try:
             consumer = sim808(tty_port)
@@ -156,6 +178,10 @@ def kalibrate_consumer(config):
                              "scan_program": "",
                              "scan_location": {}}
         band = config.kal_band
+        if band == "nope":
+            print "Disabling Kalibrate scanning..."
+            while True:
+                time.sleep(120)
         gain = config.kal_gain
         kal_scanner = kalibrate.Kal("/usr/local/bin/kal")
         start_time = utility.get_now_string()
@@ -177,8 +203,11 @@ def enricher(config):
     """ Enricher breaks apart kalibrate doc into multiple log entries, and
     assembles lines from sim808 into a main doc as well as writing multiple
     lines to the output queue for metadata """
+    enr = enricher_module(config)
     while True:
-        enr = enricher_module(config)
+        if abs((datetime.datetime.now() - enr.born_on_date).days) > 1:
+            print "Cycling enricher module for feed update"
+            enr = enricher_module(config)
         try:
             scandoc = scan_results_queue.popleft()
             doctype = enr.determine_scan_type(scandoc)
