@@ -14,6 +14,7 @@ class ConfigHelper:
         self.log_method = ConfigHelper.get_from_env("LOG_METHOD")
         self.kal_band = ConfigHelper.get_from_env("KAL_BAND")
         self.kal_gain = ConfigHelper.get_from_env("KAL_GAIN")
+        self.kal_threshold = ConfigHelper.get_from_env("KAL_THRESHOLD")
         self.sim808_band = ConfigHelper.get_from_env("SIM808_BAND")
         self.sim808_port = ConfigHelper.get_from_env("SIM808_PORT")
         self.vault_ls_cert_path = ConfigHelper.get_from_env("VAULT_LS_CERT_PATH")
@@ -24,7 +25,7 @@ class ConfigHelper:
         self.ls_cert = str(self.get_secret_from_vault())
         self.public_ip = str(utility.get_public_ip())
         self.feed_dir = "/data/"
-        self.feed_url_prefix = ConfigHelp.get_from_env("FEED_URL_BASE")
+        self.feed_url_prefix = ConfigHelper.get_from_env("FEED_URL_BASE")
         self.mcc_list = ConfigHelper.get_list_from_env("MCC_LIST")
         return
 

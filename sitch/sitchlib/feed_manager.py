@@ -1,3 +1,4 @@
+import csv
 import gzip
 import os
 import requests
@@ -18,7 +19,7 @@ class FeedManager(object):
     def update_feed_file(cls, feed_dir, url_base, mcc):
         destination_file = FeedManager.construct_feed_file_name(feed_dir, mcc)
         origin_url = FeedManager.get_source_url(url_base, mcc)
-        response = requests.get(self.origin_url, stream=True)
+        response = requests.get(origin_url, stream=True)
         with open(destination_file, 'wb') as out_file:
             for chunk in response.iter_content(chunk_size=1024):
                 if chunk:
@@ -40,21 +41,21 @@ class FeedManager(object):
             for x in self.feed_cache:
                 if (x["mcc"] == mcc and x["mnc"] == mnc and x["lac"] == lac and x["cellid"] == cellid):
                         return x
-            normalized = self.get_feed_info_from_files(mcc, mnc, lac, cellid)
-            self.feed_cache.append(normalized)
-            return normalized
-        return None
+            print "Cache miss!  Attempt to get from feed files..."
+        normalized = self.get_feed_info_from_files(mcc, mnc, lac, cellid)
+        self.feed_cache.append(normalized)
+        return normalized
 
     @classmethod
     def normalize_feed_info_for_cache(cls, feed_item):
         cache_item = {}
-        cache_item["mcc"] == feed_item["mcc"]
-        cache_item["mnc"] == feed_item["net"]
-        cache_item["lac"] == feed_item["location"]
-        cache_item["cellid"] == feed_item["cell"]
-        cache_item["lon"] == feed_item["lon"]
-        cache_item["lat"] == feed_item["lat"]
-        cache_item["range"] == feed_item["range"]
+        cache_item["mcc"] = feed_item["mcc"]
+        cache_item["mnc"] = feed_item["net"]
+        cache_item["lac"] = feed_item["area"]
+        cache_item["cellid"] = feed_item["cell"]
+        cache_item["lon"] = feed_item["lon"]
+        cache_item["lat"] = feed_item["lat"]
+        cache_item["range"] = feed_item["range"]
         return cache_item
 
     def get_feed_info_from_files(self, mcc, mnc, lac, cellid):
@@ -67,4 +68,8 @@ class FeedManager(object):
                 if (cell["mcc"] == mcc and cell["net"] == mnc and cell["area"] == lac and cell["cell"] == cellid):
                     normalized = FeedManager.normalize_feed_info_for_cache(cell)
                     return normalized
-        return None
+        # Unable to locate cell in file, we populate the cache with obviously fake values
+        cell = {"mcc": mcc, "net": mnc, "area": lac, "cell": cellid,
+                "lon": 0, "lat": 0, "range": 0}
+        normalized = FeedManager.normalize_feed_info_for_cache(cell)
+        return normalized

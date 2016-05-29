@@ -58,14 +58,23 @@ class TestEnricher:
         config.__init__ = (MagicMock(return_value=None))
         config.device_id = "12345"
         config.feed_dir = "/tmp/"
+        config.kal_threshold = "1000000"
         config.mcc_list = []
         config.feed_url_base = "https://s3.amazonaws.com/Sitchey//GSM"
         return config
 
     def create_enricher(self):
         config = self.create_config()
-        enricher = sitchlib.Enricher(config)
+        gps_location = {"lon": 0, "lat": 0}
+        enricher = sitchlib.Enricher(config, gps_location)
+        enricher.alerts = sitchlib.AlertManager()
         return enricher
+
+    def test_convert_hex_targets(self):
+        target_channel = samp_sim["scan_results"][0]
+        result = sitchlib.Enricher.convert_hex_targets(target_channel)
+        assert result["lac"] == "6029"
+        assert result["cellid"] == "15"
 
     def test_determine_scan_type(self):
         enricher = self.create_enricher()
@@ -79,20 +88,19 @@ class TestEnricher:
         result = enricher.hex_to_dec(testval)
         assert result == desired_result
 
-    def test_enrich_sim808(self):
-        enricher = self.create_enricher()
-        result = enricher.enrich_sim808_scan(samp_sim)
-        desired_item_count = 8
-        desired_cell6_cellid = '65535'
-        assert len(result) == desired_item_count
-        assert result[7][1]['cellid'] == desired_cell6_cellid
-        for item in result:
-            assert type(item) is tuple
-
     def test_enrich_kal(self):
         enricher = self.create_enricher()
         result = enricher.enrich_kal_scan(samp_kal)
+        for entry in result:
+            print entry
         desired_item_count = 5
         assert len(result) == desired_item_count
         for item in result:
             assert type(item) is tuple
+
+    def test_calculate_distance(self):
+        madrid = (40.24, 3.41)
+        chattanooga = (35.244, 85.1835)
+        result = sitchlib.Enricher.calculate_distance(madrid[0], madrid[1],
+                                                      chattanooga[0], chattanooga[1])
+        assert result != 0

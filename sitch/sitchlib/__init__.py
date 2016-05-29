@@ -1,3 +1,4 @@
+from alert_manager import AlertManager
 from config_helper import ConfigHelper
 from enricher import Enricher
 from location_tool import LocationTool

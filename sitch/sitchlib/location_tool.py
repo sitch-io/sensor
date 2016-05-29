@@ -1,5 +1,5 @@
 from geoip import geolite2
-import haversine
+from haversine import haversine
 
 
 class LocationTool(object):
@@ -17,9 +17,12 @@ class LocationTool(object):
 
     @classmethod
     def get_distance_between_points(cls, point_1, point_2):
+        """ Forces type to float if it isn't already """
         if None in [point_1, point_2]:
             print "Invalid geo value... returning 0 for distance."
             distance = 0
         else:
+            point_1 = (float(point_1[0]), float(point_1[1]))
+            point_2 = (float(point_2[0]), float(point_2[1]))
             distance = haversine(point_1, point_2)
         return distance

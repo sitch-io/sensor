@@ -11,9 +11,9 @@ from sitchlib import Utility as utility
 from sitchlib import LogHandler as logger
 from sitchlib import FonaReader as sim808
 import datetime
-import json
+# import json
 import kalibrate
-import sys
+# import sys
 import threading
 import time
 from collections import deque
@@ -98,8 +98,8 @@ def main():
         #    sim808_consumer_thread.start()
         if enricher_thread.is_alive is False:
             print "Enricher thread is dead..."
-        #    print "Enricher thread died... restarting!"
-        #    enricher_thread.start()
+            print "Enricher thread died... restarting!"
+            enricher_thread.start()
         if writer_thread.is_alive is False:
             print "Writer thread is dead..."
         #    print "Writer thread died... restarting!"
@@ -203,11 +203,27 @@ def enricher(config):
     """ Enricher breaks apart kalibrate doc into multiple log entries, and
     assembles lines from sim808 into a main doc as well as writing multiple
     lines to the output queue for metadata """
-    enr = enricher_module(config)
+    override_suppression = [110]
+    print "Getting GPS location..."
+    try:
+        public_ip = utility.get_public_ip()
+        gps_location = location_tool.get_geo_for_ip(public_ip)
+    except:
+        print "Unable to get geoIP, setting location to (0,0)"
+        gps_location = {"lat": 0, "lon": 0}
+    print "Now starting enricher"
+    enr = enricher_module(config, gps_location)
     while True:
         if abs((datetime.datetime.now() - enr.born_on_date).days) > 1:
+            print "Getting GPS location..."
+            try:
+                public_ip = utility.get_public_ip()
+                gps_location = location_tool.get_geo_for_ip(public_ip)
+            except:
+                print "Unable to get geoIP, setting location to (0,0)"
+                gps_location = {"lat": 0, "lon": 0}
             print "Cycling enricher module for feed update"
-            enr = enricher_module(config)
+            enr = enricher_module(config, gps_location)
         try:
             scandoc = scan_results_queue.popleft()
             doctype = enr.determine_scan_type(scandoc)
@@ -225,8 +241,22 @@ def enricher(config):
             else:
                 print "Can't determine scan type for: "
                 print scandoc
+            # Clean the suppression list
+            for suppressed, tstamp in enr.suppressed_alerts.items():
+                if abs((datetime.datetime.now() - tstamp).hours) > 1:
+                    del enr.suppressed_alerts[suppressed]
             # Send all the things to the outbound queue
             for log_bolus in outlist:
+                if log_bolus[0] == 'sitch_alert':
+                    if log_bolus[1]["id"] in override_suppression:
+                        message_write_queue.append(log_bolus)
+                    else:
+                        if log_bolus[1]["details"] in enr.suppressed_alerts:
+                            continue
+                        else:
+                            enr.suppressed_alerts.append(log_bolus[1]["details"]:
+                                                         datetime.datetime.now())
+                            message_write_queue.append(log_bolus)
                 message_write_queue.append(log_bolus)
         except IndexError:
             print "Enricher queue empty"
