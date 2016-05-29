@@ -254,8 +254,7 @@ def enricher(config):
                         if log_bolus[1]["details"] in enr.suppressed_alerts:
                             continue
                         else:
-                            enr.suppressed_alerts.append(log_bolus[1]["details"]:
-                                                         datetime.datetime.now())
+                            enr.suppressed_alerts[log_bolus[1]["details"]] = datetime.datetime.now()
                             message_write_queue.append(log_bolus)
                 message_write_queue.append(log_bolus)
         except IndexError:
