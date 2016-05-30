@@ -236,6 +236,7 @@ def enricher(config):
                 if log_bolus[0] == 'sitch_alert':
                     if log_bolus[1]["id"] in override_suppression:
                         message_write_queue.append(log_bolus)
+                        print log_bolus
                         continue
                     else:
                         if log_bolus[1]["details"] in enr.suppressed_alerts:
@@ -245,7 +246,7 @@ def enricher(config):
                             print log_bolus
                 message_write_queue.append(log_bolus)
         except IndexError:
-            print "Enricher queue empty"
+            # print "Enricher queue empty"
             time.sleep(1)
 
 
@@ -264,7 +265,7 @@ def output(config):
             l.record_log_message(msg_bolus)
             del msg_bolus
         except IndexError:
-            print "Output queue empty"
+            # print "Output queue empty"
             time.sleep(3)
 
 if __name__ == "__main__":

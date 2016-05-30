@@ -11,7 +11,9 @@ class LocationTool(object):
         match = geolite2.lookup(ip_address)
         try:
             lat_lon = match.location
-            return lat_lon
+            coords = {"lat": lat_lon[0],
+                      "lon": lat_lon[1]}
+            return coords
         except:
             return None
 
