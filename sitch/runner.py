@@ -5,12 +5,13 @@ SIM808 engineering mode data.
   If log message is GPS, we update the location var for the enrichment
   thread.
 """
-from sitchlib import ConfigHelper as config_helper
-from sitchlib import Enricher as enricher_module
-from sitchlib import Utility as utility
-from sitchlib import LogHandler as logger
-from sitchlib import FonaReader as sim808
-from sitchlib import FeedManager as feed_manager
+import sitchlib
+# from sitchlib import ConfigHelper as config_helper
+# from sitchlib import Enricher as enricher_module
+# from sitchlib import Utility as utility
+# from sitchlib import LogHandler as logger
+# from sitchlib import FonaReader as sim808
+# from sitchlib import FeedManager as feed_manager
 import datetime
 # import json
 import kalibrate
@@ -28,35 +29,35 @@ def main():
     scan_results_queue = deque([])
     message_write_queue = deque([])
     gps_location = {}
-    config = config_helper()
+    config = sitchlib.ConfigHelper()
     if config.mode == 'clutch':
         while True:
             time.sleep(30)
             print "Mode is clutch.  Ain't doin' nothin'"
 
     # Write LS cert
-    utility.create_path_if_nonexistent(config.logstash_cert_path)
-    utility.write_file(config.logstash_cert_path,
-                       config.ls_cert)
+    sitchlib.Utility.create_path_if_nonexistent(config.logstash_cert_path)
+    sitchlib.Utility.write_file(config.logstash_cert_path,
+                                config.ls_cert)
 
     # Write LS config
-    utility.write_file("/etc/logstash-forwarder",
-                       config.build_logstash_config())
+    sitchlib.Utility.write_file("/etc/logstash-forwarder",
+                                config.build_logstash_config())
 
     # Write logrotate config
-    utility.write_file("/etc/logrotate.d/sitch",
-                       config.build_logrotate_config())
+    sitchlib.Utility.write_file("/etc/logrotate.d/sitch",
+                                config.build_logrotate_config())
 
     # Kill interfering driver
     try:
-        utility.start_component("modprobe -r dvb_usb_rtl28xxu")
+        sitchlib.Utility.start_component("modprobe -r dvb_usb_rtl28xxu")
     except:
         print "Error trying to unload stock driver"
 
     # Give everything a few seconds to catch up (writing files, etc...)
     time.sleep(5)
     # Start cron
-    utility.start_component("/etc/init.d/cron start")
+    sitchlib.Utility.start_component("/etc/init.d/cron start")
 
     # Configure threads
     kalibrate_consumer_thread = threading.Thread(target=kalibrate_consumer,
@@ -109,12 +110,12 @@ def main():
 
 
 def feed_updater(config):
-    feed = feed_manager(config)
+    feed = sitchlib.FeedManager(config)
     while True:
         try:
             if (abs((datetime.now() - feed.born_on_date).hours) > 6):
                 print "Feed data is expired.  Updating feed from web..."
-                feed = feed_manager(config)
+                feed = sitchlib.FeedManager(config)
                 print "Finished updating feed!"
         except:
             print "Failed to update feed!"
@@ -137,9 +138,9 @@ def sim808_consumer(config):
                 time.sleep(120)
         # Sometimes the buffer is full and causes a failed instantiation the first time
         try:
-            consumer = sim808(tty_port)
+            consumer = sitchlib.FonaReader(tty_port)
         except:
-            consumer = sim808(tty_port)
+            consumer = sitchlib.FonaReader(tty_port)
         consumer.set_band(band)
         time.sleep(2)
         # consumer.trigger_gps()
@@ -151,7 +152,7 @@ def sim808_consumer(config):
                 if "cell" in report[0]:
                     retval = dict(scan_job_template)
                     retval["scan_results"] = report
-                    retval["scan_finish"] = utility.get_now_string()
+                    retval["scan_finish"] = sitchlib.Utility.get_now_string()
                     retval["scan_location"]["name"] = str(config.device_id)
                     retval["scan_program"] = "SIM808"
                     retval["band"] = config.sim808_band
@@ -161,7 +162,7 @@ def sim808_consumer(config):
                 elif "lon" in report[0]:
                     retval = dict(scan_job_template)
                     retval["scan_results"] = report
-                    retval["scan_finish"] = utility.get_now_string()
+                    retval["scan_finish"] = sitchlib.Utility.get_now_string()
                     retval["scan_location"]["name"] = str(config.device_id)
                     retval["scan_program"] = "GPS"
                     scan_results_queue.append(retval.copy())
@@ -185,9 +186,9 @@ def kalibrate_consumer(config):
                 time.sleep(120)
         gain = config.kal_gain
         kal_scanner = kalibrate.Kal("/usr/local/bin/kal")
-        start_time = utility.get_now_string()
+        start_time = sitchlib.Utility.get_now_string()
         kal_results = kal_scanner.scan_band(band, gain=gain)
-        end_time = utility.get_now_string()
+        end_time = sitchlib.Utility.get_now_string()
         scan_document = scan_job_template.copy()
         scan_document["scan_start"] = start_time
         scan_document["scan_finish"] = end_time
@@ -207,24 +208,24 @@ def enricher(config):
     override_suppression = [110]
     print "Getting GPS location..."
     try:
-        public_ip = utility.get_public_ip()
+        public_ip = sitchlib.Utility.get_public_ip()
         gps_location = location_tool.get_geo_for_ip(public_ip)
     except:
         print "Unable to get geoIP, setting location to (0,0)"
         gps_location = {"lat": 0, "lon": 0}
     print "Now starting enricher"
-    enr = enricher_module(config, gps_location)
+    enr = sitchlib.Enricher(config, gps_location)
     while True:
         if abs((datetime.datetime.now() - enr.born_on_date).days) > 1:
             print "Getting GPS location..."
             try:
-                public_ip = utility.get_public_ip()
+                public_ip = sitchlib.Utility.get_public_ip()
                 gps_location = location_tool.get_geo_for_ip(public_ip)
             except:
                 print "Unable to get geoIP, setting location to (0,0)"
                 gps_location = {"lat": 0, "lon": 0}
             print "Cycling enricher module for feed update"
-            enr = enricher_module(config, gps_location)
+            enr = sitchlib.Enricher(config, gps_location)
         try:
             scandoc = scan_results_queue.popleft()
             doctype = enr.determine_scan_type(scandoc)
@@ -266,11 +267,11 @@ def enricher(config):
 
 def output(config):
     time.sleep(5)
-    l = logger(config)
+    l = sitchlib.LogHandler(config)
     print "Output module instantiated."
     print "Starting Logstash forwarder..."
     time.sleep(5)
-    utility.start_component("/etc/init.d/logstash-forwarder start")
+    sitchlib.Utility.start_component("/etc/init.d/logstash-forwarder start")
     while True:
         try:
             msg_bolus = message_write_queue.popleft()
