@@ -68,13 +68,10 @@ def main():
                                        args=[config])
     writer_thread = threading.Thread(target=output,
                                      args=[config])
-    # feed_updater_thread = threading.Thread(target=feed_updater,
-    #                                        args=[config])
     kalibrate_consumer_thread.daemon = True
     sim808_consumer_thread.daemon = True
     enricher_thread.daemon = True
     writer_thread.daemon = True
-    # feed_updater_thread.daemon = True
     # Kick off threads
     print "Starting Kalibrate consumer thread..."
     kalibrate_consumer_thread.start()
@@ -84,9 +81,6 @@ def main():
     enricher_thread.start()
     print "Starting writer thread..."
     writer_thread.start()
-    # print "Starting feed updater thread..."
-    # feed_updater_thread.start()
-    # Periodically check to see if threads are still alive
     while True:
         time.sleep(60)
         print "heartbeat..."
@@ -107,18 +101,6 @@ def main():
         #    print "Writer thread died... restarting!"
         #    writer_thread.start()
     return
-
-
-# def feed_updater(config):
-#    feed = sitchlib.FeedManager(config)
-#    while True:
-#        try:
-#            if (abs((datetime.now() - feed.born_on_date).hours) > 6):
-#                print "Feed data is expired.  Updating feed from web..."
-#                feed = sitchlib.FeedManager(config)
-#                print "Finished updating feed!"
-#        except:
-#            print "Failed to update feed!"
 
 
 def sim808_consumer(config):
@@ -158,7 +140,7 @@ def sim808_consumer(config):
                     retval["band"] = config.sim808_band
                     retval["scanner_public_ip"] = config.public_ip
                     scan_results_queue.append(retval.copy())
-                    print "SIM808 results sent for enrichment..."
+                    # print "SIM808 results sent for enrichment..."
                 elif "lon" in report[0]:
                     retval = dict(scan_job_template)
                     retval["scan_results"] = report
@@ -197,7 +179,7 @@ def kalibrate_consumer(config):
         scan_document["scanner_name"] = config.device_id
         scan_document["scan_location"]["name"] = str(config.device_id)
         scan_results_queue.append(scan_document.copy())
-        print "Kalibrate results sent for enrichment..."
+        # print "Kalibrate results sent for enrichment..."
     return
 
 
@@ -233,13 +215,13 @@ def enricher(config):
             doctype = enr.determine_scan_type(scandoc)
             outlist = []
             if doctype == 'Kalibrate':
-                print "Enriching Kalibrate scan"
+                # print "Enriching Kalibrate scan"
                 outlist = enr.enrich_kal_scan(scandoc)
             elif doctype == 'SIM808':
-                print "Enriching SIM808 scan"
+                # print "Enriching SIM808 scan"
                 outlist = enr.enrich_sim808_scan(scandoc)
             elif doctype == 'GPS':
-                print "Updating GPS coordinates"
+                # print "Updating GPS coordinates"
                 outlist = enr.enrich_gps_scan(scandoc.copy())
                 gps_location = scandoc
             else:
@@ -251,7 +233,6 @@ def enricher(config):
                     del enr.suppressed_alerts[suppressed]
             # Send all the things to the outbound queue
             for log_bolus in outlist:
-                print log_bolus
                 if log_bolus[0] == 'sitch_alert':
                     if log_bolus[1]["id"] in override_suppression:
                         message_write_queue.append(log_bolus)
@@ -261,6 +242,7 @@ def enricher(config):
                             continue
                         else:
                             enr.suppressed_alerts[log_bolus[1]["details"]] = datetime.datetime.now()
+                            print log_bolus
                 message_write_queue.append(log_bolus)
         except IndexError:
             print "Enricher queue empty"
@@ -277,11 +259,9 @@ def output(config):
     while True:
         try:
             msg_bolus = message_write_queue.popleft()
-            print msg_bolus
             msg_type = msg_bolus[0]
             msg_body = msg_bolus[1]
             l.record_log_message(msg_bolus)
-            print msg_bolus
             del msg_bolus
         except IndexError:
             print "Output queue empty"

@@ -90,7 +90,7 @@ class Enricher:
                         alert = self.alerts.build_alert(200, message)
                         results_set.append(alert)
             except:
-                print "Failed to enrich KAL message: "
+                print "Failed to enrich Kalibrate message: "
                 print msg
         return results_set
 
@@ -136,7 +136,6 @@ class Enricher:
             results_set.append(chan_enriched)
             # Stop here if we don't process against the feed...
             if skip_feed_comparison is True:
-                print "Skipping feed comparison for %s" % json.dumps(channel)
                 continue
             # Alert if tower is not in feed DB
             if (channel["feed_info"]["range"] == 0 and
