@@ -82,7 +82,8 @@ class Enricher:
                     msg["scan_finish"] = scan_document["scan_finish"]
                     msg["scan_program"] = scan_document["scan_program"]
                     msg["scanner_public_ip"] = scan_document["scanner_public_ip"]
-                    results_set.append("kal_channel", msg)
+                    appendable = ("kal_channel", msg)
+                    results_set.append(appendable)
                     # Now we look at alerting...
                     power = float(msg["power"])
                     if power > kal_threshold:
