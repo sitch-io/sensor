@@ -10,6 +10,7 @@ from sitchlib import Enricher as enricher_module
 from sitchlib import Utility as utility
 from sitchlib import LogHandler as logger
 from sitchlib import FonaReader as sim808
+from sitchlib import FeedManager as feed_manager
 import datetime
 # import json
 import kalibrate
@@ -108,12 +109,12 @@ def main():
 
 
 def feed_updater(config):
-    feed = sitchlib.FeedManager(config)
+    feed = feed_manager(config)
     while True:
         try:
             if (abs((datetime.now() - feed.born_on_date).hours) > 6):
                 print "Feed data is expired.  Updating feed from web..."
-                feed = sitchlib.FeedManager(config)
+                feed = feed_manager(config)
                 print "Finished updating feed!"
         except:
             print "Failed to update feed!"
