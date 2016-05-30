@@ -168,8 +168,6 @@ class Enricher:
                                                              json.dumps(current_bts))
                     alert = self.alerts.build_alert(110, message)
                     results_set.append(alert)
-        print "Enriched SIM808 scan:"
-        print results_set
         return results_set
 
     def enrich_gps_scan(self, scan_document):

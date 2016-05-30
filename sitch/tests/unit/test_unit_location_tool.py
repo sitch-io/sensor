@@ -9,7 +9,7 @@ sitchlib = imp.load_module(modulename, file, pathname, description)
 class TestLocationTool:
     def test_get_geo_for_ip(self):
         loc_tool = sitchlib.LocationTool
-        test_ip = '66.18.61.90'
+        test_ip = sitchlib.Utility.get_public_ip()
         location = loc_tool.get_geo_for_ip(test_ip)
         assert location is not None
 

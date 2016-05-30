@@ -100,8 +100,8 @@ def main():
         #    sim808_consumer_thread.start()
         if enricher_thread.is_alive is False:
             print "Enricher thread is dead..."
-            print "Enricher thread died... restarting!"
-            enricher_thread.start()
+            # print "Enricher thread died... restarting!"
+            # enricher_thread.start()
         if writer_thread.is_alive is False:
             print "Writer thread is dead..."
         #    print "Writer thread died... restarting!"
@@ -210,7 +210,7 @@ def enricher(config):
     try:
         public_ip = sitchlib.Utility.get_public_ip()
         print "Detected public IP %s" % public_ip
-        gps_location = location_tool.get_geo_for_ip(public_ip)
+        gps_location = sitchlib.LocationTool.get_geo_for_ip(public_ip)
     except:
         print "Unable to get geoIP, setting location to (0,0)"
         gps_location = {"lat": 0, "lon": 0}
@@ -222,7 +222,7 @@ def enricher(config):
             print "Getting GPS location..."
             try:
                 public_ip = sitchlib.Utility.get_public_ip()
-                gps_location = location_tool.get_geo_for_ip(public_ip)
+                gps_location = sitchlib.LocationTool.get_geo_for_ip(public_ip)
             except:
                 print "Unable to get geoIP, setting location to (0,0)"
                 gps_location = {"lat": 0, "lon": 0}
