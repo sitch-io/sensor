@@ -68,8 +68,8 @@ class Enricher:
             print "No results found in scan document..."
             return
         else:
-            try:
-                for result in scan_document["scan_results"]:
+            for result in scan_document["scan_results"]:
+                try:
                     msg = {}
                     msg["band"] = result["band"]
                     msg["power"] = result["power"]
@@ -82,17 +82,24 @@ class Enricher:
                     msg["scan_finish"] = scan_document["scan_finish"]
                     msg["scan_program"] = scan_document["scan_program"]
                     msg["scanner_public_ip"] = scan_document["scanner_public_ip"]
-                    appendable = ("kal_channel", msg)
-                    results_set.append(appendable)
+                    chan_enriched = ('kal_channel', msg)
+                    results_set.append(chan_enriched)
+                except Exception as e:
+                    print "Failed to enrich Kalibrate message."
+                    print e
+                    print msg
                     # Now we look at alerting...
+                try:
                     power = float(msg["power"])
                     if power > kal_threshold:
                         message = "ARFCN %s is over threshold!" % msg["channel"]
                         alert = self.alerts.build_alert(200, message)
                         results_set.append(alert)
-            except:
-                print "Failed to enrich Kalibrate message: "
-                print msg
+                except Exception as e:
+                    print "Failed to fire alert!"
+                    print e
+                    print msg
+
         return results_set
 
     def enrich_sim808_scan(self, scan_document):
