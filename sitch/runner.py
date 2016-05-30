@@ -247,15 +247,16 @@ def enricher(config):
                     del enr.suppressed_alerts[suppressed]
             # Send all the things to the outbound queue
             for log_bolus in outlist:
+                print log_bolus
                 if log_bolus[0] == 'sitch_alert':
                     if log_bolus[1]["id"] in override_suppression:
                         message_write_queue.append(log_bolus)
+                        continue
                     else:
                         if log_bolus[1]["details"] in enr.suppressed_alerts:
                             continue
                         else:
                             enr.suppressed_alerts[log_bolus[1]["details"]] = datetime.datetime.now()
-                            message_write_queue.append(log_bolus)
                 message_write_queue.append(log_bolus)
         except IndexError:
             print "Enricher queue empty"
@@ -263,9 +264,11 @@ def enricher(config):
 
 
 def output(config):
+    time.sleep(5)
     l = logger(config)
     print "Output module instantiated."
     print "Starting Logstash forwarder..."
+    time.sleep(5)
     utility.start_component("/etc/init.d/logstash-forwarder start")
     while True:
         try:
