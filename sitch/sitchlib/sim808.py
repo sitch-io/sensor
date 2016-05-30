@@ -74,6 +74,10 @@ class FonaReader(object):
             line_parts = dataz.split(',')
             if line_parts[0] == 0:
                 processed = FonaReader.process_gps(line_parts)
+        elif line.startswith('AT+'):
+            pass
+        elif re.match('^\s*$', line):
+            pass
         else:
             print "Unprocessable line from SIM808!"
             print line

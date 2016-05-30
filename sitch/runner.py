@@ -209,6 +209,7 @@ def enricher(config):
     print "Getting GPS location..."
     try:
         public_ip = sitchlib.Utility.get_public_ip()
+        print "Detected public IP %s" % public_ip
         gps_location = location_tool.get_geo_for_ip(public_ip)
     except:
         print "Unable to get geoIP, setting location to (0,0)"
@@ -216,7 +217,8 @@ def enricher(config):
     print "Now starting enricher"
     enr = sitchlib.Enricher(config, gps_location)
     while True:
-        if abs((datetime.datetime.now() - enr.born_on_date).days) > 1:
+        if abs((datetime.datetime.now() - enr.born_on_date).total_seconds()) > 86400:
+            print "Recycling enricher..."
             print "Getting GPS location..."
             try:
                 public_ip = sitchlib.Utility.get_public_ip()
@@ -245,7 +247,7 @@ def enricher(config):
                 print scandoc
             # Clean the suppression list
             for suppressed, tstamp in enr.suppressed_alerts.items():
-                if abs((datetime.datetime.now() - tstamp).hours) > 1:
+                if abs((datetime.datetime.now() - tstamp).total_seconds()) > 3600:
                     del enr.suppressed_alerts[suppressed]
             # Send all the things to the outbound queue
             for log_bolus in outlist:
