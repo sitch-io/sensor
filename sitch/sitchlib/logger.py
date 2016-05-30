@@ -54,8 +54,6 @@ class LogHandler:
     def record_log_message(self, bolus):
         msg_type = bolus[0]
         msg_body = bolus[1]
-        print "Recording message: "
-        print bolus
         if type(msg_body) == dict:
             msg_string = json.dumps(msg_body)
             msg_json = msg_body
