@@ -25,7 +25,7 @@ class ConfigHelper:
         self.ls_cert = str(self.get_secret_from_vault())
         self.public_ip = str(utility.get_public_ip())
         self.feed_dir = "/data/"
-        self.feed_url_prefix = ConfigHelper.get_from_env("FEED_URL_BASE")
+        self.feed_url_base = ConfigHelper.get_from_env("FEED_URL_BASE")
         self.mcc_list = ConfigHelper.get_list_from_env("MCC_LIST")
         return
 
