@@ -178,6 +178,7 @@ def kalibrate_consumer(config):
         scan_document["scan_program"] = "Kalibrate"
         scan_document["scanner_name"] = config.device_id
         scan_document["scan_location"]["name"] = str(config.device_id)
+        scan_document["scanner_public_ip"] = config.public_ip
         scan_results_queue.append(scan_document.copy())
         # print "Kalibrate results sent for enrichment..."
     return
