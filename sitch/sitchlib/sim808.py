@@ -1,3 +1,4 @@
+import re
 import serial
 import time
 
@@ -75,9 +76,9 @@ class FonaReader(object):
             if line_parts[0] == 0:
                 processed = FonaReader.process_gps(line_parts)
         elif line.startswith('AT+'):
-            pass
+            processed = {}
         elif re.match('^\s*$', line):
-            pass
+            processed = {}
         else:
             print "Unprocessable line from SIM808!"
             print line

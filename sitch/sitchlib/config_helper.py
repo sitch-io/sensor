@@ -74,7 +74,9 @@ class ConfigHelper:
                                {"paths": ["/var/log/arfcn_ta.log"],
                                 "fields": {"type": "arfcn_timing_advance"}},
                                {"paths": ["/var/log/gps.log"],
-                                "fields": {"type": "gpsd"}}]}
+                                "fields": {"type": "gpsd"}},
+                               {"paths": ["/var/log/sitch_alert.log"],
+                                "fields": {"type": "sitch_alert"}}]}
         log_host = self.log_host
         log_prefix = self.log_prefix
         cert_file_loc = self.logstash_cert_path
