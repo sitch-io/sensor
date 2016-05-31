@@ -6,16 +6,8 @@ SIM808 engineering mode data.
   thread.
 """
 import sitchlib
-# from sitchlib import ConfigHelper as config_helper
-# from sitchlib import Enricher as enricher_module
-# from sitchlib import Utility as utility
-# from sitchlib import LogHandler as logger
-# from sitchlib import FonaReader as sim808
-# from sitchlib import FeedManager as feed_manager
 import datetime
-# import json
 import kalibrate
-# import sys
 import threading
 import time
 from collections import deque
@@ -261,8 +253,6 @@ def output(config):
     while True:
         try:
             msg_bolus = message_write_queue.popleft()
-            msg_type = msg_bolus[0]
-            msg_body = msg_bolus[1]
             l.record_log_message(msg_bolus)
             del msg_bolus
         except IndexError:

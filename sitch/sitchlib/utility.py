@@ -29,6 +29,7 @@ class Utility:
         try:
             subprocess.Popen(runcmd.split())
         except KeyError as e:
+            print e
             return False
         return True
 

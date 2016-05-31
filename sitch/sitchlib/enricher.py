@@ -2,7 +2,6 @@ from alert_manager import AlertManager
 from datetime import datetime
 from feed_manager import FeedManager
 from location_tool import LocationTool
-import haversine
 import json
 
 
@@ -92,7 +91,8 @@ class Enricher:
                 try:
                     power = float(msg["power"])
                     if power > kal_threshold:
-                        message = "ARFCN %s is over threshold!" % msg["channel"]
+                        message = "ARFCN %s is over threshold at %s!" % (msg["channel"],
+                                                                         msg["site_name"])
                         alert = self.alerts.build_alert(200, message)
                         results_set.append(alert)
                 except Exception as e:
@@ -151,15 +151,16 @@ class Enricher:
                     channel["feed_info"]["lat"] == 0):
                 bts_info = "mcc: %s mnc: %s lac: %s cellid: %s" % (
                     channel["mcc"], channel["mnc"], channel["lac"], channel["cellid"])
-                message = "BTS not in feed database! Info: %s" % bts_info
+                message = "BTS not in feed database! Info: %s Site: %s" % (bts_info, channel["site_name"])
                 alert = self.alerts.build_alert(120, message)
                 results_set.append(alert)
             # Else, be willing to alert if channel is not in range
             elif int(channel["distance"]) > int(channel["feed_info"]["range"]):
-                message = ("Expected range: %s  Actual distance: %s  Channel info: %s") % (
+                message = ("Expected range: %s  Actual distance: %s  Channel info: %s Site: %s") % (
                            str(channel["feed_info"]["range"]),
                            str(channel["distance"]),
-                           json.dumps(channel))
+                           json.dumps(channel),
+                           channel["site_name"])
                 alert = self.alerts.build_alert(100, message)
                 results_set.append(alert)
             # Test for primary BTS change
@@ -171,8 +172,9 @@ class Enricher:
                 if self.current_primary == {}:
                     self.current_primary = current_bts
                 elif self.current_primary != current_bts:
-                    message = "Primary BTS was %s now %s" % (json.dumps(self.current_primary),
-                                                             json.dumps(current_bts))
+                    message = "Primary BTS was %s now %s. Site: %s" % (json.dumps(self.current_primary),
+                                                                       json.dumps(current_bts),
+                                                                       channel["site_name"])
                     alert = self.alerts.build_alert(110, message)
                     results_set.append(alert)
         return results_set
