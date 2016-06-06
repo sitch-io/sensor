@@ -149,15 +149,16 @@ class Enricher:
             if (channel["feed_info"]["range"] == 0 and
                     channel["feed_info"]["lon"] == 0 and
                     channel["feed_info"]["lat"] == 0):
-                bts_info = "mcc: %s mnc: %s lac: %s cellid: %s" % (
-                    channel["mcc"], channel["mnc"], channel["lac"], channel["cellid"])
+                bts_info = "ARFCN: %s mcc: %s mnc: %s lac: %s cellid: %s" % (
+                    channel["arfcn"], channel["mcc"], channel["mnc"],
+                    channel["lac"], channel["cellid"])
                 message = "BTS not in feed database! Info: %s Site: %s" % (bts_info, channel["site_name"])
                 alert = self.alerts.build_alert(120, message)
                 results_set.append(alert)
             # Else, be willing to alert if channel is not in range
             elif int(channel["distance"]) > int(channel["feed_info"]["range"]):
-                message = ("Expected range: %s  Actual distance: %s  Channel info: %s Site: %s") % (
-                           str(channel["feed_info"]["range"]),
+                message = ("ARFCN: %s, Expected range: %s  Actual distance: %s  Channel info: %s Site: %s") % (
+                           channel["arfcn"], str(channel["feed_info"]["range"]),
                            str(channel["distance"]),
                            json.dumps(channel),
                            channel["site_name"])

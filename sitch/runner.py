@@ -220,9 +220,9 @@ def enricher(config):
             else:
                 print "Can't determine scan type for: "
                 print scandoc
-            # Clean the suppression list
+            # Clean the suppression list, everything over 12 hours
             for suppressed, tstamp in enr.suppressed_alerts.items():
-                if abs((datetime.datetime.now() - tstamp).total_seconds()) > 3600:
+                if abs((datetime.datetime.now() - tstamp).total_seconds()) > 43200:
                     del enr.suppressed_alerts[suppressed]
             # Send all the things to the outbound queue
             for log_bolus in outlist:
