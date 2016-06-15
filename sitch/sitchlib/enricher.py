@@ -171,13 +171,14 @@ class Enricher:
                                "lac": channel["lac"],
                                "cellid": channel["cellid"]}
                 if self.current_primary == {}:
-                    self.current_primary = current_bts
+                    self.current_primary = dict(current_bts)
                 elif self.current_primary != current_bts:
                     message = "Primary BTS was %s now %s. Site: %s" % (json.dumps(self.current_primary),
                                                                        json.dumps(current_bts),
                                                                        channel["site_name"])
                     alert = self.alerts.build_alert(110, message)
                     results_set.append(alert)
+                    self.current_primary = dict(current_bts)
         return results_set
 
     def enrich_gps_scan(self, scan_document):
