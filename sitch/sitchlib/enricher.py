@@ -65,7 +65,7 @@ class Enricher:
         platform_name = scan_document["scanner_name"]
         if scan_document["scan_results"] == []:
             print "No results found in scan document..."
-            return
+            return results_set
         else:
             for result in scan_document["scan_results"]:
                 try:
