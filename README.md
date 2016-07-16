@@ -48,4 +48,4 @@ Testing is done with pytest.  Coverage module optional.
 1. Run `py.test --cov sitchlib` .
 
 ## Contributing
-Please do PRs against the `testing` branch.
+Please do PRs against the `test` branch.
