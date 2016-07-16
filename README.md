@@ -37,3 +37,12 @@ VAULT_LS_CERT_PATH  # Path to logstash cert (secret/logstash-fwd-crt)
 VAULT_TOKEN         # token for accessing credentials in vault
 VAULT_URL           # https://vault.mydomain.com:port
 ```
+
+## Testing
+Testing is done with pytest.  Coverage module optional.
+1. Navigate to the base directory of the repository.
+1. Set the environment variable to reach your SITCH feed: `export SITCH_FEED_BASE=https://MY.FEED.URL/base`
+1. Run `py.test --cov sitchlib` .
+
+## Contributing
+Please do PRs against the `testing` branch.
