@@ -1,4 +1,4 @@
-# Sitch Sensor
+# SITCH Sensor
 
 ## Getting Started
 
