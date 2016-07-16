@@ -16,13 +16,15 @@
   * RTL-SDR device.  Tested with NooElec NESDR Mini and NooElec NESDR XTR
 
 ## Step by step...
+
 1. Create an application in Resin.
 1. Fork this project and clone it on your workstation.  Or clone it directly... but forking makes modifications and PRs easier to deal with.
 1. Add the Resin application as a remote repo (`git remote add resin myusername@git.resin.io/myusername/myapplicationname.git`)
 1. Push to your Resin application: `git push resin master`
-We expect the following env vars to be set in Resin:
+
+We expect the following environment variables to be set in Resin:
 ```shell
-FEED_URL_BASE       # Base uRL for feed data retrieval
+FEED_URL_BASE       # Base URL for feed data retrieval
 KAL_BAND            # Band to scan with Kalibrate (try GSM850)
 KAL_GAIN            # Gain setting for Kalibrate (try 80)
 KAL_THRESHOLD       # Threshold for creating alerts based on Kalibrate's signal strength metric
@@ -40,6 +42,7 @@ VAULT_URL           # https://vault.mydomain.com:port
 
 ## Testing
 Testing is done with pytest.  Coverage module optional.
+
 1. Navigate to the base directory of the repository.
 1. Set the environment variable to reach your SITCH feed: `export SITCH_FEED_BASE=https://MY.FEED.URL/base`
 1. Run `py.test --cov sitchlib` .
