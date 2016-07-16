@@ -1,4 +1,6 @@
+import re
 import serial
+import time
 
 
 class FonaReader(object):
@@ -8,39 +10,59 @@ class FonaReader(object):
 
     """
     def __init__(self, ser_port):
-        self.initstring = u'AT+CENG=2,1\r\n'
-        self.serconn = serial.Serial(port=ser_port,
-                                     baudrate=115200)
-        self.sio = io.TextIOWrapper(io.BufferedRWPair(self.serconn,
-                                                      self.serconn))
-        self.sio.write(self.initstring)
-        self.sio.flush()
+        self.eng_init = 'AT+CENG=2,1\r\n'
+        self.gps_init = 'AT+CGPSINF=0\r\n'
+        print "opening serial port: %s" % ser_port
+        self.serconn = serial.Serial(ser_port, 9600, timeout=1)
 
     def __iter__(self):
+        page = []
+        # self.serconn.write(self.gps_init)
+        # self.serconn.write(self.eng_init)
         while True:
             line = None
-            line = self.sio.readline()
-            if line is not None:
-                processed_line = self.process_line(line)
-                yield processed_line
+            line = self.serconn.readline()
+            processed_line = self.process_line(line)
+            if line is None:
+                pass
+            elif "lon" in processed_line:
+                yield [processed_line]
+            elif "cell" in processed_line:
+                if (str(processed_line["cell"]) == str(0) and page != []):
+                    yield page
+                    page = []
+                    page.append(processed_line)
+                else:
+                    page.append(processed_line)
 
     def trigger_gps(self):
-        self.sio.write(u'AT+CIPGSMLOC=1,1\r\n')
-        self.sio.flush()
-        return None
+        self.serconn.write(self.gps_init)
+        self.serconn.flushInput()
+        self.serconn.flushOutput()
+        return
+
+    def set_eng_mode(self):
+        self.serconn.write(self.eng_init)
+        self.serconn.flushInput()
+        self.serconn.flushOutput()
+        return
 
     def set_band(self, band):
         if band in ["EGSM_MODE", "PGSM_MODE", "DCS_MODE", "GSM850_MODE",
                     "PCS_MODE", "EGSM_DCS_MODE", "GSM850_PCS_MODE",
                     "EGSM_PCS_MODE", "ALL_BAND"]:
-            term_command = "AT+CBAND=\"%s\"" % band
-            self.sio.write(term_command)
+            term_command = "AT+CBAND=\"%s\"\r\n" % band
+            self.serconn.write(term_command)
+            self.serconn.flushInput()
+            self.serconn.flushOutput()
+        else:
+            print "Not setting band, unrecognized value: %s" % band
 
     @classmethod
     def process_line(cls, line):
         processed = None
         if line.startswith('+CENG: '):
-            dataz = line.split(' ')[1].replace('"', '')
+            dataz = line.split(' ')[1].replace('"', '').replace('\r\n', '')
             line_parts = dataz.split(',')
             if len(line_parts) == 12:
                 processed = FonaReader.process_12(line_parts)
@@ -49,10 +71,18 @@ class FonaReader(object):
             if len(line_parts) == 8:
                 processed = FonaReader.process_8(line_parts)
         elif line.startswith('+CIPGSMLOC:'):
-            dataz = line.split(' ')[1]
-            line_parts = dataz_split(',')
+            dataz = line.replace('\r\n', '').split(' ')[1]
+            line_parts = dataz.split(',')
             if line_parts[0] == 0:
                 processed = FonaReader.process_gps(line_parts)
+        elif line.startswith('AT+'):
+            processed = {}
+        elif re.match('^\s*$', line):
+            processed = {}
+        else:
+            print "Unprocessable line from SIM808!"
+            print line
+            processed = {}
         return processed
 
     @classmethod
@@ -87,13 +117,16 @@ class FonaReader(object):
 
     @classmethod
     def process_7(cls, parts):
+        # In a 7-item line, cellid is not provided.  We set
+        # it to 0 to prevent barfing elsewhere.
         retval = {"cell": parts[0],
                   "arfcn": parts[1],
                   "rxl": parts[2],
                   "bsic": parts[3],
                   "mcc": parts[4],
                   "mnc": parts[5],
-                  "lac": parts[6]
+                  "lac": parts[6],
+                  "cellid": 0
                   }
         return retval
 
@@ -102,7 +135,11 @@ class FonaReader(object):
         retval = {"status": parts[0],
                   "lon": parts[1],
                   "lat": parts[2],
-                  "date": parts[3],
-                  "time": parts[4]
+                  "altitude": parts[3],
+                  "time": parts[4],
+                  "ttff": parts[5],
+                  "sat_count": parts[6],
+                  "speed": parts[7],
+                  "heading": parts[8]
                   }
         return retval
