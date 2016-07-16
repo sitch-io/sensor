@@ -1,19 +1,39 @@
-# Expecto Cabronum
+# Sitch Sensor
 
-We expect the following env vars to be set:
+## Getting Started
 
-        LOG_HOST   # host:port
-        LOG_METHOD  # local_file or direct.  Local file expects that the logstash-forwarder daemon is shipping logs.  direct sends right from the output thread, no file or logstash-forwarder daemon.  Not thoroughly tested.  No intelligent queue management in the event it's unable to reach the server.
-        VAULT_URL # https://vault_host.com:port
-        VAULT_LS_CERT_PATH # Path to logstash cert (secret/logstash-fwd-crt)
-        VAULT_TOKEN # token for accessing cred
-        KAL_GAIN # Gain setting for Kalibrate (try 80)
-        KAL_BAND # Band to scan with Kalibrate (try GSM850)
-        SIM808_BAND # Band to scan with SIM808 (try GSM850_MODE)
-        SIM808_PORT # Device for tty (try /dev/ttyUSB0)
-        MODE  # setting this to 'clutch' will cause it to loop before all the fun stuff starts.  Great for when you're troubleshooting in the Resin console.
-        
+## Prerequisites
+* Accounts with the following providers:
+  * Resin.io
+  * Github
+* Access to the following services (See Service configuration for more information)
+  * Logstash
+  * Vault
+  * SITCH feed.  If you follow the Service configuration process, it will be located in AWS S3.
+* Hardware
+  * Raspberry Pi 2
+  * Fona SIM808 GSM modem w/ USB TTY cable
+  * RTL-SDR device.  Tested with NooElec NESDR Mini and NooElec NESDR XTR
 
-
-Optionally:
-        LOCATION_NAME  # Override the default device naming, which is Resin device ID
+## Step by step...
+1. Create an application in Resin.
+1. Fork this project and clone it on your workstation.  Or clone it directly... but forking makes modifications and PRs easier to deal with.
+1. Add the Resin application as a remote repo (`git remote add resin myusername@git.resin.io/myusername/myapplicationname.git`)
+1. Push to your Resin application: `git push resin master`
+We expect the following env vars to be set in Resin:
+```shell
+FEED_URL_BASE       # Base uRL for feed data retrieval
+KAL_BAND            # Band to scan with Kalibrate (try GSM850)
+KAL_GAIN            # Gain setting for Kalibrate (try 80)
+KAL_THRESHOLD       # Threshold for creating alerts based on Kalibrate's signal strength metric
+LOCATION_NAME       # Override the default device naming, which is Resin device ID
+LOG_HOST            # host:port
+LOG_METHOD          # local_file or direct.  Local file expects that the logstash-forwarder daemon is shipping logs.  Direct sends right from the output thread, no file or logstash-forwarder daemon.  Not thoroughly tested.  No intelligent queue management in the event it's unable to reach the server.
+MCC_LIST            # Comma-separated list of MCCs to retrieve feed files for
+MODE                # setting this to 'clutch' will cause it to loop before all the fun stuff starts.  Great for when you're troubleshooting in the Resin console.
+SIM808_BAND         # Band to scan with SIM808 (try GSM850_MODE)
+SIM808_PORT         # Device for tty (try /dev/ttyUSB0)
+VAULT_LS_CERT_PATH  # Path to logstash cert (secret/logstash-fwd-crt)
+VAULT_TOKEN         # token for accessing credentials in vault
+VAULT_URL           # https://vault.mydomain.com:port
+```
