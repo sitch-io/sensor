@@ -61,7 +61,6 @@ class TestEnricher:
         config.feed_dir = "/tmp/"
         config.kal_threshold = "1000000"
         config.mcc_list = []
-        # config.feed_url_base = "https://s3.amazonaws.com/Sitchey//GSM"
         config.feed_url_base = sitch_feed_base
         return config
 
