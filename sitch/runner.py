@@ -108,6 +108,7 @@ def gsm_modem_consumer(config):
                          "scan_location": {},
                          "scanner_public_ip": config.public_ip}
     while True:
+        print "GSM modem configured for %s" % config.gsm_modem_port
         tty_port = config.gsm_modem_port
         band = config.gsm_modem_band
         if band == "nope":
@@ -153,7 +154,8 @@ def gps_consumer(config):
     global gps_location
     time.sleep(5)
     print "Starting GPS Consumer"
-    gpsd_command = "gpsd %s" % config.gps_device_port
+    print "  gpsd configured for %s" % config.gps_device_port
+    gpsd_command = "gpsd -n %s" % config.gps_device_port
     sitchlib.Utility.start_component(gpsd_command)
     while True:
         try:

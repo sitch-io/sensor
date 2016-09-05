@@ -71,7 +71,9 @@ class DeviceDetector(object):
             else:
                 for pm in positive_match:
                     if pm in line:
+                        serconn = None
                         return True
+        serconn = None
         return False
 
     @classmethod
@@ -91,7 +93,9 @@ class DeviceDetector(object):
             else:
                 for pm in positive_match:
                     if pm in line:
+                        serconn = None
                         return True
+        serconn = None
         return False
 
     @classmethod
@@ -123,5 +127,7 @@ class DeviceDetector(object):
                 time.sleep(1)
                 pass
             else:
+                serconn = None
                 return line
+        serconn = None
         return ""

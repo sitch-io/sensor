@@ -36,6 +36,7 @@ class ConfigHelper:
         if os.getenv('GSM_MODEM_PORT') is not None:
             if dd().gsm_radios != []:
                 target_device = dd().gsm_radios[0]["device"]
+                print "Detected GSM modem at %s" % target_device
                 return target_device
         return None
 
@@ -44,6 +45,7 @@ class ConfigHelper:
         if os.getenv('GPS_DEVICE_PORT') is not None:
             if dd().gps_devices != []:
                 target_device = dd().gps_devices[0]["device"]
+                print "Detected GPS device at %s" % target_device
                 return target_device
         return None
 
