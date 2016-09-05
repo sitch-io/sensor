@@ -11,7 +11,7 @@ import kalibrate
 import threading
 import time
 from collections import deque
-from multiprocessing import Pool
+# from multiprocessing import Pool
 
 
 def main():

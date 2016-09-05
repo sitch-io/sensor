@@ -101,8 +101,13 @@ class ConfigHelper:
         client = hvac.Client(url=self.vault_url, token=self.vault_token)
         print "Get secrets from %s, with path %s" % (self.vault_url,
                                                      self.vault_ls_cert_path)
-        response = client.read(self.vault_ls_cert_path)
-        ls_cert = response["data"]["value"]
+        try:
+            response = client.read(self.vault_ls_cert_path)
+            ls_cert = response["data"]["value"]
+        except Exception as e:
+            print "Error in getting secret from vault!"
+            print e
+            ls_cert = "NONE"
         return ls_cert
 
     @classmethod
