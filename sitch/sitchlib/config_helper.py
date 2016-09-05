@@ -15,8 +15,8 @@ class ConfigHelper:
         self.kal_band = ConfigHelper.get_from_env("KAL_BAND")
         self.kal_gain = ConfigHelper.get_from_env("KAL_GAIN")
         self.kal_threshold = ConfigHelper.get_from_env("KAL_THRESHOLD")
-        self.sim808_band = ConfigHelper.get_from_env("SIM808_BAND")
-        self.sim808_port = ConfigHelper.get_from_env("SIM808_PORT")
+        self.gsm_modem_band = ConfigHelper.get_from_env("GSM_MODEM_BAND")
+        self.gsm_modem_port = ConfigHelper.get_from_env("GSM_MODEM_PORT")
         self.vault_ls_cert_path = ConfigHelper.get_from_env("VAULT_LS_CERT_PATH")
         self.vault_token = ConfigHelper.get_from_env("VAULT_TOKEN")
         self.vault_url = ConfigHelper.get_from_env("VAULT_URL")
@@ -45,8 +45,8 @@ class ConfigHelper:
                                 "fields": {"type": "kalibrate"}},
                                {"paths": ["/var/log/channel.log"],
                                 "fields": {"type": "channel"}},
-                               {"paths": ["/var/log/sim808_channel.log"],
-                                "fields": {"type": "sim808_channel"}},
+                               {"paths": ["/var/log/gsm_modem_channel.log"],
+                                "fields": {"type": "gsm_modem_channel"}},
                                {"paths": ["/var/log/kal_channel.log"],
                                 "fields": {"type": "kal_channel"}},
                                {"paths": ["/var/log/arfcn_power.log"],

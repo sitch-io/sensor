@@ -11,7 +11,6 @@ import kalibrate
 import threading
 import time
 from collections import deque
-# from multiprocessing import Pool
 
 
 def main():
@@ -54,21 +53,21 @@ def main():
     # Configure threads
     kalibrate_consumer_thread = threading.Thread(target=kalibrate_consumer,
                                                  args=[config])
-    sim808_consumer_thread = threading.Thread(target=sim808_consumer,
-                                              args=[config])
+    gsm_modem_consumer_thread = threading.Thread(target=gsm_modem_consumer,
+                                                 args=[config])
     enricher_thread = threading.Thread(target=enricher,
                                        args=[config])
     writer_thread = threading.Thread(target=output,
                                      args=[config])
     kalibrate_consumer_thread.daemon = True
-    sim808_consumer_thread.daemon = True
+    gsm_modem_consumer_thread.daemon = True
     enricher_thread.daemon = True
     writer_thread.daemon = True
     # Kick off threads
     print "Starting Kalibrate consumer thread..."
     kalibrate_consumer_thread.start()
-    print "Starting SIM808 consumer thread..."
-    sim808_consumer_thread.start()
+    print "Starting GSM Modem consumer thread..."
+    gsm_modem_consumer_thread.start()
     print "Starting enricher thread..."
     enricher_thread.start()
     print "Starting writer thread..."
@@ -80,8 +79,8 @@ def main():
             print "Kalibrate consumer is dead..."
         #    print "Kalibrate thread died... restarting!"
         #    kalibrate_consumer_thread.start()
-        if sim808_consumer_thread.is_alive is False:
-            print "SIM808 consumer is dead..."
+        if gsm_modem_consumer_thread.is_alive is False:
+            print "GSM Modem consumer is dead..."
         #    print "SIM808 consumer thread died... restarting!"
         #    sim808_consumer_thread.start()
         if enricher_thread.is_alive is False:
@@ -95,7 +94,7 @@ def main():
     return
 
 
-def sim808_consumer(config):
+def gsm_modem_consumer(config):
     scan_job_template = {"platform": config.platform_name,
                          "scan_results": [],
                          "scan_start": "",
@@ -104,10 +103,10 @@ def sim808_consumer(config):
                          "scan_location": {},
                          "scanner_public_ip": config.public_ip}
     while True:
-        tty_port = config.sim808_port
-        band = config.sim808_band
+        tty_port = config.gsm_modem_port
+        band = config.gsm_modem_band
         if band == "nope":
-            print "Disabling SIM808 scanning..."
+            print "Disabling GSM Modem scanning..."
             while True:
                 time.sleep(120)
         # Sometimes the buffer is full and causes a failed instantiation the first time
@@ -128,8 +127,8 @@ def sim808_consumer(config):
                     retval["scan_results"] = report
                     retval["scan_finish"] = sitchlib.Utility.get_now_string()
                     retval["scan_location"]["name"] = str(config.device_id)
-                    retval["scan_program"] = "SIM808"
-                    retval["band"] = config.sim808_band
+                    retval["scan_program"] = "GSM_MODEM"
+                    retval["band"] = config.gsm_modem_band
                     retval["scanner_public_ip"] = config.public_ip
                     scan_results_queue.append(retval.copy())
                     # print "SIM808 results sent for enrichment..."
@@ -178,7 +177,7 @@ def kalibrate_consumer(config):
 
 def enricher(config):
     """ Enricher breaks apart kalibrate doc into multiple log entries, and
-    assembles lines from sim808 into a main doc as well as writing multiple
+    assembles lines from gsm_modem into a main doc as well as writing multiple
     lines to the output queue for metadata """
     override_suppression = [110]
     print "Getting GPS location..."
@@ -210,9 +209,9 @@ def enricher(config):
             if doctype == 'Kalibrate':
                 # print "Enriching Kalibrate scan"
                 outlist = enr.enrich_kal_scan(scandoc)
-            elif doctype == 'SIM808':
+            elif doctype == 'GSM_MODEM':
                 # print "Enriching SIM808 scan"
-                outlist = enr.enrich_sim808_scan(scandoc)
+                outlist = enr.enrich_gsm_modem_scan(scandoc)
             elif doctype == 'GPS':
                 # print "Updating GPS coordinates"
                 outlist = enr.enrich_gps_scan(scandoc.copy())

@@ -29,7 +29,7 @@ samp_sim = {'platform': u'AMLOGIC',
                 {'cell': '6', 'rxl': '23', 'lac': '0000', 'bsic': '00', 'mnc': '', 'mcc': '', 'cellid': 'ffff',
                     'arfcn': '0236'}],
             'scan_start': '',
-            'scan_program': 'SIM808'}
+            'scan_program': 'GSM_MODEM'}
 # alternate_cell = {"mcc": "310", "mnc": "410", "lac": "34011", "cellid": "45789",
 #                  "cell": "7", "arfcn": "0988"}
 # GSM,310,410,27305,63153,,-82.57584,29.969747,1102,2,1,1459815432,1461799588,
@@ -79,7 +79,7 @@ class TestIntegrationEnricher:
         scan = samp_sim
         enricher = self.create_enricher()
         scan["scan_results"].append(alternate_cell)
-        results = enricher.enrich_sim808_scan(scan)
+        results = enricher.enrich_gsm_modem_scan(scan)
         alert_types = []
         for result in results:
             print result
@@ -94,7 +94,7 @@ class TestIntegrationEnricher:
         alt_cell = dict(alternate_cell)
         alt_cell["cell"] = '0'
         scan["scan_results"].append(alt_cell)
-        results = enricher.enrich_sim808_scan(scan)
+        results = enricher.enrich_gsm_modem_scan(scan)
         alert_types = []
         for result in results:
             print result
@@ -106,7 +106,7 @@ class TestIntegrationEnricher:
         # Tower not in DB
         scan = samp_sim
         enricher = self.create_enricher()
-        results = enricher.enrich_sim808_scan(scan)
+        results = enricher.enrich_gsm_modem_scan(scan)
         alert_types = []
         for result in results:
             print result

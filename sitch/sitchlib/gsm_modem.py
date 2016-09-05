@@ -1,9 +1,8 @@
 import re
 import serial
-import time
 
 
-class FonaReader(object):
+class GsmModem(object):
     """ Initialization causes the module to go into engineering mode, which will
     cause it to return cell network information.
     It has an iterator (generator) built in that cranks out dicts.
@@ -65,16 +64,16 @@ class FonaReader(object):
             dataz = line.split(' ')[1].replace('"', '').replace('\r\n', '')
             line_parts = dataz.split(',')
             if len(line_parts) == 12:
-                processed = FonaReader.process_12(line_parts)
+                processed = GsmModem.process_12(line_parts)
             if len(line_parts) == 7:
-                processed = FonaReader.process_7(line_parts)
+                processed = GsmModem.process_7(line_parts)
             if len(line_parts) == 8:
-                processed = FonaReader.process_8(line_parts)
+                processed = GsmModem.process_8(line_parts)
         elif line.startswith('+CIPGSMLOC:'):
             dataz = line.replace('\r\n', '').split(' ')[1]
             line_parts = dataz.split(',')
             if line_parts[0] == 0:
-                processed = FonaReader.process_gps(line_parts)
+                processed = GsmModem.process_gps(line_parts)
         elif line.startswith('AT+'):
             processed = {}
         elif re.match('^\s*$', line):
