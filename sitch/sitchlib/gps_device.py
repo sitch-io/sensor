@@ -1,25 +1,23 @@
-import gps
+import gps3
 import time
 
 
 class GpsListener(object):
     def __init__(self):
-        self.session = gps.gps("localhost", "2947")
-        self.session.stream(gps.WATCH_ENABLE | gps.WATCH_NEWSTYLE)
+        self.gps_socket = gps3.GPSDSocket()
+        self.data_stream = gps3.DataStream()
+        self.gps_socket.connect()
+        self.gps_socket.watch()
 
     def __iter__(self):
-        while True:
-            try:
-                report = self.session.next()
-                if report["class"] == 'TPV':
-                    if hasattr(report, 'time'):
-                        geojson = {"type": "Feature",
-                                   "geometry": {
-                                       "type": "Point",
-                                       "coordinates": [
-                                           report["lon"],
-                                           report["lat"]]}}
-                        yield geojson
-                        time.sleep(30)
-            except KeyError:
-                pass
+        for new_data in self.gps_socket:
+            if new_data:
+                self.data_stream.unpack(new_data)
+                geojson = {"type": "Feature",
+                           "geometry": {
+                               "type": "Point",
+                               "coordinates": [
+                                   self.data_stream.TPV['lon'],
+                                   self.data_stream.TPV['lat']]}}
+                yield geojson
+                time.sleep(30)

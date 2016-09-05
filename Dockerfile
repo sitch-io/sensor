@@ -49,13 +49,13 @@ RUN pip install virtualenv && \
     virtualenv --no-site-packages venv && \
     . ./venv/bin/activate && \
     pip install pyserial && \
+    pip install gps3 && \
     pip install hvac && \
     pip install kalibrate && \
     pip install haversine && \
     pip install python-geoip && \
     pip install python-geoip-geolite2 && \
     pip install pyudev && \
-
     git clone https://github.com/klynch/python-logstash-handler && \
     cd python-logstash-handler && \
     git checkout c5574624c8cb4fdba14bef33303e8650eb2f3487 && \
