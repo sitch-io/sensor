@@ -17,9 +17,9 @@ def main():
     global scan_results_queue
     global message_write_queue
     global gps_location
+    gps_location = {}
     scan_results_queue = deque([])
     message_write_queue = deque([])
-    gps_location = {}
     config = sitchlib.ConfigHelper()
     if config.mode == 'clutch':
         while True:
@@ -150,6 +150,7 @@ def gsm_modem_consumer(config):
 
 
 def gps_consumer(config):
+    global gps_location
     time.sleep(5)
     print "Starting GPS Consumer"
     gpsd_command = "gpsd %s" % config.gps_device
@@ -201,13 +202,16 @@ def enricher(config):
     """ Enricher breaks apart kalibrate doc into multiple log entries, and
     assembles lines from gsm_modem into a main doc as well as writing multiple
     lines to the output queue for metadata """
+    global gps_location
     override_suppression = [110]
     print "Now starting enricher"
+    print "GPS is: %s" % str(gps_location)
     enr = sitchlib.Enricher(config, gps_location)
     while True:
-        if abs((datetime.datetime.now() - enr.born_on_date).total_seconds()) > 86400:
+        if abs((datetime.datetime.now() -
+                enr.born_on_date).total_seconds()) > 86400:
             print "Recycling enricher..."
-            print "Cycling enricher module for feed update"
+            print "GPS is: %s" % str(gps_location)
             enr = sitchlib.Enricher(config, gps_location)
         try:
             scandoc = scan_results_queue.popleft()
@@ -228,7 +232,8 @@ def enricher(config):
                 print scandoc
             # Clean the suppression list, everything over 12 hours
             for suppressed, tstamp in enr.suppressed_alerts.items():
-                if abs((datetime.datetime.now() - tstamp).total_seconds()) > 43200:
+                if abs((datetime.datetime.now() -
+                        tstamp).total_seconds()) > 43200:
                     del enr.suppressed_alerts[suppressed]
             # Send all the things to the outbound queue
             for log_bolus in outlist:
@@ -241,7 +246,7 @@ def enricher(config):
                         if log_bolus[1]["details"] in enr.suppressed_alerts:
                             continue
                         else:
-                            enr.suppressed_alerts[log_bolus[1]["details"]] = datetime.datetime.now()
+                            enr.suppressed_alerts[log_bolus[1]["details"]] = datetime.datetime.now()  # NOQA
                             print log_bolus
                 message_write_queue.append(log_bolus)
         except IndexError:
