@@ -26,7 +26,7 @@ class TestLocationTool:
         distance = loc_tool.get_distance_between_points(madrid, chattanooga)
         assert distance > 1000
 
-    def test_get_distance_between_points(self):
+    def test_get_distance_between_points_fail(self):
         loc_tool = sitchlib.LocationTool
         elseweyr = None
         chattanooga = (35.244, 85.1835)
