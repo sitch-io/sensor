@@ -153,7 +153,7 @@ def gps_consumer(config):
     global gps_location
     time.sleep(5)
     print "Starting GPS Consumer"
-    gpsd_command = "gpsd %s" % config.gps_device
+    gpsd_command = "gpsd %s" % config.gps_device_port
     sitchlib.Utility.start_component(gpsd_command)
     while True:
         try:
