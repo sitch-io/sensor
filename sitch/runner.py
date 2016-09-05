@@ -155,12 +155,13 @@ def gps_consumer(config):
     gpsd_command = "gpsd %s" % config.gps_device
     sitchlib.Utility.start_component(gpsd_command)
     while True:
-        gps_listener = sitchlib.GpsListener()
-        for fix in gps_listener:
-            gps_location = fix
-            print "GPS location:"
-            print gps_location
-    except IndexError:
+        try:
+            gps_listener = sitchlib.GpsListener()
+            for fix in gps_listener:
+                gps_location = fix
+                print "GPS location:"
+                print gps_location
+        except IndexError:
             # print "Output queue empty"
             time.sleep(3)
 
