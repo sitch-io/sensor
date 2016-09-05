@@ -6,6 +6,8 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y \
     vim \
     logrotate \
     cron \
+    gpsd \
+    gpsd-clients \
     kmod \
     lshw \
     libfftw3-double3 \
@@ -16,6 +18,7 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y \
     libgcc1 \
     libudev1 \
     python \
+    python-gps \
     python-pip && \
     apt-get clean && \
     apt-get -y autoclean && \
@@ -52,6 +55,7 @@ RUN pip install virtualenv && \
     pip install python-geoip && \
     pip install python-geoip-geolite2 && \
     pip install pyudev && \
+
     git clone https://github.com/klynch/python-logstash-handler && \
     cd python-logstash-handler && \
     git checkout c5574624c8cb4fdba14bef33303e8650eb2f3487 && \

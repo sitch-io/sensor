@@ -2,6 +2,7 @@ import hvac
 import json
 import os
 import sys
+from device_detector import DeviceDetector as dd
 from utility import Utility as utility
 
 
@@ -16,7 +17,8 @@ class ConfigHelper:
         self.kal_gain = ConfigHelper.get_from_env("KAL_GAIN")
         self.kal_threshold = ConfigHelper.get_from_env("KAL_THRESHOLD")
         self.gsm_modem_band = ConfigHelper.get_from_env("GSM_MODEM_BAND")
-        self.gsm_modem_port = ConfigHelper.get_from_env("GSM_MODEM_PORT")
+        self.gsm_modem_port = ConfigHelper.get_gsm_modem_port()
+        self.gps_device_port = ConfigHelper.get_gps_device_port()
         self.vault_ls_cert_path = ConfigHelper.get_from_env("VAULT_LS_CERT_PATH")
         self.vault_token = ConfigHelper.get_from_env("VAULT_TOKEN")
         self.vault_url = ConfigHelper.get_from_env("VAULT_URL")
@@ -28,6 +30,22 @@ class ConfigHelper:
         self.feed_url_base = ConfigHelper.get_from_env("FEED_URL_BASE")
         self.mcc_list = ConfigHelper.get_list_from_env("MCC_LIST")
         return
+
+    @classmethod
+    def get_gsm_modem_port(cls):
+        if os.getenv('GSM_MODEM_PORT') is not None:
+            if dd().gsm_radios != []:
+                target_device = dd().gsm_radios[0]["device"]
+                return target_device
+        return None
+
+    @classmethod
+    def get_gps_device_port(cls):
+        if os.getenv('GPS_DEVICE_PORT') is not None:
+            if dd().gps_devices != []:
+                target_device = dd().gps_devices[0]["device"]
+                return target_device
+        return None
 
     def build_logrotate_config(self):
         lr_options = "{\nrotate 14\ndaily\ncompress\ndelaycompress\nmissingok\nnotifempty\n}"
