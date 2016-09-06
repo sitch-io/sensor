@@ -63,6 +63,7 @@ def main():
                                      args=[config])
     kalibrate_consumer_thread.daemon = True
     gsm_modem_consumer_thread.daemon = True
+
     gps_consumer_thread.daemon = True
     enricher_thread.daemon = True
     writer_thread.daemon = True
