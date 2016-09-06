@@ -11,16 +11,15 @@ import kalibrate
 import threading
 import time
 from collections import deque
-# from multiprocessing import Pool
 
 
 def main():
     global scan_results_queue
     global message_write_queue
     global gps_location
+    gps_location = {}
     scan_results_queue = deque([])
     message_write_queue = deque([])
-    gps_location = {}
     config = sitchlib.ConfigHelper()
     if config.mode == 'clutch':
         while True:
@@ -54,21 +53,26 @@ def main():
     # Configure threads
     kalibrate_consumer_thread = threading.Thread(target=kalibrate_consumer,
                                                  args=[config])
-    sim808_consumer_thread = threading.Thread(target=sim808_consumer,
-                                              args=[config])
+    gsm_modem_consumer_thread = threading.Thread(target=gsm_modem_consumer,
+                                                 args=[config])
+    gps_consumer_thread = threading.Thread(target=gps_consumer,
+                                           args=[config])
     enricher_thread = threading.Thread(target=enricher,
                                        args=[config])
     writer_thread = threading.Thread(target=output,
                                      args=[config])
     kalibrate_consumer_thread.daemon = True
-    sim808_consumer_thread.daemon = True
+    gsm_modem_consumer_thread.daemon = True
+    gps_consumer_thread.daemon = True
     enricher_thread.daemon = True
     writer_thread.daemon = True
     # Kick off threads
     print "Starting Kalibrate consumer thread..."
     kalibrate_consumer_thread.start()
-    print "Starting SIM808 consumer thread..."
-    sim808_consumer_thread.start()
+    print "Starting GSM Modem consumer thread..."
+    gsm_modem_consumer_thread.start()
+    print "Starting GPS consumer thread..."
+    gps_consumer_thread.start()
     print "Starting enricher thread..."
     enricher_thread.start()
     print "Starting writer thread..."
@@ -80,10 +84,12 @@ def main():
             print "Kalibrate consumer is dead..."
         #    print "Kalibrate thread died... restarting!"
         #    kalibrate_consumer_thread.start()
-        if sim808_consumer_thread.is_alive is False:
-            print "SIM808 consumer is dead..."
+        if gsm_modem_consumer_thread.is_alive is False:
+            print "GSM Modem consumer is dead..."
         #    print "SIM808 consumer thread died... restarting!"
         #    sim808_consumer_thread.start()
+        if gps_consumer_thread.is_alive is False:
+            print "GPS consumer is dead..."
         if enricher_thread.is_alive is False:
             print "Enricher thread is dead..."
             # print "Enricher thread died... restarting!"
@@ -95,7 +101,7 @@ def main():
     return
 
 
-def sim808_consumer(config):
+def gsm_modem_consumer(config):
     scan_job_template = {"platform": config.platform_name,
                          "scan_results": [],
                          "scan_start": "",
@@ -104,17 +110,18 @@ def sim808_consumer(config):
                          "scan_location": {},
                          "scanner_public_ip": config.public_ip}
     while True:
-        tty_port = config.sim808_port
-        band = config.sim808_band
+        print "GSM modem configured for %s" % config.gsm_modem_port
+        tty_port = config.gsm_modem_port
+        band = config.gsm_modem_band
         if band == "nope":
-            print "Disabling SIM808 scanning..."
+            print "Disabling GSM Modem scanning..."
             while True:
                 time.sleep(120)
-        # Sometimes the buffer is full and causes a failed instantiation the first time
+        # Sometimes the buffer is full and instantiation fails the first time
         try:
-            consumer = sitchlib.FonaReader(tty_port)
+            consumer = sitchlib.GsmModem(tty_port)
         except:
-            consumer = sitchlib.FonaReader(tty_port)
+            consumer = sitchlib.GsmModem(tty_port)
         consumer.set_band(band)
         time.sleep(2)
         # consumer.trigger_gps()
@@ -128,8 +135,8 @@ def sim808_consumer(config):
                     retval["scan_results"] = report
                     retval["scan_finish"] = sitchlib.Utility.get_now_string()
                     retval["scan_location"]["name"] = str(config.device_id)
-                    retval["scan_program"] = "SIM808"
-                    retval["band"] = config.sim808_band
+                    retval["scan_program"] = "GSM_MODEM"
+                    retval["band"] = config.gsm_modem_band
                     retval["scanner_public_ip"] = config.public_ip
                     scan_results_queue.append(retval.copy())
                     # print "SIM808 results sent for enrichment..."
@@ -143,6 +150,23 @@ def sim808_consumer(config):
                 else:
                     print "No match!"
                     print report
+
+
+def gps_consumer(config):
+    global gps_location
+    print "Starting GPS Consumer"
+    print "  gpsd configured for %s" % config.gps_device_port
+    gpsd_command = "gpsd -n %s" % config.gps_device_port
+    sitchlib.Utility.start_component(gpsd_command)
+    time.sleep(10)
+    while True:
+        try:
+            gps_listener = sitchlib.GpsListener()
+            for fix in gps_listener:
+                gps_location = fix
+        except IndexError:
+            # print "Output queue empty"
+            time.sleep(3)
 
 
 def kalibrate_consumer(config):
@@ -178,30 +202,18 @@ def kalibrate_consumer(config):
 
 def enricher(config):
     """ Enricher breaks apart kalibrate doc into multiple log entries, and
-    assembles lines from sim808 into a main doc as well as writing multiple
+    assembles lines from gsm_modem into a main doc as well as writing multiple
     lines to the output queue for metadata """
+    global gps_location
     override_suppression = [110]
-    print "Getting GPS location..."
-    try:
-        public_ip = sitchlib.Utility.get_public_ip()
-        print "Detected public IP %s" % public_ip
-        gps_location = sitchlib.LocationTool.get_geo_for_ip(public_ip)
-    except:
-        print "Unable to get geoIP, setting location to (0,0)"
-        gps_location = {"lat": 0, "lon": 0}
     print "Now starting enricher"
+    print "GPS is: %s" % str(gps_location)
     enr = sitchlib.Enricher(config, gps_location)
     while True:
-        if abs((datetime.datetime.now() - enr.born_on_date).total_seconds()) > 86400:
+        if abs((datetime.datetime.now() -
+                enr.born_on_date).total_seconds()) > 86400:
             print "Recycling enricher..."
-            print "Getting GPS location..."
-            try:
-                public_ip = sitchlib.Utility.get_public_ip()
-                gps_location = sitchlib.LocationTool.get_geo_for_ip(public_ip)
-            except:
-                print "Unable to get geoIP, setting location to (0,0)"
-                gps_location = {"lat": 0, "lon": 0}
-            print "Cycling enricher module for feed update"
+            print "GPS is: %s" % str(gps_location)
             enr = sitchlib.Enricher(config, gps_location)
         try:
             scandoc = scan_results_queue.popleft()
@@ -210,9 +222,9 @@ def enricher(config):
             if doctype == 'Kalibrate':
                 # print "Enriching Kalibrate scan"
                 outlist = enr.enrich_kal_scan(scandoc)
-            elif doctype == 'SIM808':
+            elif doctype == 'GSM_MODEM':
                 # print "Enriching SIM808 scan"
-                outlist = enr.enrich_sim808_scan(scandoc)
+                outlist = enr.enrich_gsm_modem_scan(scandoc)
             elif doctype == 'GPS':
                 # print "Updating GPS coordinates"
                 outlist = enr.enrich_gps_scan(scandoc.copy())
@@ -222,7 +234,8 @@ def enricher(config):
                 print scandoc
             # Clean the suppression list, everything over 12 hours
             for suppressed, tstamp in enr.suppressed_alerts.items():
-                if abs((datetime.datetime.now() - tstamp).total_seconds()) > 43200:
+                if abs((datetime.datetime.now() -
+                        tstamp).total_seconds()) > 43200:
                     del enr.suppressed_alerts[suppressed]
             # Send all the things to the outbound queue
             for log_bolus in outlist:
@@ -235,7 +248,7 @@ def enricher(config):
                         if log_bolus[1]["details"] in enr.suppressed_alerts:
                             continue
                         else:
-                            enr.suppressed_alerts[log_bolus[1]["details"]] = datetime.datetime.now()
+                            enr.suppressed_alerts[log_bolus[1]["details"]] = datetime.datetime.now()  # NOQA
                             print log_bolus
                 message_write_queue.append(log_bolus)
         except IndexError:

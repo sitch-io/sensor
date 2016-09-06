@@ -29,7 +29,7 @@ samp_sim = {'platform': u'AMLOGIC',
                 {'cell': '6', 'rxl': '23', 'lac': '0000', 'bsic': '00', 'mnc': '', 'mcc': '', 'cellid': 'ffff',
                     'arfcn': '0236'}],
             'scan_start': '',
-            'scan_program': 'SIM808'}
+            'scan_program': 'GSM_MODEM'}
 
 samp_kal = {'platform': u'AMLOGIC',
             'scan_finish': '2016-05-07 04:14:30',
@@ -80,7 +80,7 @@ class TestEnricher:
     def test_determine_scan_type(self):
         enricher = self.create_enricher()
         scantype = enricher.determine_scan_type(samp_sim)
-        assert scantype == 'SIM808'
+        assert scantype == 'GSM_MODEM'
 
     def test_hex_to_dec(self):
         testval = 'ffff'

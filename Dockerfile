@@ -1,4 +1,4 @@
-FROM ioft/armhf-ubuntu:15.04
+FROM ioft/armhf-ubuntu:16.04
 MAINTAINER Ash
 
 RUN apt-get update && apt-get upgrade -y && apt-get install -y \
@@ -6,6 +6,8 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y \
     vim \
     logrotate \
     cron \
+    gpsd \
+    gpsd-clients \
     kmod \
     lshw \
     libfftw3-double3 \
@@ -16,6 +18,7 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y \
     libgcc1 \
     libudev1 \
     python \
+    python-gps \
     python-pip && \
     apt-get clean && \
     apt-get -y autoclean && \
@@ -46,6 +49,7 @@ RUN pip install virtualenv && \
     virtualenv --no-site-packages venv && \
     . ./venv/bin/activate && \
     pip install pyserial && \
+    pip install gps3 && \
     pip install hvac && \
     pip install kalibrate && \
     pip install haversine && \

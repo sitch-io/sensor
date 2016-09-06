@@ -57,8 +57,8 @@ class Enricher:
                 scan = json.loads(str)
             if scan["scan_program"] == 'Kalibrate':
                 scan_type = 'Kalibrate'
-            if scan["scan_program"] == 'SIM808':
-                scan_type = 'SIM808'
+            if scan["scan_program"] == 'GSM_MODEM':
+                scan_type = 'GSM_MODEM'
             if scan["scan_program"] == 'GPS':
                 scan_type = 'GPS'
         except:
@@ -69,7 +69,7 @@ class Enricher:
     def enrich_kal_scan(self, scan_document):
         results_set = [("scan", scan_document)]
         kal_threshold = float(self.kal_threshold)
-        platform_name = scan_document["scanner_name"]
+        # platform_name = scan_document["scanner_name"]
         if scan_document["scan_results"] == []:
             print "No results found in scan document..."
             return results_set
@@ -109,11 +109,11 @@ class Enricher:
 
         return results_set
 
-    def enrich_sim808_scan(self, scan_document):
+    def enrich_gsm_modem_scan(self, scan_document):
         chan = {}
         here = {}
         results_set = [("cell", scan_document)]
-        platform_name = scan_document["scan_location"]["name"]
+        # platform_name = scan_document["scan_location"]["name"]
         scan_items = scan_document["scan_results"]
         for channel in scan_items:
             channel["band"] = scan_document["band"]
@@ -148,7 +148,7 @@ class Enricher:
                                                                   chan["lat"],
                                                                   here["lon"],
                                                                   here["lat"])
-            chan_enriched = ('sim808_channel', channel)
+            chan_enriched = ('gsm_modem_channel', channel)
             results_set.append(chan_enriched)
             # Stop here if we don't process against the feed...
             if skip_feed_comparison is True:

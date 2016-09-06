@@ -1,5 +1,7 @@
 # SITCH Sensor
 
+[![Build Status](https://travis-ci.org/sitch-io/sensor.svg?branch=master)](https://travis-ci.org/sitch-io/sensor)
+
 ## Getting Started
 
 ## Prerequisites
@@ -33,8 +35,8 @@ LOG_HOST            # host:port
 LOG_METHOD          # local_file or direct.  Local file expects that the logstash-forwarder daemon is shipping logs.  Direct sends right from the output thread, no file or logstash-forwarder daemon.  Not thoroughly tested.  No intelligent queue management in the event it's unable to reach the server.
 MCC_LIST            # Comma-separated list of MCCs to retrieve feed files for
 MODE                # setting this to 'clutch' will cause it to loop before all the fun stuff starts.  Great for when you're troubleshooting in the Resin console.
-SIM808_BAND         # Band to scan with SIM808 (try GSM850_MODE)
-SIM808_PORT         # Device for tty (try /dev/ttyUSB0)
+GSM_MODEM_BAND         # Band to scan with SIM808 (try GSM850_MODE)
+GSM_MODEM_PORT         # Device for tty (try /dev/ttyUSB0)
 VAULT_LS_CERT_PATH  # Path to logstash cert (secret/logstash-fwd-crt)
 VAULT_TOKEN         # token for accessing credentials in vault
 VAULT_URL           # https://vault.mydomain.com:port
