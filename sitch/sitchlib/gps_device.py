@@ -13,11 +13,12 @@ class GpsListener(object):
         for new_data in self.gps_socket:
             if new_data:
                 self.data_stream.unpack(new_data)
-                geojson = {"type": "Feature",
-                           "geometry": {
-                               "type": "Point",
-                               "coordinates": [
-                                   self.data_stream.TPV['lon'],
-                                   self.data_stream.TPV['lat']]}}
-                yield geojson
-                time.sleep(30)
+                if "lon" in self.data_stream.TPV:
+                    geojson = {"type": "Feature",
+                               "geometry": {
+                                   "type": "Point",
+                                   "coordinates": [
+                                       self.data_stream.TPV['lon'],
+                                       self.data_stream.TPV['lat']]}}
+                    yield geojson
+                    time.sleep(30)
