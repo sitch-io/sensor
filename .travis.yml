@@ -3,7 +3,7 @@ python:
 - '2.7'
 install:
 - pip install pytest-cov pytest-pep8 python-coveralls
-- pip install pyserial hvac kalibrate haversine python-geoip python-geoip-geolite2 pyudev
+- pip install pyserial hvac kalibrate haversine python-geoip python-geoip-geolite2 pyudev gps3
 - git clone https://github.com/klynch/python-logstash-handler && cd python-logstash-handler && git checkout c5574624c8cb4fdba14bef33303e8650eb2f3487 &&   pip install .
 - cd $OLDPWD
 script: py.test sitch/tests/unit/ --cov sitchlib --cov-report term-missing
