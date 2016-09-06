@@ -46,7 +46,7 @@ class ConfigHelper:
         if os.getenv('GPS_DEVICE_PORT') is None:
             detector = dd()
             if detector.gps_devices != []:
-                target_device = dd().gps_devices[0]["device"]
+                target_device = dd().gps_devices[0]
                 print "Detected GPS device at %s" % target_device
                 return target_device
         return os.getenv('GPS_DEVICE_PORT')
