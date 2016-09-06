@@ -14,11 +14,12 @@ class GpsListener(object):
             if new_data:
                 self.data_stream.unpack(new_data)
                 if "lon" in self.data_stream.TPV:
-                    geojson = {"type": "Feature",
-                               "geometry": {
-                                   "type": "Point",
-                                   "coordinates": [
-                                       self.data_stream.TPV['lon'],
-                                       self.data_stream.TPV['lat']]}}
-                    yield geojson
-                    time.sleep(30)
+                    if self.data_stream.TPV['lon'] != 'n/a':
+                        geojson = {"type": "Feature",
+                                   "geometry": {
+                                       "type": "Point",
+                                       "coordinates": [
+                                           self.data_stream.TPV['lon'],
+                                           self.data_stream.TPV['lat']]}}
+                        yield geojson
+                        time.sleep(30)
