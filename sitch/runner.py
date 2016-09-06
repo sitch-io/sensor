@@ -152,11 +152,11 @@ def gsm_modem_consumer(config):
 
 def gps_consumer(config):
     global gps_location
-    time.sleep(5)
     print "Starting GPS Consumer"
     print "  gpsd configured for %s" % config.gps_device_port
     gpsd_command = "gpsd -n %s" % config.gps_device_port
     sitchlib.Utility.start_component(gpsd_command)
+    time.sleep(10)
     while True:
         try:
             gps_listener = sitchlib.GpsListener()
