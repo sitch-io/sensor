@@ -33,21 +33,23 @@ class ConfigHelper:
 
     @classmethod
     def get_gsm_modem_port(cls):
-        if os.getenv('GSM_MODEM_PORT') is not None:
-            if dd().gsm_radios != []:
+        if os.getenv('GSM_MODEM_PORT') is None:
+            detector = dd()
+            if detector.gsm_radios != []:
                 target_device = dd().gsm_radios[0]["device"]
                 print "Detected GSM modem at %s" % target_device
                 return target_device
-        return None
+        return os.getenv('GSM_MODEM_PORT')
 
     @classmethod
     def get_gps_device_port(cls):
-        if os.getenv('GPS_DEVICE_PORT') is not None:
-            if dd().gps_devices != []:
+        if os.getenv('GPS_DEVICE_PORT') is None:
+            detector = dd()
+            if detector.gps_devices != []:
                 target_device = dd().gps_devices[0]["device"]
                 print "Detected GPS device at %s" % target_device
                 return target_device
-        return None
+        return os.getenv('GPS_DEVICE_PORT')
 
     def build_logrotate_config(self):
         lr_options = "{\nrotate 14\ndaily\ncompress\ndelaycompress\nmissingok\nnotifempty\n}"
