@@ -5,6 +5,7 @@ from gps_device import GpsListener
 from gsm_modem import GsmModem
 from location_tool import LocationTool
 from logger import LogHandler
+from geo_ip import GeoIp
 from gsm_modem import GsmModem
 from utility import Utility
 from feed_manager import FeedManager
