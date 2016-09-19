@@ -7,7 +7,7 @@ from utility import Utility as utility
 
 
 class ConfigHelper:
-    def __init__(self):
+    def __init__(self, feed_dir="/data/"):
         self.device_id = ConfigHelper.get_device_id()
         self.platform_name = utility.get_platform_name()
         self.log_prefix = "/var/log/sitch/"
@@ -26,9 +26,10 @@ class ConfigHelper:
         self.logstash_cert_path = "/run/dbus/crypto/logstash.crt"
         self.ls_cert = str(self.get_secret_from_vault())
         self.public_ip = str(utility.get_public_ip())
-        self.feed_dir = "/data/"
+        self.feed_dir = feed_dir
         self.feed_url_base = ConfigHelper.get_from_env("FEED_URL_BASE")
         self.mcc_list = ConfigHelper.get_list_from_env("MCC_LIST")
+        self.gps_drift_threshold = 1000
         return
 
     @classmethod

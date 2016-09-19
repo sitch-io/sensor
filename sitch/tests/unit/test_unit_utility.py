@@ -25,3 +25,11 @@ class TestUtility:
         ip_match = r'^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$'
         ip_matcher = re.compile(ip_match)
         assert ip_matcher.match(result)
+
+    def test_calculate_distance(self):
+        madrid = (40.24, 3.41)
+        chattanooga = (35.244, 85.1835)
+        result = sitchlib.Utility.calculate_distance(madrid[0], madrid[1],
+                                                     chattanooga[0],
+                                                     chattanooga[1])
+        assert result != 0

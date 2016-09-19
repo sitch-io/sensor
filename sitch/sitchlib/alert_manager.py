@@ -4,7 +4,8 @@ class AlertManager(object):
             100: "Tower out of range.",
             110: "Primary BTS metadata change.",
             120: "Tower not in feed DB.",
-            200: "ARFCN FCCH detected above power threshold."
+            200: "ARFCN FCCH detected above power threshold.",
+            300: "GPS to GeoIP delta over threshold."
         }
         return
 

@@ -3,6 +3,7 @@ import json
 import os
 import subprocess
 import requests
+from location_tool import LocationTool
 
 
 class Utility:
@@ -86,3 +87,14 @@ class Utility:
         url = 'https://api.ipify.org/?format=json'
         result = (requests.get(url).json())['ip']
         return result
+
+    @classmethod
+    def calculate_distance(cls, lon_1, lat_1, lon_2, lat_2):
+        if None in [lon_1, lat_1, lon_2, lat_2]:
+            print "Zero geo coordinate detected, not resolving distance."
+            return 0
+        pos_1 = (lon_1, lat_1)
+        pos_2 = (lon_2, lat_2)
+        dist_in_km = LocationTool.get_distance_between_points(pos_1, pos_2)
+        dist_in_m = dist_in_km * 1000
+        return dist_in_m
