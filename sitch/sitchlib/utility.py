@@ -98,3 +98,12 @@ class Utility:
         dist_in_km = LocationTool.get_distance_between_points(pos_1, pos_2)
         dist_in_m = dist_in_km * 1000
         return dist_in_m
+
+    @classmethod
+    def str_to_float(cls, s):
+        retval = None
+        try:
+            retval = float(s)
+        except:
+            print "Unable to convert %s to float" % str(s)
+        return retval

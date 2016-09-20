@@ -92,17 +92,17 @@ class TestGsmModemEnricher:
 
     def test_str_to_float_badval(self):
         testval = "I AINT"
-        result = sitchlib.Enricher.str_to_float(testval)
+        result = sitchlib.Utility.str_to_float(testval)
         assert result is None
 
     def test_str_to_float_integer(self):
         testval = "12345"
-        result = sitchlib.Enricher.str_to_float(testval)
+        result = sitchlib.Utility.str_to_float(testval)
         assert result == 12345.0
 
     def test_str_to_float_float(self):
         testval = "12345.0010234"
-        result = sitchlib.Enricher.str_to_float(testval)
+        result = sitchlib.Utility.str_to_float(testval)
         assert result == 12345.0010234
 
     def test_geo_drift_check_suppress(self):

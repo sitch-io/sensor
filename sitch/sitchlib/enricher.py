@@ -2,6 +2,7 @@ from alert_manager import AlertManager
 from datetime import datetime
 from feed_manager import FeedManager
 from enrich_gsm_modem import GsmModemEnricher
+from enrich_kal_scan import KalScanEnricher
 from utility import Utility
 import json
 
@@ -34,6 +35,8 @@ class Enricher:
         self.kal_threshold = config.kal_threshold
         self.suppressed_alerts = {}
         self.gsm_modem_enricher = GsmModemEnricher(state, self.feed_dir)
+        self.kal_enricher = KalScanEnricher(state, self.feed_dir,
+                                            self.kal_threshold)
         return
 
     @classmethod
@@ -61,46 +64,7 @@ class Enricher:
         return retval
 
     def enrich_kal_scan(self, scan_document):
-        results_set = [("scan", scan_document)]
-        kal_threshold = float(self.kal_threshold)
-        # platform_name = scan_document["scanner_name"]
-        if scan_document["scan_results"] == []:
-            print "No results found in scan document..."
-            return results_set
-        else:
-            for result in scan_document["scan_results"]:
-                try:
-                    msg = {}
-                    msg["band"] = result["band"]
-                    msg["power"] = Enricher.str_to_float(result["power"])
-                    msg["sample_rate"] = result["sample_rate"]
-                    msg["final_freq"] = result["final_freq"]
-                    msg["channel"] = result["channel"]
-                    msg["gain"] = result["gain"]
-                    msg["site_name"] = scan_document["scan_location"]["name"]
-                    msg["scan_start"] = scan_document["scan_start"]
-                    msg["scan_finish"] = scan_document["scan_finish"]
-                    msg["scan_program"] = scan_document["scan_program"]
-                    msg["scanner_public_ip"] = scan_document["scanner_public_ip"]
-                    chan_enriched = ('kal_channel', msg)
-                    results_set.append(chan_enriched)
-                except Exception as e:
-                    print "Failed to enrich Kalibrate message."
-                    print e
-                    print msg
-                    # Now we look at alerting...
-                try:
-                    power = float(msg["power"])
-                    if power > kal_threshold:
-                        message = "ARFCN %s is over threshold at %s!" % (msg["channel"],
-                                                                         msg["site_name"])
-                        alert = self.alerts.build_alert(200, message)
-                        results_set.append(alert)
-                except Exception as e:
-                    print "Failed to fire alert!"
-                    print e
-                    print msg
-
+        results_set = self.kal_enricher.enrich_kal_scan(scan_document)
         return results_set
 
     def enrich_gps_scan(self, scan_document):
@@ -121,16 +85,6 @@ class Enricher:
                                                           lac, cellid)
         return feed_info
     """
-
-
-    @classmethod
-    def str_to_float(cls, s):
-        retval = None
-        try:
-            retval = float(s)
-        except:
-            print "Unable to convert %s to float" % str(s)
-        return retval
 
     @classmethod
     def geo_drift_check(cls, prior_distance, geoip_scan, gps_scan, threshold):
