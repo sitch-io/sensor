@@ -17,6 +17,7 @@ class GsmModemEnricher(object):
         self.feed_dir = feed_dir
         self.alerts = alert_manager.AlertManager()
         self.prior_bts = {}
+        self.feed_cache = []
         return
 
     def enrich_gsm_modem_scan(self, scan_document):
@@ -101,10 +102,10 @@ class GsmModemEnricher(object):
                                "cellid": channel["cellid"]}
                 if self.prior_bts == {}:
                     self.prior_bts = dict(current_bts)
-                elif self.current_primary != current_bts:
+                elif self.prior_bts != current_bts:
                     message = ("Primary BTS was %s " +
                                "now %s. Site: %s") % (
-                                   json.dumps(self.current_primary),
+                                   json.dumps(self.prior_bts),
                                    json.dumps(current_bts),
                                    channel["site_name"])
                     alert = self.alerts.build_alert(110, message)

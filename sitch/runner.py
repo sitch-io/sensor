@@ -28,8 +28,7 @@ def main():
 
     # Write LS cert
     sitchlib.Utility.create_path_if_nonexistent(config.logstash_cert_path)
-    sitchlib.Utility.write_file(config.logstash_cert_path,
-                                config.ls_cert)
+    sitchlib.Utility.write_file(config.logstash_cert_path, config.ls_cert)
 
     # Write LS config
     sitchlib.Utility.write_file("/etc/logstash-forwarder",
