@@ -1,4 +1,5 @@
 from mock import Mock
+from mock import MagicMock
 import imp
 import os
 import sys
@@ -58,7 +59,14 @@ class TestGsmModemEnricher:
         return state
 
     def create_config(self):
-        config = sitchlib.ConfigHelper(feedpath=feedpath)
+        config = sitchlib.ConfigHelper
+        config.__init__ = (MagicMock(return_value=None))
+        config.device_id = "12345"
+        config.feed_dir = "/tmp/"
+        config.kal_threshold = "1000000"
+        config.mcc_list = []
+        config.feed_url_base = sitch_feed_base
+        config.feed_dir = feedpath
         return config
 
     def create_modem_enricher(self):
@@ -70,39 +78,17 @@ class TestGsmModemEnricher:
 
     def test_convert_hex_targets(self):
         target_channel = samp_sim["scan_results"][0]
-        result = sitchlib.Enricher.gsm_modem_enricher.convert_hex_targets(target_channel)
+        enr = self.create_modem_enricher()
+        result = enr.convert_hex_targets(target_channel)
         assert result["lac"] == "6029"
         assert result["cellid"] == "15"
-
-    def test_determine_scan_type(self):
-        enricher = self.create_enricher()
-        scantype = enricher.determine_scan_type(samp_sim)
-        assert scantype == 'GSM_MODEM'
 
     def test_hex_to_dec(self):
         testval = 'ffff'
         desired_result = '65535'
-        enricher = self.create_enricher()
-        result = enricher.gsm_modem_enricher.hex_to_dec(testval)
+        enr = self.create_modem_enricher()
+        result = enr.hex_to_dec(testval)
         assert result == desired_result
-
-    def test_enrich_kal(self):
-        enricher = self.create_enricher()
-        result = enricher.enrich_kal_scan(samp_kal)
-        for entry in result:
-            print entry
-        desired_item_count = 5
-        assert len(result) == desired_item_count
-        for item in result:
-            assert type(item) is tuple
-
-    def test_calculate_distance(self):
-        madrid = (40.24, 3.41)
-        chattanooga = (35.244, 85.1835)
-        result = sitchlib.Enricher.calculate_distance(madrid[0], madrid[1],
-                                                      chattanooga[0],
-                                                      chattanooga[1])
-        assert result != 0
 
     def test_str_to_float_badval(self):
         testval = "I AINT"
