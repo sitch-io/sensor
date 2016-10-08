@@ -22,7 +22,6 @@ class ConfigHelper:
         self.ls_ca_path = "/run/dbus/crypto/ca.crt"
         self.ls_cert_path = "/run/dbus/crypto/logstash.crt"
         self.ls_key_path = "/run/dbus/crypto/logstash.key"
-        self.vault_secrets = str(self.get_secret_from_vault())
         self.vault_token = ConfigHelper.get_from_env("VAULT_TOKEN")
         self.vault_url = ConfigHelper.get_from_env("VAULT_URL")
         self.mode = ConfigHelper.get_from_env("MODE")
@@ -30,6 +29,7 @@ class ConfigHelper:
         self.feed_dir = feed_dir
         self.feed_url_base = ConfigHelper.get_from_env("FEED_URL_BASE")
         self.mcc_list = ConfigHelper.get_list_from_env("MCC_LIST")
+        self.vault_secrets = str(self.get_secret_from_vault())
         self.gps_drift_threshold = 1000
         return
 
