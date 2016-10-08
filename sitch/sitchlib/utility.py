@@ -22,6 +22,7 @@ class Utility:
             raw_response = subprocess.check_output(lshw.split())
             platform_info = json.loads(raw_response.replace('\n', ''))
         except:
+            print "Unable to get platform info from lshw!"
             platform_info = {}
         return platform_info
 

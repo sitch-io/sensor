@@ -15,6 +15,7 @@ class LocationTool(object):
                       "lon": lat_lon[1]}
             return coords
         except:
+            print "LocationTool cannot get geo for IP: %s" % ip_address
             return None
 
     @classmethod
