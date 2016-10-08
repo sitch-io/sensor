@@ -50,4 +50,5 @@ Testing is done with pytest.  Coverage module optional.
 1. Run `py.test --cov sitchlib` .
 
 ## Contributing
-Please do PRs against the `test` branch.
+* Please do PRs against the `test` branch.
+* To add an ID string to the device detector for GSM modems, add part of the ID string to the ```positive_match``` variable in the ```DeviceDetector.is_a_gsm_modem()``` function
