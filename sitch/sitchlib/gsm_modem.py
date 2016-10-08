@@ -1,5 +1,6 @@
 import re
 import serial
+import sys
 import time
 
 
@@ -14,7 +15,15 @@ class GsmModem(object):
         self.gps_init = 'AT+CGPSINF=0\r\n'
         print "opening serial port: %s" % ser_port
         self.serconn = serial.Serial(ser_port, 9600, timeout=1)
-        time.sleep(3)
+        ser_open_iter = 0
+        while not self.serconn.is_open:
+            print "Attempting to open %s again..." % ser_port
+            time.sleep(1)
+            ser_open_iter = ser_open_iter + 1
+            self.serconn.open()
+            if ser_open_iter > 5:
+                print "Failed to init and open serial port %s!" % ser_port
+                sys.exit(2)
         return
 
     def __iter__(self):
