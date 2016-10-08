@@ -292,6 +292,12 @@ def enricher(config):
         except IndexError:
             # print "Enricher queue empty"
             time.sleep(1)
+        except KeyError as e:
+            print "Getting a key error!  Taking a dump!"
+            print e
+            print "outlist:"
+            print outlist
+
 
 
 def output(config):
