@@ -114,9 +114,8 @@ class ConfigHelper:
                                 "fields": {"type": "sitch_alert"}}]}
         log_host = self.log_host
         log_prefix = self.log_prefix
-        cert_file_loc = self.logstash_cert_path
         ls_config["network"]["servers"][0] = log_host
-        ls_config["network"]["ssl ca"] = cert_file_loc
+        # ls_config["network"]["ssl ca"] = cert_file_loc
         for f in ls_config["files"]:
             f["paths"][0] = f["paths"][0].replace('/var/log', log_prefix)
         return json.dumps(ls_config)
