@@ -165,6 +165,7 @@ def gsm_modem_consumer(config):
 
 
 def gps_consumer(config):
+    global gps_location
     print "Starting GPS Consumer"
     print "  gpsd configured for %s" % config.gps_device_port
     gpsd_command = "gpsd -n %s" % config.gps_device_port
