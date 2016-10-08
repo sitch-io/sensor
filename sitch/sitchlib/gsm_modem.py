@@ -1,5 +1,6 @@
 import re
 import serial
+import time
 
 
 class GsmModem(object):
@@ -13,6 +14,8 @@ class GsmModem(object):
         self.gps_init = 'AT+CGPSINF=0\r\n'
         print "opening serial port: %s" % ser_port
         self.serconn = serial.Serial(ser_port, 9600, timeout=1)
+        time.sleep(3)
+        return
 
     def __iter__(self):
         page = []
@@ -51,6 +54,7 @@ class GsmModem(object):
                     "PCS_MODE", "EGSM_DCS_MODE", "GSM850_PCS_MODE",
                     "EGSM_PCS_MODE", "ALL_BAND"]:
             term_command = "AT+CBAND=\"%s\"\r\n" % band
+            print "Setting GSM band with: %s" % term_command
             self.serconn.write(term_command)
             self.serconn.flushInput()
             self.serconn.flushOutput()
