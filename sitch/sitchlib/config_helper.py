@@ -24,6 +24,7 @@ class ConfigHelper:
         self.ls_key_path = "/run/dbus/crypto/logstash.key"
         self.vault_token = ConfigHelper.get_from_env("VAULT_TOKEN")
         self.vault_url = ConfigHelper.get_from_env("VAULT_URL")
+        self.vault_path = ConfigHelper.get_from_env("VAULT_PATH")
         self.mode = ConfigHelper.get_from_env("MODE")
         self.public_ip = str(utility.get_public_ip())
         self.feed_dir = feed_dir
@@ -133,7 +134,7 @@ class ConfigHelper:
     def get_secret_from_vault(self):
         client = hvac.Client(url=self.vault_url, token=self.vault_token)
         print "Get secrets from %s, with path %s" % (self.vault_url,
-                                                     self.vault_ls_cert_path)
+                                                     self.vault_path)
         try:
             response = client.read(self.vault_ls_cert_path)
             secrets = response["data"]
