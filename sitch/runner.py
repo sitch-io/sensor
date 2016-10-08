@@ -129,7 +129,7 @@ def gsm_modem_consumer(config):
             print "Disabling GSM Modem scanning..."
             while True:
                 time.sleep(120)
-        if tty_port == "None":
+        if tty_port is None:
             print "No GSM modem auto-detected or otherwise configured!"
             while True:
                 time.sleep(120)
