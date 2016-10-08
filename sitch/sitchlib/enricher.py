@@ -68,11 +68,11 @@ class Enricher:
         return results_set
 
     def enrich_gps_scan(self, scan_document):
-        retval = ("gps", scan_document)
+        retval = [("gps", scan_document)]
         return retval
 
     def enrich_geoip_scan(self, scan_document):
-        retval = ("geoip", scan_document)
+        retval = [("geoip", scan_document)]
         return retval
     """
     @classmethod
