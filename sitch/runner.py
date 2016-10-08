@@ -129,6 +129,10 @@ def gsm_modem_consumer(config):
             print "Disabling GSM Modem scanning..."
             while True:
                 time.sleep(120)
+        if tty_port == "None":
+            print "No GSM modem auto-detected or otherwise configured!"
+            while True:
+                time.sleep(120)
         # Sometimes the buffer is full and instantiation fails the first time
         try:
             consumer = sitchlib.GsmModem(tty_port)
