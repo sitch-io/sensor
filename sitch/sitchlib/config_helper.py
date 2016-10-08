@@ -19,12 +19,13 @@ class ConfigHelper:
         self.gsm_modem_band = ConfigHelper.get_from_env("GSM_MODEM_BAND")
         self.gsm_modem_port = ConfigHelper.get_gsm_modem_port()
         self.gps_device_port = ConfigHelper.get_gps_device_port()
-        self.vault_ls_cert_path = ConfigHelper.get_from_env("VAULT_LS_CERT_PATH")
+        self.ls_ca_path = "/run/dbus/crypto/ca.crt"
+        self.ls_cert_path = "/run/dbus/crypto/logstash.crt"
+        self.ls_key_path = "/run/dbus/crypto/logstash.key"
+        self.vault_secrets = str(self.get_secret_from_vault())
         self.vault_token = ConfigHelper.get_from_env("VAULT_TOKEN")
         self.vault_url = ConfigHelper.get_from_env("VAULT_URL")
         self.mode = ConfigHelper.get_from_env("MODE")
-        self.logstash_cert_path = "/run/dbus/crypto/logstash.crt"
-        self.ls_cert = str(self.get_secret_from_vault())
         self.public_ip = str(utility.get_public_ip())
         self.feed_dir = feed_dir
         self.feed_url_base = ConfigHelper.get_from_env("FEED_URL_BASE")
@@ -53,13 +54,20 @@ class ConfigHelper:
         return os.getenv('GPS_DEVICE_PORT')
 
     def build_logrotate_config(self):
-        lr_options = "{\nrotate 14\ndaily\ncompress\ndelaycompress\nmissingok\nnotifempty\n}"
+        lr_options = str("{\nrotate 14" +
+                         "\ndaily" +
+                         "\ncompress" +
+                         "\ndelaycompress" +
+                         "\nmissingok" +
+                         "\nnotifempty\n}")
         lr_config = "%s/*.log %s" % (self.log_prefix, lr_options)
         return lr_config
 
     def build_logstash_config(self):
         ls_config = {"network": {"servers": ["servername:serverport"],
-                                 "ssl ca": "/run/dbus/crypto/logstash.crt"},
+                                 "ssl ca": self.ls_ca_path,
+                                 "ssl certificate": self.ls_cert_path,
+                                 "ssl key": self.ls_key_path},
                      "files": [{"paths": ["/var/log/cells.log"],
                                 "fields": {"type": "syslog"}},
                                {"paths": ["/var/log/scanner.log"],
@@ -89,11 +97,13 @@ class ConfigHelper:
                                {"paths": ["/var/log/arfcn_cellid.log"],
                                 "fields": {"type": "arfcn_cellid"}},
                                {"paths": ["/var/log/arfcn_rla.log"],
-                                "fields": {"type": "arfcn_rcv_level_access_minimum"}},
+                                "fields": {"type":
+                                           "arfcn_rcv_level_access_minimum"}},
                                {"paths": ["/var/log/arfcn_txp.log"],
                                 "fields": {"type": "arfcn_tx_power_maximum"}},
                                {"paths": ["/var/log/arfcn_lac.log"],
-                                "fields": {"type": "arfcn_location_area_code"}},
+                                "fields": {"type":
+                                           "arfcn_location_area_code"}},
                                {"paths": ["/var/log/arfcn_ta.log"],
                                 "fields": {"type": "arfcn_timing_advance"}},
                                {"paths": ["/var/log/gps.log"],
@@ -126,12 +136,12 @@ class ConfigHelper:
                                                      self.vault_ls_cert_path)
         try:
             response = client.read(self.vault_ls_cert_path)
-            ls_cert = response["data"]["value"]
+            secrets = response["data"]
         except Exception as e:
             print "Error in getting secret from vault!"
             print e
-            ls_cert = "NONE"
-        return ls_cert
+            secrets = "NONE"
+        return secrets
 
     @classmethod
     def get_from_env(cls, k):

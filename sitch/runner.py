@@ -20,15 +20,21 @@ def main():
     gps_location = {}
     scan_results_queue = deque([])
     message_write_queue = deque([])
+    print "Setting config..."
     config = sitchlib.ConfigHelper()
     if config.mode == 'clutch':
         while True:
             time.sleep(30)
             print "Mode is clutch.  Ain't doin' nothin'"
 
-    # Write LS cert
+    print "Writing Logstash key material..."
     sitchlib.Utility.create_path_if_nonexistent(config.logstash_cert_path)
-    sitchlib.Utility.write_file(config.logstash_cert_path, config.ls_cert)
+    sitchlib.Utility.write_file(config.ls_ca_path,
+                                config.vault_secrets["ca"])
+    sitchlib.Utility.write_file(config.ls_cert_path,
+                                config.vault_secrets["crt"])
+    sitchlib.Utility.write_file(config.ls_key_path,
+                                config.vault_secrets["key"])
 
     # Write LS config
     sitchlib.Utility.write_file("/etc/logstash-forwarder",
