@@ -137,7 +137,7 @@ class ConfigHelper:
         print "Get secrets from %s, with path %s" % (self.vault_url,
                                                      self.vault_path)
         try:
-            response = client.read(self.vault_ls_cert_path)
+            response = client.read(self.vault_path)
             secrets = response["data"]
         except Exception as e:
             print "Error in getting secret from vault!"
