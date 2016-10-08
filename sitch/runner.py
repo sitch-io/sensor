@@ -316,6 +316,10 @@ def output(config):
         except IndexError:
             # print "Output queue empty"
             time.sleep(3)
+        except Exception as e:
+            print "Exception caught while processing message for output:"
+            print e
+            print msg_bolus
 
 if __name__ == "__main__":
     main()

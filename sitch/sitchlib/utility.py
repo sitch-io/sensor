@@ -67,10 +67,12 @@ class Utility:
             raw_response = subprocess.check_output(lshw.split())
             platform_info = json.loads(raw_response.replace('\n', ''))
         except:
+            print "Failed to obtain platform info!"
             platform_info = {}
         try:
             platform_name = platform_info["product"]
         except:
+            print "Failed to obtain platform name!"
             platform_name = "Unspecified"
         return platform_name
 
