@@ -188,7 +188,7 @@ def geoip_consumer(config):
     geoip_event = {"scan_program": "geo_ip",
                    "scan_results": {}}
     while True:
-        geoip_listener = sitchlib.GeoIP(delay=60)
+        geoip_listener = sitchlib.GeoIp(delay=60)
         for result in geoip_listener:
             geoip_event["scan_results"] = result
             scan_results_queue.append(geoip_event.copy())
