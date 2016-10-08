@@ -22,6 +22,7 @@ class ConfigHelper:
         self.ls_ca_path = "/run/dbus/crypto/ca.crt"
         self.ls_cert_path = "/run/dbus/crypto/logstash.crt"
         self.ls_key_path = "/run/dbus/crypto/logstash.key"
+        self.ls_crypto_base_path = "/run/dbus/crypto/"
         self.vault_token = ConfigHelper.get_from_env("VAULT_TOKEN")
         self.vault_url = ConfigHelper.get_from_env("VAULT_URL")
         self.vault_path = ConfigHelper.get_from_env("VAULT_PATH")

@@ -28,7 +28,7 @@ def main():
             print "Mode is clutch.  Ain't doin' nothin'"
 
     print "Writing Logstash key material..."
-    sitchlib.Utility.create_path_if_nonexistent(config.logstash_cert_path)
+    sitchlib.Utility.create_path_if_nonexistent(config.ls_crypto_base_path)
     sitchlib.Utility.write_file(config.ls_ca_path,
                                 config.vault_secrets["ca"])
     sitchlib.Utility.write_file(config.ls_cert_path,
