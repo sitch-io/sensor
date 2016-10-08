@@ -31,7 +31,7 @@ class ConfigHelper:
         self.feed_dir = feed_dir
         self.feed_url_base = ConfigHelper.get_from_env("FEED_URL_BASE")
         self.mcc_list = ConfigHelper.get_list_from_env("MCC_LIST")
-        self.vault_secrets = str(self.get_secret_from_vault())
+        self.vault_secrets = self.get_secret_from_vault()
         self.gps_drift_threshold = 1000
         return
 
