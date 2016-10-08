@@ -20,16 +20,21 @@ def main():
     gps_location = {}
     scan_results_queue = deque([])
     message_write_queue = deque([])
+    print "Setting config..."
     config = sitchlib.ConfigHelper()
     if config.mode == 'clutch':
         while True:
             time.sleep(30)
             print "Mode is clutch.  Ain't doin' nothin'"
 
-    # Write LS cert
+    print "Writing Logstash key material..."
     sitchlib.Utility.create_path_if_nonexistent(config.logstash_cert_path)
-    sitchlib.Utility.write_file(config.logstash_cert_path,
-                                config.ls_cert)
+    sitchlib.Utility.write_file(config.ls_ca_path,
+                                config.vault_secrets["ca"])
+    sitchlib.Utility.write_file(config.ls_cert_path,
+                                config.vault_secrets["crt"])
+    sitchlib.Utility.write_file(config.ls_key_path,
+                                config.vault_secrets["key"])
 
     # Write LS config
     sitchlib.Utility.write_file("/etc/logstash-forwarder",
@@ -55,6 +60,8 @@ def main():
                                                  args=[config])
     gsm_modem_consumer_thread = threading.Thread(target=gsm_modem_consumer,
                                                  args=[config])
+    geoip_consumer_thread = threading.Thread(target=geoip_consumer,
+                                             args=[config])
     gps_consumer_thread = threading.Thread(target=gps_consumer,
                                            args=[config])
     enricher_thread = threading.Thread(target=enricher,
@@ -63,7 +70,7 @@ def main():
                                      args=[config])
     kalibrate_consumer_thread.daemon = True
     gsm_modem_consumer_thread.daemon = True
-
+    geoip_consumer_thread.daemon = True
     gps_consumer_thread.daemon = True
     enricher_thread.daemon = True
     writer_thread.daemon = True
@@ -74,6 +81,8 @@ def main():
     gsm_modem_consumer_thread.start()
     print "Starting GPS consumer thread..."
     gps_consumer_thread.start()
+    print "Starting GeoIP consumer thread..."
+    geoip_consumer_thread.start()
     print "Starting enricher thread..."
     enricher_thread.start()
     print "Starting writer thread..."
@@ -90,6 +99,8 @@ def main():
         #    print "SIM808 consumer thread died... restarting!"
         #    sim808_consumer_thread.start()
         if gps_consumer_thread.is_alive is False:
+            print "GPS consumer is dead..."
+        if geoip_consumer_thread.is_alive is False:
             print "GPS consumer is dead..."
         if enricher_thread.is_alive is False:
             print "Enricher thread is dead..."
@@ -160,14 +171,27 @@ def gps_consumer(config):
     gpsd_command = "gpsd -n %s" % config.gps_device_port
     sitchlib.Utility.start_component(gpsd_command)
     time.sleep(10)
+    gps_event = {"scan_program": "gps",
+                 "scan_results": {}}
     while True:
         try:
-            gps_listener = sitchlib.GpsListener()
+            gps_listener = sitchlib.GpsListener(delay=60)
             for fix in gps_listener:
-                gps_location = fix
+                gps_event["scan_results"] = fix
+                scan_results_queue.append(gps_event.copy())
         except IndexError:
-            # print "Output queue empty"
             time.sleep(3)
+
+
+def geoip_consumer(config):
+    print "Starting GeoIP Consumer"
+    geoip_event = {"scan_program": "geo_ip",
+                   "scan_results": {}}
+    while True:
+        geoip_listener = sitchlib.GeoIP(delay=60)
+        for result in geoip_listener:
+            geoip_event["scan_results"] = result
+            scan_results_queue.append(geoip_event.copy())
 
 
 def kalibrate_consumer(config):
@@ -205,31 +229,44 @@ def enricher(config):
     """ Enricher breaks apart kalibrate doc into multiple log entries, and
     assembles lines from gsm_modem into a main doc as well as writing multiple
     lines to the output queue for metadata """
-    global gps_location
+    state = {"gps": {},
+             "geoip": {},
+             "geo_distance_meters": 0}
     override_suppression = [110]
     print "Now starting enricher"
-    print "GPS is: %s" % str(gps_location)
-    enr = sitchlib.Enricher(config, gps_location)
+    enr = sitchlib.Enricher(config, state)
     while True:
-        if abs((datetime.datetime.now() -
-                enr.born_on_date).total_seconds()) > 86400:
-            print "Recycling enricher..."
-            print "GPS is: %s" % str(gps_location)
-            enr = sitchlib.Enricher(config, gps_location)
         try:
             scandoc = scan_results_queue.popleft()
             doctype = enr.determine_scan_type(scandoc)
             outlist = []
             if doctype == 'Kalibrate':
-                # print "Enriching Kalibrate scan"
                 outlist = enr.enrich_kal_scan(scandoc)
             elif doctype == 'GSM_MODEM':
-                # print "Enriching SIM808 scan"
-                outlist = enr.enrich_gsm_modem_scan(scandoc)
+                outlist = enr.enrich_gsm_modem_scan(state, scandoc)
             elif doctype == 'GPS':
-                # print "Updating GPS coordinates"
+                """ Every time we get a GPS reading, we check to make sure
+                that it is close to the same distance from GeoIP as it was
+                when it was last measured.  Alerts are generated if the drift
+                is beyond threshold."""
                 outlist = enr.enrich_gps_scan(scandoc.copy())
-                gps_location = scandoc
+                geo_problem = enr.geo_drift_check(state["geo_distance_meters"],
+                                                  state["geoip"],
+                                                  scandoc["scan_results"],
+                                                  config.gps_drift_threshold)
+                if geo_problem:
+                    outlist.append(geo_problem.copy())
+                state["gps"] = scandoc["scan_results"]
+                lat_1 = state["geoip"]["geometry"]["coordinates"][0]
+                lon_1 = state["geoip"]["geometry"]["coordinates"][1]
+                lat_2 = state["gps"]["geometry"]["coordinates"][0]
+                lon_2 = state["gps"]["geometry"]["coordinates"][1]
+                new_distance = (enr.calculate_distance(lon_1, lat_1,
+                                                       lon_2, lat_2))
+                state["geo_distance_meters"] = int(new_distance)
+            elif doctype == 'GEOIP':
+                outlist = enr.enrich_geoip_scan(scandoc.copy())
+                state["geoip"] = scandoc["scan_results"]
             else:
                 print "Can't determine scan type for: "
                 print scandoc

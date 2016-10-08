@@ -3,8 +3,10 @@ from config_helper import ConfigHelper
 from enricher import Enricher
 from gps_device import GpsListener
 from gsm_modem import GsmModem
+from enrich_gsm_modem import GsmModemEnricher
 from location_tool import LocationTool
 from logger import LogHandler
+from geo_ip import GeoIp
 from gsm_modem import GsmModem
 from utility import Utility
 from feed_manager import FeedManager
