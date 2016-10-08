@@ -46,6 +46,7 @@ class LogHandler:
                         "arfcn_ta": "arfcn_ta.log",  # sim808
                         "kal_channel": "kal_channel.log",  # cells from Kal
                         "sim808_channel": "sim808_channel.log",  # sim808 cells
+                        "geoip": "geoip.log",
                         "gps": "gps.log",
                         "sitch_alert": "sitch_alert.log"}
         if ltype in type_to_file:

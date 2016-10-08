@@ -108,6 +108,8 @@ class ConfigHelper:
                                            "arfcn_location_area_code"}},
                                {"paths": ["/var/log/arfcn_ta.log"],
                                 "fields": {"type": "arfcn_timing_advance"}},
+                               {"paths": ["/var/log/geoip.log"],
+                                "fields": {"type": "geoip"}},
                                {"paths": ["/var/log/gps.log"],
                                 "fields": {"type": "gpsd"}},
                                {"paths": ["/var/log/sitch_alert.log"],
