@@ -261,8 +261,10 @@ def enricher(config):
                 lon_1 = state["geoip"]["geometry"]["coordinates"][1]
                 lat_2 = state["gps"]["geometry"]["coordinates"][0]
                 lon_2 = state["gps"]["geometry"]["coordinates"][1]
-                new_distance = (enr.calculate_distance(lon_1, lat_1,
-                                                       lon_2, lat_2))
+                new_distance = (sitchlib.Utility.calculate_distance(lon_1,
+                                                                    lat_1,
+                                                                    lon_2,
+                                                                    lat_2))
                 state["geo_distance_meters"] = int(new_distance)
             elif doctype == 'GEOIP':
                 outlist = enr.enrich_geoip_scan(scandoc.copy())
@@ -297,7 +299,6 @@ def enricher(config):
             print e
             print "outlist:"
             print outlist
-
 
 
 def output(config):

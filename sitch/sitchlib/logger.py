@@ -13,12 +13,16 @@ class LogHandler:
         self.log_method = config.log_method
         self.logstash_host = config.log_host.split(':')[0]
         self.logstash_port = config.log_host.split(':')[1]
-        self.logstash_cert_path = config.logstash_cert_path
+        self.logstash_ca_path = config.ls_ca_path
+        self.logstash_cert_path = config.ls_cert_path
+        self.logstash_key_path = config.ls_key_path
         self.ls_logger = logging.getLogger()
         self.ls_handler = LogstashHandler(self.logstash_host,
                                           self.logstash_port,
                                           ssl=True,
-                                          ca_certs=self.logstash_cert_path)
+                                          ca_certs=self.logstash_ca_path,
+                                          keyfile=self.logstash_key_path,
+                                          certfile=self.logstash_cert_path)
         self.ls_formatter = LogstashFormatter()
         self.ls_handler.setFormatter(self.ls_formatter)
         self.ls_logger.addHandler(self.ls_handler)
@@ -40,8 +44,8 @@ class LogHandler:
                         "arfcn_txp": "arfcn_txp.log",  # sim808
                         "arfcn_lac": "arfcn_lac.log",  # sim808
                         "arfcn_ta": "arfcn_ta.log",  # sim808
-                        "kal_channel": "kal_channel.log",  # individual cells from Kal
-                        "sim808_channel": "sim808_channel.log",  # individual cells from sim808
+                        "kal_channel": "kal_channel.log",  # cells from Kal
+                        "sim808_channel": "sim808_channel.log",  # sim808 cells
                         "gps": "gps.log",
                         "sitch_alert": "sitch_alert.log"}
         if ltype in type_to_file:
