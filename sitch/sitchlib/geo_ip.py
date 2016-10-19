@@ -17,6 +17,8 @@ class GeoIp(object):
             self.set_ip
             self.set_geo
             yield self.geo
+            print "DEBUG"
+            print self.geo
             time.sleep(self.delay)
 
     def set_ip(self):
