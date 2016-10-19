@@ -179,7 +179,7 @@ def gps_consumer(config):
                  "scan_results": {}}
     while True:
         try:
-            gps_listener = sitchlib.GpsListener(delay=60)
+            gps_listener = sitchlib.GpsListener(delay=120)
             for fix in gps_listener:
                 gps_event["scan_results"] = fix
                 scan_results_queue.append(gps_event.copy())
@@ -192,7 +192,7 @@ def geoip_consumer(config):
     geoip_event = {"scan_program": "geo_ip",
                    "scan_results": {}}
     while True:
-        geoip_listener = sitchlib.GeoIp(delay=60)
+        geoip_listener = sitchlib.GeoIp(delay=600)
         for result in geoip_listener:
             geoip_event["scan_results"] = result
             scan_results_queue.append(geoip_event.copy())

@@ -23,4 +23,6 @@ class GpsListener(object):
                                            self.data_stream.TPV['lon'],
                                            self.data_stream.TPV['lat']]}}
                         yield geojson
+                        print "GPS DEBUG"
+                        print geojson
                         time.sleep(self.delay)
