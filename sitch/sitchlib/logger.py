@@ -80,5 +80,8 @@ class LogHandler:
 
     def transmit_log_message(self, message):
         """You should only ever send a dict to this method"""
+        if type(message) is not dict:
+            print "Wrong type for output message!"
+            print message
         self.ls_logger.info(message)
         return
