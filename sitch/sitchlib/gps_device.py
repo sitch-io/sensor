@@ -1,4 +1,5 @@
 from gps3 import gps3
+import copy
 import time
 
 
@@ -22,7 +23,5 @@ class GpsListener(object):
                                        "coordinates": [
                                            self.data_stream.TPV['lon'],
                                            self.data_stream.TPV['lat']]}}
-                        yield geojson
-                        print "GPS DEBUG"
-                        print geojson
+                        yield copy.deepcopy(geojson)
                         time.sleep(self.delay)

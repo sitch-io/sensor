@@ -1,3 +1,4 @@
+import copy
 import requests
 import time
 from geoip import geolite2
@@ -16,7 +17,7 @@ class GeoIp(object):
         while True:
             self.set_ip
             self.set_geo
-            yield self.geo
+            yield copy.deepcopy(self.geo)
             time.sleep(self.delay)
 
     def set_ip(self):
