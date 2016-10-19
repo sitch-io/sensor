@@ -11,7 +11,7 @@ file, pathname, description = imp.find_module(modulename, [modulepath])
 fixturepath = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                            "../fixture/ceng.txt")
 feedpath = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                           "../fixture/feed/")
+                        "../fixture/feed/")
 sitchlib = imp.load_module(modulename, file, pathname, description)
 sitch_feed_base = os.getenv('SITCH_FEED_BASE')
 current_gps = {"type": "Feature",
@@ -106,6 +106,9 @@ class TestIntegrationEnricher:
         config.kal_threshold = "500000"
         config.mcc_list = [310]
         config.feed_url_base = sitch_feed_base
+        config.public_ip = "1.1.1.1"
+        config.platform_name = "yourmom.com"
+        config.state_list = ["CA"]
         return config
 
     def create_enricher(self):

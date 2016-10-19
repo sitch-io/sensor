@@ -3,14 +3,17 @@ from datetime import datetime
 from feed_manager import FeedManager
 from enrich_gsm_modem import GsmModemEnricher
 from enrich_kal_scan import KalScanEnricher
+from enrich_arfcn import EnrichArfcn
 from utility import Utility
 import json
 
 
 class Enricher:
-    def __init__(self, config, state):
+    def __init__(self, config, geo_state):
         self.device_id = config.device_id
         self.born_on_date = datetime.now()
+        self.public_ip = config.public_ip
+        self.platform_name = config.platform_name
         """ BTS reference looks like a list of these:
         {'radio': 'GSM',
          'mcc': '310',
@@ -34,9 +37,10 @@ class Enricher:
         self.current_primary = {}
         self.kal_threshold = config.kal_threshold
         self.suppressed_alerts = {}
-        self.gsm_modem_enricher = GsmModemEnricher(state, self.feed_dir)
-        self.kal_enricher = KalScanEnricher(state, self.feed_dir,
-                                            self.kal_threshold)
+        self.gsm_modem_enricher = GsmModemEnricher(geo_state, self.feed_dir)
+        self.kal_enricher = KalScanEnricher(self.kal_threshold)
+        self.arfcn_enricher = EnrichArfcn(geo_state, config.state_list,
+                                          self.feed_dir)
         return
 
     @classmethod
@@ -74,17 +78,18 @@ class Enricher:
     def enrich_geoip_scan(self, scan_document):
         retval = [("geoip", scan_document)]
         return retval
-    """
-    @classmethod
-    def hex_to_dec(cls, hx):
-        integer = int(hx, 16)
-        return str(integer)
 
-    def get_feed_info(self, mcc, mnc, lac, cellid):
-        feed_info = self.feed_obj.get_feed_info_for_tower(mcc, mnc,
-                                                          lac, cellid)
-        return feed_info
-    """
+    def check_arfcn_in_range(self, arfcn):
+        """ Checks to make sure ARFCN is licensed for this area """
+        scan_job = {"platform": self.platform_name,
+                    "scan_results": [{"arfcn": arfcn}],
+                    "scan_start": datetime.now(),
+                    "scan_finish": datetime.now(),
+                    "scan_program": "ARFCN_ENRICHER",
+                    "scan_location": {"name": self.device_id},
+                    "scanner_public_ip": self.public_ip}
+        retval = self.arfcn_enricher.compare_arfcn_to_feed(scan_job)
+        return retval
 
     @classmethod
     def geo_drift_check(cls, prior_distance, geoip_scan, gps_scan, threshold):

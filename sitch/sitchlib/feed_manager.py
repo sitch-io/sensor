@@ -1,5 +1,3 @@
-# import csv
-# import gzip
 import os
 import requests
 from datetime import datetime
@@ -60,7 +58,7 @@ class FeedManager(object):
 
     @classmethod
     def get_source_url(cls, url_base, mcc):
-        src_url = "%s/%s/all.csv.gz" % (url_base, mcc)
+        src_url = "%s/%s.csv.gz" % (url_base, mcc)
         return src_url
 
 """

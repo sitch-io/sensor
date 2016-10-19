@@ -7,14 +7,7 @@ from utility import Utility
 
 
 class KalScanEnricher(object):
-    def __init__(self, state, feed_dir, kal_threshold):
-        """ State looks like this:
-        {"gps": {},
-         "geoip": {},
-         "geo_distance_meters": 0}
-        """
-        self.state = state
-        self.feed_dir = feed_dir
+    def __init__(self, kal_threshold):
         self.alerts = alert_manager.AlertManager()
         self.kal_threshold = kal_threshold
         return

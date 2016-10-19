@@ -82,11 +82,6 @@ class GsmModem(object):
                 processed = GsmModem.process_7(line_parts)
             if len(line_parts) == 8:
                 processed = GsmModem.process_8(line_parts)
-        elif line.startswith('+CIPGSMLOC:'):
-            dataz = line.replace('\r\n', '').split(' ')[1]
-            line_parts = dataz.split(',')
-            if line_parts[0] == 0:
-                processed = GsmModem.process_gps(line_parts)
         elif line.startswith('AT+'):
             processed = {}
         elif re.match('^\s*$', line):
@@ -139,19 +134,5 @@ class GsmModem(object):
                   "mnc": parts[5],
                   "lac": parts[6],
                   "cellid": 0
-                  }
-        return retval
-
-    @classmethod
-    def process_gps(cls, parts):
-        retval = {"status": parts[0],
-                  "lon": parts[1],
-                  "lat": parts[2],
-                  "altitude": parts[3],
-                  "time": parts[4],
-                  "ttff": parts[5],
-                  "sat_count": parts[6],
-                  "speed": parts[7],
-                  "heading": parts[8]
                   }
         return retval
