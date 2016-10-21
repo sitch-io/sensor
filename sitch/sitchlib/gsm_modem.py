@@ -28,8 +28,6 @@ class GsmModem(object):
 
     def __iter__(self):
         page = []
-        # self.serconn.write(self.gps_init)
-        # self.serconn.write(self.eng_init)
         while True:
             line = None
             line = self.serconn.readline()
