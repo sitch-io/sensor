@@ -31,6 +31,7 @@ class GsmModem(object):
         while True:
             line = None
             line = self.serconn.readline()
+            print line
             processed_line = self.process_line(line)
             if line is None:
                 pass
