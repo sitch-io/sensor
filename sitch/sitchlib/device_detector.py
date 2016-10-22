@@ -86,7 +86,7 @@ class DeviceDetector(object):
     def is_a_gsm_modem(cls, port):
         test_command = "ATI \r\n"
         positive_match = ["SIM808"]
-        serconn = serial.Serial(port, 9600, timeout=1)
+        serconn = serial.Serial(port, 4800, timeout=1)
         serconn.write(test_command)
         serconn.flushInput()
         serconn.flushOutput()
