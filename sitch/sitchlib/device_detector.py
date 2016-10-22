@@ -19,10 +19,13 @@ class DeviceDetector(object):
     def __init__(self):
         print "Initializing Device Detector..."
         self.usbtty_ports = DeviceDetector.get_devices_by_subsys('usb-serial')
+        time.sleep(1)
         print "Searching for GSM modem..."
         self.gsm_radios = DeviceDetector.find_gsm_radios(self.usbtty_ports)
+        time.sleep(1)
         print "Searching for GPS device..."
         self.gps_devices = DeviceDetector.find_gps_radios(self.usbtty_ports)
+        time.sleep(1)
         return
 
     @classmethod
@@ -76,8 +79,7 @@ class DeviceDetector(object):
                     if pm in line:
                         serconn = None
                         return True
-        serconn = None
-        time.sleep(3)
+        serconn.close()
         return False
 
     @classmethod
@@ -99,8 +101,7 @@ class DeviceDetector(object):
                     if pm in line:
                         serconn = None
                         return True
-        serconn = None
-        time.sleep(3)
+        serconn.close()
         return False
 
     @classmethod
