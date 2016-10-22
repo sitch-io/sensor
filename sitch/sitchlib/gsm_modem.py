@@ -76,10 +76,13 @@ class GsmModem(object):
             line_parts = dataz.split(',')
             if len(line_parts) == 12:
                 processed = GsmModem.process_12(line_parts)
-            if len(line_parts) == 7:
+            elif len(line_parts) == 7:
                 processed = GsmModem.process_7(line_parts)
-            if len(line_parts) == 8:
+            elif len(line_parts) == 8:
                 processed = GsmModem.process_8(line_parts)
+            else:
+                print "Unrecognized GSM message format:"
+                print line_parts
         elif line.startswith('AT+'):
             processed = {}
         elif re.match('^\s*$', line):
