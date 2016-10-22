@@ -19,7 +19,9 @@ class DeviceDetector(object):
     def __init__(self):
         print "Initializing Device Detector..."
         self.usbtty_ports = DeviceDetector.get_devices_by_subsys('usb-serial')
+        print "Searching for GSM modem..."
         self.gsm_radios = DeviceDetector.find_gsm_radios(self.usbtty_ports)
+        print "Searching for GPS device..."
         self.gps_devices = DeviceDetector.find_gps_radios(self.usbtty_ports)
         return
 
