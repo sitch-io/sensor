@@ -140,8 +140,6 @@ def gsm_modem_consumer(config):
             consumer = sitchlib.GsmModem(tty_port)
         consumer.set_band(band)
         time.sleep(2)
-        # consumer.trigger_gps()
-        time.sleep(2)
         consumer.set_eng_mode()
         time.sleep(2)
         for report in consumer:
@@ -176,6 +174,8 @@ def gps_consumer(config):
     print "  gpsd configured for %s" % config.gps_device_port
     gpsd_command = "gpsd -n %s" % config.gps_device_port
     sitchlib.Utility.start_component(gpsd_command)
+    print "Starting gpsd with:"
+    print gpsd_command
     time.sleep(10)
     gps_event = {"scan_program": "gps",
                  "scan_results": {}}

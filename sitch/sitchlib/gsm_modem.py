@@ -14,7 +14,7 @@ class GsmModem(object):
         self.eng_init = 'AT+CENG=2,1\r\n'
         self.gps_init = 'AT+CGPSINF=0\r\n'
         print "opening serial port: %s" % ser_port
-        self.serconn = serial.Serial(ser_port, 9600, timeout=1)
+        self.serconn = serial.Serial(ser_port, 4800, timeout=1)
         ser_open_iter = 0
         while not self.serconn.is_open:
             print "Attempting to open %s again..." % ser_port
