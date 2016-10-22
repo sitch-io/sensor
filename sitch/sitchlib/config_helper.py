@@ -18,8 +18,8 @@ class ConfigHelper:
         self.kal_gain = ConfigHelper.get_from_env("KAL_GAIN")
         self.kal_threshold = ConfigHelper.get_from_env("KAL_THRESHOLD")
         self.gsm_modem_band = ConfigHelper.get_from_env("GSM_MODEM_BAND")
-        self.gsm_modem_port = ConfigHelper.get_gsm_modem_port()
-        self.gps_device_port = ConfigHelper.get_gps_device_port()
+        self.gsm_modem_port = self.get_gsm_modem_port()
+        self.gps_device_port = self.get_gps_device_port()
         self.ls_ca_path = "/run/dbus/crypto/ca.crt"
         self.ls_cert_path = "/run/dbus/crypto/logstash.crt"
         self.ls_key_path = "/run/dbus/crypto/logstash.key"
