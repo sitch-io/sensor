@@ -8,6 +8,7 @@ from utility import Utility as utility
 
 class ConfigHelper:
     def __init__(self, feed_dir="/data/"):
+        self.detector = dd()
         self.device_id = ConfigHelper.get_device_id()
         self.platform_name = utility.get_platform_name()
         self.log_prefix = "/var/log/sitch/"
@@ -36,22 +37,18 @@ class ConfigHelper:
         self.gps_drift_threshold = 1000
         return
 
-    @classmethod
-    def get_gsm_modem_port(cls):
+    def get_gsm_modem_port(self):
         if os.getenv('GSM_MODEM_PORT') is None:
-            detector = dd()
-            if detector.gsm_radios != []:
-                target_device = dd().gsm_radios[0]["device"]
+            if self.detector.gsm_radios != []:
+                target_device = self.detector.gsm_radios[0]["device"]
                 print "Detected GSM modem at %s" % target_device
                 return target_device
         return os.getenv('GSM_MODEM_PORT')
 
-    @classmethod
-    def get_gps_device_port(cls):
+    def get_gps_device_port(self):
         if os.getenv('GPS_DEVICE_PORT') is None:
-            detector = dd()
-            if detector.gps_devices != []:
-                target_device = dd().gps_devices[0]
+            if self.detector.gps_devices != []:
+                target_device = self.detector.gps_devices[0]
                 print "Detected GPS device at %s" % target_device
                 return target_device
         return os.getenv('GPS_DEVICE_PORT')
