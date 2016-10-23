@@ -91,6 +91,7 @@ def main():
         time.sleep(60)
         if kalibrate_consumer_thread.is_alive is True:
             scan_results_queue.append(sitchlib.Utility.heartbeat("kalibrate"))
+            print "KALIBRATE IS ALIVE"
         if gsm_modem_consumer_thread.is_alive is True:
             scan_results_queue.append(sitchlib.Utility.heartbeat("gsm_modem"))
         if gps_consumer_thread.is_alive is True:
@@ -246,7 +247,7 @@ def enricher(config):
             if doctype == 'Kalibrate':
                 outlist = enr.enrich_kal_scan(scandoc)
             elif doctype == 'HEARTBEAT':
-                outlist.append(scandoc)
+                outlist.append(("heartbeat", scandoc))
             elif doctype == 'GSM_MODEM':
                 outlist = enr.enrich_gsm_modem_scan(state, scandoc)
             elif doctype == 'GPS':
@@ -316,6 +317,7 @@ def output(config):
     while True:
         try:
             msg_bolus = message_write_queue.popleft()
+            print msg_bolus
             l.record_log_message(msg_bolus)
             del msg_bolus
         except IndexError:

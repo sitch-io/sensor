@@ -48,6 +48,7 @@ class LogHandler:
                         "sim808_channel": "sim808_channel.log",  # sim808 cells
                         "geoip": "geoip.log",
                         "gps": "gps.log",
+                        "heartbeat": "heartbeat.log",
                         "sitch_alert": "sitch_alert.log"}
         if ltype in type_to_file:
             log_file = type_to_file[ltype]
