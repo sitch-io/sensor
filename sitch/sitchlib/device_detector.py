@@ -64,6 +64,7 @@ class DeviceDetector(object):
 
     @classmethod
     def is_a_gps(cls, port):
+        time.sleep(2)
         positive_match = ["$GPGGA", "$GPGLL", "$GPGSA", "$GPGSV", "$GPRMC"]
         serconn = serial.Serial(port, 4800, timeout=1)
         serconn.flush()
@@ -87,6 +88,7 @@ class DeviceDetector(object):
 
     @classmethod
     def is_a_gsm_modem(cls, port):
+        time.sleep(2)
         test_command = "ATI \r\n"
         positive_match = ["SIM808"]
         serconn = serial.Serial(port, 9600, timeout=1)
@@ -124,6 +126,7 @@ class DeviceDetector(object):
 
     @classmethod
     def interrogate_gsm_modem(cls, port, command):
+        time.sleep(2)
         serconn = serial.Serial(port, 9600, timeout=1)
         cmd = "%s\r\n" % command
         serconn.write(cmd)
