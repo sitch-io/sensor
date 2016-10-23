@@ -14,6 +14,8 @@ class GsmModem(object):
     def __init__(self, ser_port):
         self.eng_init = 'AT+CENG=2,1 \r\n'
         self.gps_init = 'AT+CGPSINF=0 \r\n'
+        self.echo_off = 'ATE0 \r\n'
+        self.auto_reg = 'AT+COPS=0 \r\n'
         print "opening serial port: %s" % ser_port
         time.sleep(10)
         self.serconn = serial.Serial(ser_port, 4800, timeout=1)
@@ -33,9 +35,10 @@ class GsmModem(object):
         while True:
             line = None
             line = self.serconn.readline()
-            print line
             processed_line = self.process_line(line)
             if line is None:
+                pass
+            elif processed_line == {}:
                 pass
             elif "lon" in processed_line:
                 yield [processed_line]
@@ -54,6 +57,11 @@ class GsmModem(object):
 
     def set_eng_mode(self):
         self.serconn.write(self.eng_init)
+        self.serconn.flush()
+        return
+
+    def set_auto_registration(self):
+        self.serconn.write(self.auto_reg)
         self.serconn.flush()
         return
 

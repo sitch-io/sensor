@@ -92,24 +92,16 @@ def main():
         print "heartbeat..."
         if kalibrate_consumer_thread.is_alive is False:
             print "Kalibrate consumer is dead..."
-        #    print "Kalibrate thread died... restarting!"
-        #    kalibrate_consumer_thread.start()
         if gsm_modem_consumer_thread.is_alive is False:
             print "GSM Modem consumer is dead..."
-        #    print "SIM808 consumer thread died... restarting!"
-        #    sim808_consumer_thread.start()
         if gps_consumer_thread.is_alive is False:
             print "GPS consumer is dead..."
         if geoip_consumer_thread.is_alive is False:
             print "GPS consumer is dead..."
         if enricher_thread.is_alive is False:
             print "Enricher thread is dead..."
-            # print "Enricher thread died... restarting!"
-            # enricher_thread.start()
         if writer_thread.is_alive is False:
             print "Writer thread is dead..."
-        #    print "Writer thread died... restarting!"
-        #    writer_thread.start()
     return
 
 
@@ -138,6 +130,8 @@ def gsm_modem_consumer(config):
             consumer = sitchlib.GsmModem(tty_port)
         except:
             consumer = sitchlib.GsmModem(tty_port)
+        # Set auto-registration
+        consumer.set_auto_registration()
         consumer.set_band(band)
         time.sleep(2)
         consumer.set_eng_mode()
