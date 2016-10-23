@@ -79,6 +79,7 @@ class DeviceDetector(object):
                     if pm in line:
                         serconn = None
                         return True
+        serconn.flush()
         serconn.close()
         return False
 
@@ -86,7 +87,7 @@ class DeviceDetector(object):
     def is_a_gsm_modem(cls, port):
         test_command = "ATI \r\n"
         positive_match = ["SIM808"]
-        serconn = serial.Serial(port, 4800, timeout=1)
+        serconn = serial.Serial(port, 9600, timeout=1)
         serconn.write(test_command)
         serconn.flushInput()
         serconn.flushOutput()
@@ -101,6 +102,7 @@ class DeviceDetector(object):
                     if pm in line:
                         serconn = None
                         return True
+        serconn.flush()
         serconn.close()
         return False
 
@@ -118,7 +120,7 @@ class DeviceDetector(object):
 
     @classmethod
     def interrogate_gsm_modem(cls, port, command):
-        serconn = serial.Serial(port, 4800, timeout=1)
+        serconn = serial.Serial(port, 9600, timeout=1)
         cmd = "%s\r\n" % command
         serconn.write(cmd)
         serconn.flushInput()
@@ -135,5 +137,6 @@ class DeviceDetector(object):
             else:
                 serconn = None
                 return line
-        serconn = None
-        return ""
+        serconn.flush()
+        serconn.close()
+        return ""  # Returning an empty string for return type consistency
