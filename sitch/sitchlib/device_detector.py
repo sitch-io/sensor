@@ -99,7 +99,7 @@ class DeviceDetector(object):
         time.sleep(2)
         test_command = "ATI \r\n"
         positive_match = ["SIM808"]
-        serconn = serial.Serial(port, 9600, timeout=1)
+        serconn = serial.Serial(port, 4800, timeout=1)
         serconn.write(test_command)
         serconn.flush()
         for i in xrange(10):
@@ -135,7 +135,7 @@ class DeviceDetector(object):
     @classmethod
     def interrogate_gsm_modem(cls, port, command):
         time.sleep(2)
-        serconn = serial.Serial(port, 9600, timeout=1)
+        serconn = serial.Serial(port, 4800, timeout=1)
         cmd = "%s\r\n" % command
         serconn.write(cmd)
         serconn.flush()
