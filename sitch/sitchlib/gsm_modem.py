@@ -58,6 +58,7 @@ class GsmModem(object):
     def set_eng_mode(self):
         self.serconn.write(self.eng_init)
         self.serconn.flush()
+        time.sleep(2)
         output = self.serconn.readline()
         print output
         self.serconn.flush()
@@ -66,6 +67,7 @@ class GsmModem(object):
     def get_reg_info(self):
         self.serconn.write(self.reg_info)
         self.serconn.flush()
+        time.sleep(2)
         output = self.serconn.readline()
         print output
         self.serconn.flush()
@@ -78,6 +80,10 @@ class GsmModem(object):
             term_command = "AT+CBAND=\"%s\" \r\n" % band
             print "Setting GSM band with: %s" % term_command
             self.serconn.write(term_command)
+            self.serconn.flush()
+            time.sleep(2)
+            output = self.serconn.readline()
+            print output
             self.serconn.flush()
         else:
             print "Not setting band, unrecognized value: %s" % band
@@ -100,6 +106,8 @@ class GsmModem(object):
         elif line.startswith('AT+'):
             processed = {}
         elif re.match('^\s*$', line):
+            processed = {}
+        elif re.match('^OK\s*$', line):
             processed = {}
         else:
             print "Unprocessable line from SIM808!"
