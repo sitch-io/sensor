@@ -57,16 +57,22 @@ def main():
 
     # Configure threads
     kalibrate_consumer_thread = threading.Thread(target=kalibrate_consumer,
+                                                 name="kalibrate_consumer",
                                                  args=[config])
     gsm_modem_consumer_thread = threading.Thread(target=gsm_modem_consumer,
+                                                 name="gsm_modem_consumer",
                                                  args=[config])
     geoip_consumer_thread = threading.Thread(target=geoip_consumer,
+                                             name="geoip_consumer",
                                              args=[config])
     gps_consumer_thread = threading.Thread(target=gps_consumer,
+                                           name="gps_consumer",
                                            args=[config])
     enricher_thread = threading.Thread(target=enricher,
+                                       name="enricher",
                                        args=[config])
     writer_thread = threading.Thread(target=output,
+                                     name="writer",
                                      args=[config])
     kalibrate_consumer_thread.daemon = True
     gsm_modem_consumer_thread.daemon = True
@@ -89,6 +95,10 @@ def main():
     writer_thread.start()
     while True:
         time.sleep(60)
+        active_threads = threading.enumerate()
+        print "Active threads: "
+        for item in active_threads:
+            print item
         if kalibrate_consumer_thread.is_alive is True:
             scan_results_queue.append(sitchlib.Utility.heartbeat("kalibrate"))
             print "KALIBRATE IS ALIVE"
