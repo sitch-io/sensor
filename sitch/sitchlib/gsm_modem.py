@@ -16,6 +16,7 @@ class GsmModem(object):
         self.gps_init = 'AT+CGPSINF=0 \r\n'
         self.echo_off = 'ATE0 \r\n'
         self.reg_info = 'AT+COPS? \r\n'
+        self.config_dump = 'ATV1Q0&V \r\n'
         print "opening serial port: %s" % ser_port
         time.sleep(10)
         self.serconn = serial.Serial(ser_port, 4800, timeout=1)
@@ -70,6 +71,18 @@ class GsmModem(object):
         time.sleep(2)
         output = self.serconn.readline()
         print output
+        self.serconn.flush()
+        return
+
+    def dump_config(self):
+        self.serconn.write(self.config_dump)
+        self.serconn.flush()
+        time.sleep(2)
+        while True:
+            output = self.serconn.readline()
+            if output == '':
+                break
+            print output
         self.serconn.flush()
         return
 
