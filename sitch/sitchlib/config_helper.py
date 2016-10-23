@@ -118,6 +118,8 @@ class ConfigHelper:
                                 "fields": {"type": "geoip"}},
                                {"paths": ["/var/log/gps.log"],
                                 "fields": {"type": "gpsd"}},
+                               {"paths": ["/var/log/heartbeat.log"],
+                                "fields": {"type": "heartbeat"}},
                                {"paths": ["/var/log/sitch_alert.log"],
                                 "fields": {"type": "sitch_alert"}}]}
         log_host = self.log_host

@@ -110,3 +110,9 @@ class Utility:
         except:
             print "Unable to convert %s to float" % str(s)
         return retval
+
+    @classmethod
+    def heartbeat(cls, service_name):
+        scan = {"scan_program": "heartbeat",
+                "heartbeat_service_name": service_name}
+        return scan

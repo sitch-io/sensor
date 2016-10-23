@@ -89,19 +89,18 @@ def main():
     writer_thread.start()
     while True:
         time.sleep(60)
-        print "heartbeat..."
-        if kalibrate_consumer_thread.is_alive is False:
-            print "Kalibrate consumer is dead..."
-        if gsm_modem_consumer_thread.is_alive is False:
-            print "GSM Modem consumer is dead..."
-        if gps_consumer_thread.is_alive is False:
-            print "GPS consumer is dead..."
-        if geoip_consumer_thread.is_alive is False:
-            print "GPS consumer is dead..."
-        if enricher_thread.is_alive is False:
-            print "Enricher thread is dead..."
-        if writer_thread.is_alive is False:
-            print "Writer thread is dead..."
+        if kalibrate_consumer_thread.is_alive is True:
+            scan_results_queue.append(sitchlib.Utility.heartbeat("kalibrate"))
+        if gsm_modem_consumer_thread.is_alive is True:
+            scan_results_queue.append(sitchlib.Utility.heartbeat("gsm_modem"))
+        if gps_consumer_thread.is_alive is True:
+            scan_results_queue.append(sitchlib.Utility.heartbeat("gps"))
+        if geoip_consumer_thread.is_alive is True:
+            scan_results_queue.append(sitchlib.Utility.heartbeat("geoip"))
+        if enricher_thread.is_alive is True:
+            scan_results_queue.append(sitchlib.Utility.heartbeat("enricher"))
+        if writer_thread.is_alive is True:
+            scan_results_queue.append(sitchlib.Utility.heartbeat("writer"))
     return
 
 
@@ -246,6 +245,8 @@ def enricher(config):
             outlist = []
             if doctype == 'Kalibrate':
                 outlist = enr.enrich_kal_scan(scandoc)
+            elif doctype == 'HEARTBEAT':
+                outlist.append(scandoc)
             elif doctype == 'GSM_MODEM':
                 outlist = enr.enrich_gsm_modem_scan(state, scandoc)
             elif doctype == 'GPS':

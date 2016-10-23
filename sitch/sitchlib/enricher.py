@@ -57,6 +57,8 @@ class Enricher:
                 scan_type = 'GPS'
             if scan["scan_program"] == 'geo_ip':
                 scan_type = 'GEOIP'
+            if scan["scan_program"] == 'heartbeat':
+                scan_type = 'HEARTBEAT'
         except:
             print "Failure to determine scan type"
             print scan
