@@ -66,8 +66,7 @@ class DeviceDetector(object):
     def is_a_gps(cls, port):
         positive_match = ["$GPGGA", "$GPGLL", "$GPGSA", "$GPGSV", "$GPRMC"]
         serconn = serial.Serial(port, 4800, timeout=1)
-        serconn.flushInput()
-        serconn.flushOutput()
+        serconn.flush()
         for i in xrange(10):
             line = None
             line = serconn.readline()
@@ -77,10 +76,13 @@ class DeviceDetector(object):
             else:
                 for pm in positive_match:
                     if pm in line:
+                        serconn.flush()
+                        serconn.close()
                         serconn = None
                         return True
         serconn.flush()
         serconn.close()
+        serconn = None
         return False
 
     @classmethod
@@ -89,8 +91,7 @@ class DeviceDetector(object):
         positive_match = ["SIM808"]
         serconn = serial.Serial(port, 9600, timeout=1)
         serconn.write(test_command)
-        serconn.flushInput()
-        serconn.flushOutput()
+        serconn.flush()
         for i in xrange(10):
             line = None
             line = serconn.readline()
@@ -100,10 +101,13 @@ class DeviceDetector(object):
             else:
                 for pm in positive_match:
                     if pm in line:
+                        serconn.flush()
+                        serconn.close()
                         serconn = None
                         return True
         serconn.flush()
         serconn.close()
+        serconn = None
         return False
 
     @classmethod
@@ -123,8 +127,7 @@ class DeviceDetector(object):
         serconn = serial.Serial(port, 9600, timeout=1)
         cmd = "%s\r\n" % command
         serconn.write(cmd)
-        serconn.flushInput()
-        serconn.flushOutput()
+        serconn.flush()
         for i in xrange(10):
             line = None
             line = serconn.readline()
@@ -135,8 +138,11 @@ class DeviceDetector(object):
                 time.sleep(1)
                 pass
             else:
+                serconn.flush()
+                serconn.close()
                 serconn = None
                 return line
         serconn.flush()
         serconn.close()
+        serconn = None
         return ""  # Returning an empty string for return type consistency
