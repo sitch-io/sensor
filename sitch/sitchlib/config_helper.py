@@ -1,6 +1,7 @@
 import hvac
 import json
 import os
+import pprint
 import sys
 from device_detector import DeviceDetector as dd
 from utility import Utility as utility
@@ -9,6 +10,7 @@ from utility import Utility as utility
 class ConfigHelper:
     def __init__(self, feed_dir="/data/"):
         self.detector = dd()
+        self.print_devices_as_detected()
         self.device_id = ConfigHelper.get_device_id()
         self.platform_name = utility.get_platform_name()
         self.log_prefix = "/var/log/sitch/"
@@ -35,6 +37,14 @@ class ConfigHelper:
         self.state_list = ConfigHelper.get_list_from_env("STATE_LIST")
         self.vault_secrets = self.get_secret_from_vault()
         self.gps_drift_threshold = 1000
+        return
+
+    def print_devices_as_detected(self):
+        pp = pprint.PrettyPrinter()
+        print "\nDetected GSM modems:"
+        pp.pprint(self.detector.gsm_radios)
+        print "Detected GPS devices:"
+        pp.pprint(self.detector.gps_devices)
         return
 
     def get_gsm_modem_port(self):
