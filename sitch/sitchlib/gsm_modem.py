@@ -15,7 +15,7 @@ class GsmModem(object):
         self.eng_init = 'AT+CENG=2,1 \r\n'
         self.gps_init = 'AT+CGPSINF=0 \r\n'
         self.echo_off = 'ATE0 \r\n'
-        self.auto_reg = 'AT+COPS=0 \r\n'
+        self.reg_info = 'AT+COPS? \r\n'
         print "opening serial port: %s" % ser_port
         time.sleep(10)
         self.serconn = serial.Serial(ser_port, 4800, timeout=1)
@@ -58,10 +58,16 @@ class GsmModem(object):
     def set_eng_mode(self):
         self.serconn.write(self.eng_init)
         self.serconn.flush()
+        output = self.serconn.readline()
+        print output
+        self.serconn.flush()
         return
 
-    def set_auto_registration(self):
-        self.serconn.write(self.auto_reg)
+    def get_reg_info(self):
+        self.serconn.write(self.reg_info)
+        self.serconn.flush()
+        output = self.serconn.readline()
+        print output
         self.serconn.flush()
         return
 

@@ -132,8 +132,8 @@ def gsm_modem_consumer(config):
             consumer = sitchlib.GsmModem(tty_port)
         # Set auto-registration
         time.sleep(2)
-        print "Setting auto-registration on GSM modem"
-        consumer.set_auto_registration()
+        print "Getting registration info..."
+        consumer.get_reg_info()
         time.sleep(2)
         consumer.set_band(band)
         time.sleep(2)
