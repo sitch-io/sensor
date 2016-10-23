@@ -5,7 +5,8 @@ import time
 
 
 class GsmModem(object):
-    """ Initialization causes the module to go into engineering mode, which will
+    """ Initialization opens the port.  Calling GsmModem.set_eng_mode() causes
+    the module to go into engineering mode, which will
     cause it to return cell network information.
     It has an iterator (generator) built in that cranks out dicts.
 
@@ -48,25 +49,22 @@ class GsmModem(object):
 
     def trigger_gps(self):
         self.serconn.write(self.gps_init)
-        self.serconn.flushInput()
-        self.serconn.flushOutput()
+        self.serconn.flush()
         return
 
     def set_eng_mode(self):
         self.serconn.write(self.eng_init)
-        self.serconn.flushInput()
-        self.serconn.flushOutput()
+        self.serconn.flush()
         return
 
     def set_band(self, band):
         if band in ["EGSM_MODE", "PGSM_MODE", "DCS_MODE", "GSM850_MODE",
                     "PCS_MODE", "EGSM_DCS_MODE", "GSM850_PCS_MODE",
                     "EGSM_PCS_MODE", "ALL_BAND"]:
-            term_command = "AT+CBAND=\"%s\"\r\n" % band
+            term_command = "AT+CBAND=\"%s\" \r\n" % band
             print "Setting GSM band with: %s" % term_command
             self.serconn.write(term_command)
-            self.serconn.flushInput()
-            self.serconn.flushOutput()
+            self.serconn.flush()
         else:
             print "Not setting band, unrecognized value: %s" % band
 
