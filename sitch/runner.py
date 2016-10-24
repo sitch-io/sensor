@@ -314,7 +314,6 @@ def output(config):
     while True:
         try:
             msg_bolus = message_write_queue.popleft()
-            print msg_bolus
             l.record_log_message(msg_bolus)
             del msg_bolus
         except IndexError:
