@@ -98,7 +98,6 @@ def main():
         active_threads = threading.enumerate()
         #  Heartbeat messages
         for item in active_threads:
-            print item.name
             scan_results_queue.append(sitchlib.Utility.heartbeat(item.name))
     return
 
