@@ -98,7 +98,7 @@ def main():
         active_threads = threading.enumerate()
         print "Active threads: "
         for item in active_threads:
-            print item
+            print item.name
         if kalibrate_consumer_thread.is_alive is True:
             scan_results_queue.append(sitchlib.Utility.heartbeat("kalibrate"))
             print "KALIBRATE IS ALIVE"
