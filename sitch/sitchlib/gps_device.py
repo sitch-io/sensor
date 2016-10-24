@@ -21,7 +21,7 @@ class GpsListener(object):
                                    "geometry": {
                                        "type": "Point",
                                        "coordinates": [
-                                           self.data_stream.TPV['lon'],
-                                           self.data_stream.TPV['lat']]}}
+                                           self.data_stream.TPV["lon"],
+                                           self.data_stream.TPV["lat"]]}}
                         yield copy.deepcopy(geojson)
                         time.sleep(self.delay)

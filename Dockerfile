@@ -57,10 +57,9 @@ RUN pip install virtualenv && \
     pip install python-geoip-geolite2 && \
     pip install pyudev && \
     pip install LatLon && \
+    pip install logstash_formatter && \
     git clone https://github.com/klynch/python-logstash-handler && \
     cd python-logstash-handler && \
-    git checkout c5574624c8cb4fdba14bef33303e8650eb2f3487 && \
     pip install .
 
-# CMD cd /app/sitch && . ./venv/bin/activate && /app/sitch/venv/bin/python ./runner.py
 CMD /app/sitch/venv/bin/python ./runner.py
