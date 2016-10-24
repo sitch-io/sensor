@@ -96,22 +96,10 @@ def main():
     while True:
         time.sleep(60)
         active_threads = threading.enumerate()
-        print "Active threads: "
+        #  Heartbeat messages
         for item in active_threads:
             print item.name
-        if kalibrate_consumer_thread.is_alive is True:
-            scan_results_queue.append(sitchlib.Utility.heartbeat("kalibrate"))
-            print "KALIBRATE IS ALIVE"
-        if gsm_modem_consumer_thread.is_alive is True:
-            scan_results_queue.append(sitchlib.Utility.heartbeat("gsm_modem"))
-        if gps_consumer_thread.is_alive is True:
-            scan_results_queue.append(sitchlib.Utility.heartbeat("gps"))
-        if geoip_consumer_thread.is_alive is True:
-            scan_results_queue.append(sitchlib.Utility.heartbeat("geoip"))
-        if enricher_thread.is_alive is True:
-            scan_results_queue.append(sitchlib.Utility.heartbeat("enricher"))
-        if writer_thread.is_alive is True:
-            scan_results_queue.append(sitchlib.Utility.heartbeat("writer"))
+            scan_results_queue.append(sitchlib.Utility.heartbeat(item.name))
     return
 
 

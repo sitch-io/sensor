@@ -114,5 +114,6 @@ class Utility:
     @classmethod
     def heartbeat(cls, service_name):
         scan = {"scan_program": "heartbeat",
-                "heartbeat_service_name": service_name}
+                "heartbeat_service_name": service_name,
+                "timestamp": Utility.get_now_string()}
         return scan
