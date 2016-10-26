@@ -1,7 +1,7 @@
 import json
 import logging
 from logstash_formatter import LogstashFormatter
-from logstash_handler import LogstashHandler
+from logstash_handler import TCPLogstashHandler
 import os
 from utility import Utility as utility
 
@@ -17,12 +17,12 @@ class LogHandler:
         self.logstash_cert_path = config.ls_cert_path
         self.logstash_key_path = config.ls_key_path
         self.ls_logger = logging.getLogger()
-        self.ls_handler = LogstashHandler(self.logstash_host,
-                                          self.logstash_port,
-                                          ssl_verify=False,
-                                          ca_certs=self.logstash_ca_path,
-                                          keyfile=self.logstash_key_path,
-                                          certfile=self.logstash_cert_path)
+        self.ls_handler = TCPLogstashHandler(self.logstash_host,
+                                             self.logstash_port,
+                                             ssl_verify=False,
+                                             ca_certs=self.logstash_ca_path,
+                                             keyfile=self.logstash_key_path,
+                                             certfile=self.logstash_cert_path)
         self.ls_formatter = LogstashFormatter()
         self.ls_handler.setFormatter(self.ls_formatter)
         self.ls_logger.addHandler(self.ls_handler)
@@ -84,5 +84,5 @@ class LogHandler:
         if type(message) is not dict:
             print "Wrong type for output message!"
         print message
-        self.ls_logger.info(message)
+        self.ls_logger.warn(message)
         return
