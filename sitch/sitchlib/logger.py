@@ -1,6 +1,6 @@
 import json
 import logging
-from logstash_formatter import LogstashFormatterV1
+from logstash_formatter import LogstashFormatter
 from logstash_handler import LogstashHandler
 import os
 from utility import Utility as utility
@@ -19,10 +19,11 @@ class LogHandler:
         self.ls_logger = logging.getLogger()
         self.ls_handler = LogstashHandler(self.logstash_host,
                                           self.logstash_port,
+                                          ssl_verify=False,
                                           ca_certs=self.logstash_ca_path,
                                           keyfile=self.logstash_key_path,
                                           certfile=self.logstash_cert_path)
-        self.ls_formatter = LogstashFormatterV1()
+        self.ls_formatter = LogstashFormatter()
         self.ls_handler.setFormatter(self.ls_formatter)
         self.ls_logger.addHandler(self.ls_handler)
         utility.create_path_if_nonexistent(self.log_prefix)
