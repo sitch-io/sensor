@@ -58,8 +58,8 @@ RUN pip install virtualenv && \
     pip install pyudev && \
     pip install LatLon && \
     pip install logstash_formatter && \
-    # git clone https://github.com/klynch/python-logstash-handler && \
-    # cd python-logstash-handler && \
+    git clone https://github.com/klynch/python-logstash-handler && \
+    cd python-logstash-handler && \
     git clone https://github.com/skwashd/python-logstash && \
     cd python-logstash && \
     pip install .
