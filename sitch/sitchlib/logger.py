@@ -18,10 +18,10 @@ class LogHandler:
         self.logstash_key_path = config.ls_key_path
         self.ls_logger = logging.getLogger()
         self.ls_handler = LogstashHandler(self.logstash_host,
-                                             self.logstash_port,
-                                             ca_certs=self.logstash_ca_path,
-                                             keyfile=self.logstash_key_path,
-                                             certfile=self.logstash_cert_path)
+                                          self.logstash_port,
+                                          ca_certs=self.logstash_ca_path,
+                                          keyfile=self.logstash_key_path,
+                                          certfile=self.logstash_cert_path)
         self.ls_formatter = LogstashFormatter()
         self.ls_handler.setFormatter(self.ls_formatter)
         self.ls_logger.addHandler(self.ls_handler)
