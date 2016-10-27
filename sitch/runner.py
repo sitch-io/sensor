@@ -35,6 +35,8 @@ def main():
                                 config.vault_secrets["crt"])
     sitchlib.Utility.write_file(config.ls_key_path,
                                 config.vault_secrets["key"])
+    sitchlib.Utility.write_file("/etc/ssl/certs/logstash-ca.pem",
+                                config.vault_secrets["ca"])
 
     # Write LS config
     sitchlib.Utility.write_file("/etc/logstash-forwarder",
