@@ -19,7 +19,7 @@ class LogHandler:
         self.ls_logger = logging.getLogger()
         self.ls_handler = LogstashHandler(self.logstash_host,
                                           int(self.logstash_port),
-                                          ca_certs="/etc/ssl/certs/",
+                                          ca_certs=self.logstash_ca_path,
                                           keyfile=self.logstash_key_path,
                                           certfile=self.logstash_cert_path)
         self.ls_formatter = LogstashFormatterV1()
