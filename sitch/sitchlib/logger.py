@@ -1,7 +1,7 @@
 import json
 import logging
 from logstash_formatter import LogstashFormatter
-from logstash_handler import TCPLogstashHandler
+from logstash_handler import LogstashHandler
 import os
 from utility import Utility as utility
 
@@ -17,7 +17,7 @@ class LogHandler:
         self.logstash_cert_path = config.ls_cert_path
         self.logstash_key_path = config.ls_key_path
         self.ls_logger = logging.getLogger()
-        self.ls_handler = TCPLogstashHandler(self.logstash_host,
+        self.ls_handler = LogstashHandler(self.logstash_host,
                                              self.logstash_port,
                                              ssl_verify=False,
                                              ca_certs=self.logstash_ca_path,
