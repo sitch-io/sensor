@@ -1,6 +1,6 @@
 import json
 import logging
-from logstash_formatter import LogstashFormatterV1
+from logstash_formatter import LogstashFormatter
 from logstash_handler import LogstashHandler
 import os
 from utility import Utility as utility
@@ -22,7 +22,7 @@ class LogHandler:
                                           ca_certs=self.logstash_ca_path,
                                           keyfile=self.logstash_key_path,
                                           certfile=self.logstash_cert_path)
-        self.ls_formatter = LogstashFormatterV1()
+        self.ls_formatter = LogstashFormatter()
         self.ls_handler.setFormatter(self.ls_formatter)
         self.ls_logger.addHandler(self.ls_handler)
         utility.create_path_if_nonexistent(self.log_prefix)
@@ -85,5 +85,5 @@ class LogHandler:
         if type(message) is not dict:
             print "Wrong type for output message!"
         print message
-        self.ls_logger.warn(json.dumps(message))
+        self.ls_logger.warn("SITCH Message", extra=message)
         return
