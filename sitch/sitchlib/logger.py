@@ -85,5 +85,5 @@ class LogHandler:
         if type(message) is not dict:
             print "Wrong type for output message!"
         print message
-        self.ls_logger.warn(message)
+        self.ls_logger.warn(json.dumps(message))
         return
