@@ -86,7 +86,7 @@ class ConfigHelper:
         fb["output.logstash"]["ssl.certificate"] = [self.ls_cert_path]
         fb["output.logstash"]["ssl.certificate_authorities"] = [self.ls_ca_path]
         with open(self.filebeat_config_file_path, 'w') as out_file:
-            yaml.dump(fb, out_file)
+            yaml.safe_dump(fb, out_file)
         return
 
     def build_logstash_config(self):
