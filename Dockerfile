@@ -32,6 +32,9 @@ RUN dpkg -i /app/packages/logstash-forwarder_0.4.0_armhf.deb
 # Place Kalibrate
 COPY binaries/kal /usr/local/bin/
 
+# Place Filebeat
+COPY binaries/filebeat-linux-arm /usr/local/bin
+
 # Get Kalibrate source for posterity
 ADD https://github.com/hainn8x/kalibrate-rtl/archive/master.zip /app/source
 
