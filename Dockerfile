@@ -56,6 +56,7 @@ RUN pip install virtualenv && \
     virtualenv --no-site-packages venv && \
     . ./venv/bin/activate && \
     pip install pyserial && \
+    pip install pyyaml && \
     pip install gps3 && \
     pip install hvac && \
     pip install kalibrate && \
