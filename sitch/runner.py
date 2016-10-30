@@ -42,6 +42,9 @@ def main():
     sitchlib.Utility.write_file("/etc/logstash-forwarder",
                                 config.build_logstash_config())
 
+    # Write FB config
+    config.write_filebeat_config()
+
     # Write logrotate config
     sitchlib.Utility.write_file("/etc/logrotate.d/sitch",
                                 config.build_logrotate_config())

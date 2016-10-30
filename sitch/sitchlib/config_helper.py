@@ -3,6 +3,7 @@ import json
 import os
 import pprint
 import sys
+import yaml
 from device_detector import DeviceDetector as dd
 from utility import Utility as utility
 
@@ -37,6 +38,8 @@ class ConfigHelper:
         self.state_list = ConfigHelper.get_list_from_env("STATE_LIST")
         self.vault_secrets = self.get_secret_from_vault()
         self.gps_drift_threshold = 1000
+        self.filebeat_template = self.get_filebeat_template()
+        self.filebeat_config_file_path = "/etc/filebeat.yml"
         return
 
     def print_devices_as_detected(self):
@@ -70,6 +73,21 @@ class ConfigHelper:
                          "\nnotifempty\n}")
         lr_config = "%s/*.log %s" % (self.log_prefix, lr_options)
         return lr_config
+
+    @classmethod
+    def get_filebeat_template(cls, filename="/etc/templates/filebeat.json"):
+        with open(filename, 'r') as template_file:
+            return json.load(template_file)
+
+    def write_filebeat_config(self):
+        fb = self.filebeat_template
+        fb["output.logstash"]["hosts"] = [self.log_host]
+        fb["output.logstash"]["ssl.key"] = [self.ls_key_path]
+        fb["output.logstash"]["ssl.certificate"] = [self.ls_cert_path]
+        fb["output.logstash"]["ssl.certificate_authorities"] = [self.ls_ca_path]
+        with open(self.filebeat_config_file_path, 'w') as out_file:
+            yaml.dump(fb, out_file)
+        return
 
     def build_logstash_config(self):
         ls_config = {"network": {"servers": ["servername:serverport"],

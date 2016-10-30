@@ -42,6 +42,10 @@ ADD https://github.com/hainn8x/kalibrate-rtl/archive/master.zip /app/source
 # Place the Logstash init script
 COPY init/logstash-forwarder /etc/init.d/
 
+# Place config templates
+RUN mkdir -p /etc/templates
+COPY configs/filebeat.json /etc/templates
+
 # Get the scripts in place
 COPY sitch/ /app/sitch
 
