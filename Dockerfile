@@ -26,21 +26,22 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y \
 
 
 # Install Logstash
-COPY packages/ /app/packages
-RUN dpkg -i /app/packages/logstash-forwarder_0.4.0_armhf.deb
+# COPY packages/ /app/packages
+# RUN dpkg -i /app/packages/logstash-forwarder_0.4.0_armhf.deb
 
 # Place Kalibrate
 COPY binaries/kal /usr/local/bin/
 
 # Place Filebeat
 COPY binaries/filebeat-linux-arm /usr/local/bin
+COPY https://raw.githubusercontent.com/elastic/beats/master/LICENSE /filebeat
 
 # Get Kalibrate source for posterity
 ADD https://github.com/hainn8x/kalibrate-rtl/archive/master.zip /app/source
 
 
 # Place the Logstash init script
-COPY init/logstash-forwarder /etc/init.d/
+# COPY init/logstash-forwarder /etc/init.d/
 
 # Place config templates
 RUN mkdir -p /etc/templates
@@ -64,14 +65,6 @@ RUN pip install virtualenv && \
     pip install python-geoip && \
     pip install python-geoip-geolite2 && \
     pip install pyudev && \
-    pip install LatLon && \
-    pip install logstash_formatter && \
-    git clone https://github.com/klynch/python-logstash-handler && \
-    cd python-logstash-handler && \
-    pip install . && \
-    cd .. && \
-    git clone https://github.com/skwashd/python-logstash && \
-    cd python-logstash && \
-    pip install .
+    pip install LatLon
 
 CMD /app/sitch/venv/bin/python ./runner.py
