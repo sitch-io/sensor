@@ -6,6 +6,7 @@ from datetime import datetime
 class FeedManager(object):
     def __init__(self, config):
         self.mcc_list = config.mcc_list
+        self.state_list = config.state_list
         self.feed_dir = config.feed_dir
         self.url_base = config.feed_url_base
         self.feed_cache = []
