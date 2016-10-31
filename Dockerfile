@@ -34,7 +34,7 @@ COPY binaries/kal /usr/local/bin/
 
 # Place Filebeat
 COPY binaries/filebeat-linux-arm /usr/local/bin
-COPY https://raw.githubusercontent.com/elastic/beats/master/LICENSE /filebeat
+ADD https://raw.githubusercontent.com/elastic/beats/master/LICENSE /filebeat-lic
 
 # Get Kalibrate source for posterity
 ADD https://github.com/hainn8x/kalibrate-rtl/archive/master.zip /app/source
