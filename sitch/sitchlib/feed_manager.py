@@ -50,7 +50,7 @@ class FeedManager(object):
         origin_url = FeedManager.get_source_url(url_base, state)
         print "Feed: Downloading %s to %s" % (origin_url, temp_file)
         response = requests.get(origin_url, stream=True)
-        with open(destination_file, 'wb') as out_file:
+        with open(temp_file, 'wb') as out_file:
             for chunk in response.iter_content(chunk_size=1024):
                 if chunk:
                     out_file.write(chunk)
