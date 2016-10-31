@@ -14,14 +14,14 @@ class FeedManager(object):
     def update_mcc_feeds(self):
         for mcc in self.mcc_list:
             print "Pulling down feed for MCC %s" % str(mcc)
-            FeedManager.update_feed_file(self.feed_dir, self.url_base, mcc)
+            FeedManager.update_mcc_feed_file(self.feed_dir, self.url_base, mcc)
         print "Finished pulling all MCC feed files"
         return
 
     def update_fcc_feed_files(self):
         for state in self.state_list:
             print "Pulling down feed for state: %s" % str(state)
-            FeedManager.update_feed_file(self.feed_dir, self.url_base, state)
+            FeedManager.update_fcc_feed_file(self.feed_dir, self.url_base, state)
         print "Finished pulling all state feed files"
         return
 
