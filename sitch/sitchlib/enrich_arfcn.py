@@ -15,8 +15,7 @@ class EnrichArfcn(object):
         self.geo_state = geo_state
         self.feed_dir = feed_dir
         self.fcc_feed = FccFeed(states, feed_dir)
-        self.permitted_arfcn = []
-        self.denied_arfcn = []
+        self.observed_arfcn = []
         return
 
     def compare_arfcn_to_feed(self, scan_document):
@@ -24,6 +23,8 @@ class EnrichArfcn(object):
         Bool represents if the commparison was good, false if it failed."""
         arfcn = scan_document["scan_results"][0]["arfcn"]
         results_set = [("scan", scan_document)]
+        if arfcn in self.observed_arfcn:
+            return results_set
         if self.geo_state["gps"] == {}:
             msg = "No gps state for comparison.  ARFCN: %s" % arfcn
             print msg
@@ -37,6 +38,7 @@ class EnrichArfcn(object):
         msg = "Unable to locate a license for ARFCN %s" % str(arfcn)
         alert = self.alerts.build_alert(400, msg)
         results_set.append(alert)
+        self.observed_arfcn.append(arfcn)
         return results_set
 
     @classmethod

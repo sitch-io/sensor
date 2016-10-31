@@ -18,6 +18,8 @@ class GsmModemEnricher(object):
         self.alerts = alert_manager.AlertManager()
         self.prior_bts = {}
         self.feed_cache = []
+        self.good_arfcns = []
+        self.bad_arfcns = []
         return
 
     def enrich_gsm_modem_scan(self, scan_document):
