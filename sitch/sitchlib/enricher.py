@@ -41,6 +41,8 @@ class Enricher:
         self.kal_enricher = KalScanEnricher(self.kal_threshold)
         self.arfcn_enricher = EnrichArfcn(geo_state, config.state_list,
                                           self.feed_dir)
+        self.feed_obj.update_mcc_feeds()
+        self.feed_obj.update_fcc_feed_files()
         return
 
     @classmethod
