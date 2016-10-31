@@ -21,8 +21,6 @@ class GsmModemEnricher(object):
         return
 
     def enrich_gsm_modem_scan(self, scan_document):
-        print "Enriching GSM scan:"
-        print scan_document
         chan = {}
         here = {}
         state = self.state
