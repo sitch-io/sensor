@@ -249,7 +249,7 @@ def enricher(config):
             elif doctype == 'HEARTBEAT':
                 outlist.append(("heartbeat", scandoc))
             elif doctype == 'GSM_MODEM':
-                outlist = enr.enrich_gsm_modem_scan(state, scandoc)
+                outlist = enr.enrich_gsm_modem_scan(scandoc, state)
             elif doctype == 'GPS':
                 """ Every time we get a GPS reading, we check to make sure
                 that it is close to the same distance from GeoIP as it was

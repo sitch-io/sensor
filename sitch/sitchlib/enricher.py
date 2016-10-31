@@ -51,13 +51,13 @@ class Enricher:
                 scan = json.loads(str)
             if scan["scan_program"] == 'Kalibrate':
                 scan_type = 'Kalibrate'
-            if scan["scan_program"] == 'GSM_MODEM':
+            elif scan["scan_program"] == 'GSM_MODEM':
                 scan_type = 'GSM_MODEM'
-            if scan["scan_program"] == 'gps':
+            elif scan["scan_program"] == 'gps':
                 scan_type = 'GPS'
-            if scan["scan_program"] == 'geo_ip':
+            elif scan["scan_program"] == 'geo_ip':
                 scan_type = 'GEOIP'
-            if scan["scan_program"] == 'heartbeat':
+            elif scan["scan_program"] == 'heartbeat':
                 scan_type = 'HEARTBEAT'
         except:
             print "Failure to determine scan type"
