@@ -313,7 +313,8 @@ def output(config):
     print "Output module instantiated."
     print "Starting Logstash forwarder..."
     time.sleep(5)
-    sitchlib.Utility.start_component("/etc/init.d/logstash-forwarder start")
+    # sitchlib.Utility.start_component("/etc/init.d/logstash-forwarder start")
+    sitchlib.Utility.start_component("/usr/local/bin/filebeat-linux-arm -c /etc/filebeat.yml")
     while True:
         try:
             msg_bolus = message_write_queue.popleft()
