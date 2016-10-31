@@ -1,5 +1,6 @@
 import os
 import requests
+import time
 from datetime import datetime
 
 
@@ -36,6 +37,8 @@ class FeedManager(object):
             for chunk in response.iter_content(chunk_size=1024):
                 if chunk:
                     out_file.write(chunk)
+        time.sleep(2)
+        print "Feed: Moving %s to %s" % (temp_file, destination_file)
         os.rename(temp_file, destination_file)
 
     @classmethod
@@ -49,6 +52,8 @@ class FeedManager(object):
             for chunk in response.iter_content(chunk_size=1024):
                 if chunk:
                     out_file.write(chunk)
+        time.sleep(2)
+        print "Feed: Moving %s to %s" % (temp_file, destination_file)
         os.rename(temp_file, destination_file)
 
     @classmethod
