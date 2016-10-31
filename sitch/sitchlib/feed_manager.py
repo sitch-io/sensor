@@ -32,6 +32,7 @@ class FeedManager(object):
         destination_file = FeedManager.construct_feed_file_name(feed_dir, mcc)
         temp_file = "%s.TEMP" % destination_file
         origin_url = FeedManager.get_source_url(url_base, mcc)
+        print "Feed: Downloading %s to %s" % (origin_url, temp_file)
         response = requests.get(origin_url, stream=True)
         with open(temp_file, 'wb') as out_file:
             for chunk in response.iter_content(chunk_size=1024):
@@ -47,6 +48,7 @@ class FeedManager(object):
                                                                 state)
         temp_file = "%s.TEMP" % destination_file
         origin_url = FeedManager.get_source_url(url_base, state)
+        print "Feed: Downloading %s to %s" % (origin_url, temp_file)
         response = requests.get(origin_url, stream=True)
         with open(destination_file, 'wb') as out_file:
             for chunk in response.iter_content(chunk_size=1024):
