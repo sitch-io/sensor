@@ -143,8 +143,6 @@ def gsm_modem_consumer(config):
         consumer.set_eng_mode()
         time.sleep(2)
         for report in consumer:
-            print "GSM REPORT:"
-            print report
             if report != {}:
                 if "cell" in report[0]:
                     retval = dict(scan_job_template)
