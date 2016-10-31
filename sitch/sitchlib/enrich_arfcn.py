@@ -28,6 +28,8 @@ class EnrichArfcn(object):
         if self.geo_state["gps"] == {}:
             msg = "No gps state for comparison.  ARFCN: %s" % arfcn
             print msg
+        msg = "Cache miss.  Attempt to get %s from feed files..." % str(arfcn)
+        print msg
         for item in self.fcc_feed:
             if str(item["ARFCN"]) != str(arfcn):
                 continue

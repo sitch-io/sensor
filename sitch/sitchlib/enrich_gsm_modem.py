@@ -123,7 +123,8 @@ class GsmModemEnricher(object):
                         x["lac"] == lac and
                         x["cellid"] == cellid):
                     return x
-            print "Cache miss!  Attempt to get from feed files..."
+            feed_string = "%s:%s:%s:%s" % (mcc, mnc, lac, cellid)
+            print "Cache miss!  Attempt to match %s from feed..." % feed_string
         normalized = self.get_feed_info_from_files(mcc, mnc, lac, cellid)
         self.feed_cache.append(normalized)
         return normalized
