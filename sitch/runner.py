@@ -242,6 +242,7 @@ def enricher(config):
     override_suppression = [110]
     print "Now starting enricher"
     enr = sitchlib.Enricher(config, state)
+    enr.update_feeds()
     while True:
         try:
             scandoc = scan_results_queue.popleft()
