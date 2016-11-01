@@ -11,6 +11,7 @@ import kalibrate
 import threading
 import time
 from collections import deque
+from socket import error as SocketError
 
 
 def main():
@@ -185,6 +186,8 @@ def gps_consumer(config):
                 scan_results_queue.append(gps_event.copy())
         except IndexError:
             time.sleep(3)
+        except SocketError as e:
+            print e
 
 
 def geoip_consumer(config):
