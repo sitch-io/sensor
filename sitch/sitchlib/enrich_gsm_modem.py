@@ -54,8 +54,8 @@ class GsmModemEnricher(object):
             channel = self.convert_float_targets(channel)
 
             """ Setting CGI """
-            cgi = "%s%s%s%s" % (channel["mcc"], channel["mnc"],
-                                channel["lac"], channel["cellid"])
+            cgi = "%s%s%s%s" % (str(channel["mcc"]), str(channel["mnc"]),
+                                str(channel["lac"]), str(channel["cellid"]))
             channel["cgi_str"] = cgi
             try:
                 channel["cgi_int"] = int(cgi)
