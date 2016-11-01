@@ -34,15 +34,6 @@ class GsmModemEnricher(object):
             channel["scan_finish"] = scan_document["scan_finish"]
             channel["site_name"] = scan_document["scan_location"]["name"]
             channel["scanner_public_ip"] = scan_document["scanner_public_ip"]
-            cgi = "%s%s%s%s" % (channel["mcc"], channel["mnc"],
-                                channel["lac"], channel["cellid"])
-            channel["cgi_str"] = cgi
-            try:
-                channel["cgi_int"] = int(cgi)
-            except:
-                print "Unable to convert CGI to int"
-                print cgi
-                channel["cgi_int"] = 0
             try:
                 channel["arfcn_int"] = int(channel["arfcn"])
             except:
@@ -61,6 +52,17 @@ class GsmModemEnricher(object):
             """ Now we bring the hex values to decimal..."""
             channel = self.convert_hex_targets(channel)
             channel = self.convert_float_targets(channel)
+
+            """ Setting CGI """
+            cgi = "%s%s%s%s" % (channel["mcc"], channel["mnc"],
+                                channel["lac"], channel["cellid"])
+            channel["cgi_str"] = cgi
+            try:
+                channel["cgi_int"] = int(cgi)
+            except:
+                print "Unable to convert CGI to int"
+                print cgi
+                channel["cgi_int"] = 0
 
             """ Here's the feed comparison part """
             if skip_feed_comparison is False:
