@@ -39,7 +39,7 @@ class KalScanEnricher(object):
                     except:
                         print "Unable to convert ARFCN to int"
                         print result["channel"]
-                        channel["arfcn_int"] = 0
+                        msg["arfcn_int"] = 0
                     chan_enriched = ('kal_channel', msg)
                     results_set.append(chan_enriched)
                 except Exception as e:
