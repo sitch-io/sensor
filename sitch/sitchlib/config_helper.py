@@ -82,8 +82,8 @@ class ConfigHelper:
     def write_filebeat_config(self):
         fb = self.filebeat_template
         fb["output.logstash"]["hosts"] = [self.log_host]
-        fb["output.logstash"]["ssl.key"] = [self.ls_key_path]
-        fb["output.logstash"]["ssl.certificate"] = [self.ls_cert_path]
+        fb["output.logstash"]["ssl.key"] = self.ls_key_path
+        fb["output.logstash"]["ssl.certificate"] = self.ls_cert_path
         fb["output.logstash"]["ssl.certificate_authorities"] = [self.ls_ca_path]
         with open(self.filebeat_config_file_path, 'w') as out_file:
             yaml.safe_dump(fb, out_file)
