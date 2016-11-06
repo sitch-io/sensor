@@ -72,19 +72,20 @@ class GsmModem(object):
         output = self.serconn.readline()
         print output
         self.serconn.flush()
-        return
+        return output
 
     def dump_config(self):
         self.serconn.write(self.config_dump)
         self.serconn.flush()
         time.sleep(2)
+        retval = []
         while True:
             output = self.serconn.readline()
             if output == '':
                 break
-            print output
+            retval.append(str(output))
         self.serconn.flush()
-        return
+        return retval
 
     def set_band(self, band):
         if band in ["EGSM_MODE", "PGSM_MODE", "DCS_MODE", "GSM850_MODE",

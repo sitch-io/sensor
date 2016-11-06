@@ -107,6 +107,11 @@ def main():
             scan_results_queue.append(sitchlib.Utility.heartbeat(item.name))
     return
 
+def init_event_injector(init_event):
+    "Pass a dict into this fn."
+    evt = [("sitch_init"), init_event]
+    message_write_queue.append(evt)
+
 
 def gsm_modem_consumer(config):
     scan_job_template = {"platform": config.platform_name,
@@ -122,10 +127,16 @@ def gsm_modem_consumer(config):
         band = config.gsm_modem_band
         if band == "nope":
             print "Disabling GSM Modem scanning..."
+            init_event_injector({"evt_cls": "gsm_consumer",
+                                 "evt_type": "config_state",
+                                 "evt_data": "GSM scanning disabled"})
             while True:
                 time.sleep(120)
         if tty_port is None:
             print "No GSM modem auto-detected or otherwise configured!"
+            init_event_injector({"evt_cls": "gsm_consumer",
+                                 "evt_type": "config_state",
+                                 "evt_data": "GSM scanning not configured"})
             while True:
                 time.sleep(120)
         # Sometimes the buffer is full and instantiation fails the first time
@@ -135,9 +146,15 @@ def gsm_modem_consumer(config):
             consumer = sitchlib.GsmModem(tty_port)
         time.sleep(2)
         print "Getting registration info..."
-        consumer.get_reg_info()
+        reg_info = consumer.get_reg_info()
+        init_event_injector({"evt_cls": "gsm_consumer",
+                             "evt_type": "registration",
+                             "evt_data": str(reg_info)})
         print "Dumping current GSM modem config..."
-        consumer.dump_config()
+        dev_config = consumer.dump_config()
+        init_event_injector({"evt_cls": "gsm_consumer",
+                             "evt_type": "device_config",
+                             "evt_data": " | ".join(dev_config)})
         time.sleep(2)
         consumer.set_band(band)
         time.sleep(2)
@@ -212,6 +229,9 @@ def kalibrate_consumer(config):
         band = config.kal_band
         if band == "nope":
             print "Disabling Kalibrate scanning..."
+            init_event_injector({"evt_cls": "kalibrate_consumer",
+                                 "evt_type": "config_state",
+                                 "evt_data": "Kalibrate scanning disabled"})
             while True:
                 time.sleep(120)
         gain = config.kal_gain
@@ -228,7 +248,6 @@ def kalibrate_consumer(config):
         scan_document["scan_location"]["name"] = str(config.device_id)
         scan_document["scanner_public_ip"] = config.public_ip
         scan_results_queue.append(scan_document.copy())
-        # print "Kalibrate results sent for enrichment..."
     return
 
 
@@ -302,14 +321,7 @@ def enricher(config):
                             print log_bolus
                 message_write_queue.append(log_bolus)
         except IndexError:
-            # print "Enricher queue empty"
             time.sleep(1)
-        # except KeyError as e:
-        #    print "Getting a key error!  Taking a dump!"
-        #    print e
-        #    print "outlist:"
-        #    print outlist
-
 
 def output(config):
     time.sleep(5)
