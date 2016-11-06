@@ -51,7 +51,7 @@ class LogHandler:
                         "gps": "gps.log",
                         "heartbeat": "heartbeat.log",
                         "sitch_alert": "sitch_alert.log",
-                        "init":"sitch_init.log"}
+                        "sitch_init":"sitch_init.log"}
         if ltype in type_to_file:
             log_file = type_to_file[ltype]
         else:
