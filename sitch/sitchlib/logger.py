@@ -33,24 +33,25 @@ class LogHandler:
     def get_log_file_name(cls, ltype):
         type_to_file = {"cell": "cells.log",  # sim808 scan doc
                         "scan": "scanner.log",  # kal scan doc
-                        "arfcn_power": "arfcn_power.log",  # kal
-                        "arfcn_prio": "radio_prio_arfcn.log",  # sim808
-                        "arfcn_rxl": "arfcn_rxl.log",  # sim808
-                        "arfcn_rxq": "arfcn_rxq.log",  # sim808
-                        "arfcn_mcc": "arfcn_mcc.log",  # sim808
-                        "arfcn_mnc": "arfcn_mnc.log",  # sim808
-                        "arfcn_bsic": "arfcn_bsic.log",  # sim808
-                        "arfcn_cellid": "arfcn_cellid.log",  # sim808
-                        "arfcn_rla": "arfcn_rla.log",  # sim808
-                        "arfcn_txp": "arfcn_txp.log",  # sim808
-                        "arfcn_lac": "arfcn_lac.log",  # sim808
-                        "arfcn_ta": "arfcn_ta.log",  # sim808
+                        "arfcn_power": "arfcn_power.log",  # kal ##
+                        "arfcn_prio": "radio_prio_arfcn.log",  # sim808 ##
+                        "arfcn_rxl": "arfcn_rxl.log",  # sim808 ##
+                        "arfcn_rxq": "arfcn_rxq.log",  # sim808 ##
+                        "arfcn_mcc": "arfcn_mcc.log",  # sim808 ##
+                        "arfcn_mnc": "arfcn_mnc.log",  # sim808 ##
+                        "arfcn_bsic": "arfcn_bsic.log",  # sim808 ##
+                        "arfcn_cellid": "arfcn_cellid.log",  # sim808 ##
+                        "arfcn_rla": "arfcn_rla.log",  # sim808 ##
+                        "arfcn_txp": "arfcn_txp.log",  # sim808 ##
+                        "arfcn_lac": "arfcn_lac.log",  # sim808 ##
+                        "arfcn_ta": "arfcn_ta.log",  # sim808 ##
                         "kal_channel": "kal_channel.log",  # cells from Kal
                         "gsm_modem_channel": "gsm_modem_channel.log",  # sim808 cells
                         "geoip": "geoip.log",
                         "gps": "gps.log",
                         "heartbeat": "heartbeat.log",
-                        "sitch_alert": "sitch_alert.log"}
+                        "sitch_alert": "sitch_alert.log",
+                        "init":"sitch_init.log"}
         if ltype in type_to_file:
             log_file = type_to_file[ltype]
         else:

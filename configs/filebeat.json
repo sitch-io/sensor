@@ -1,186 +1,82 @@
 {
     "output.logstash": {
-        "ssl.certificate_authorities": [], 
-        "hosts": [], 
-        "ssl.verification_mode": "full", 
-        "ssl.key": "", 
-        "ssl.enabled": true, 
-        "enabled": true, 
+        "ssl.certificate_authorities": [],
+        "hosts": [],
+        "ssl.verification_mode": "full",
+        "ssl.key": "",
+        "ssl.enabled": true,
+        "enabled": true,
         "ssl.certificate": ""
-    }, 
+    },
     "filebeat.prospectors": [
         {
-            "input_type": "log", 
-            "document_type": "cells", 
-            "keys_under_root": true, 
+            "input_type": "log",
+            "document_type": "cells",
+            "keys_under_root": true,
             "paths": [
                 "/var/log/sitch/cells.log"
             ]
-        }, 
+        },
         {
-            "input_type": "log", 
-            "document_type": "scan", 
-            "keys_under_root": true, 
+            "input_type": "log",
+            "document_type": "scan",
+            "keys_under_root": true,
             "paths": [
                 "/var/log/sitch/scanner.log"
             ]
-        }, 
+        },
         {
-            "input_type": "log", 
-            "document_type": "kalibrate", 
-            "keys_under_root": true, 
-            "paths": [
-                "/var/log/sitch/kalibrate.log"
-            ]
-        }, 
-        {
-            "input_type": "log", 
-            "document_type": "channel", 
-            "keys_under_root": true, 
-            "paths": [
-                "/var/log/sitch/channel.log"
-            ]
-        }, 
-        {
-            "input_type": "log", 
-            "document_type": "gsm_modem_channel", 
-            "keys_under_root": true, 
+            "input_type": "log",
+            "document_type": "gsm_modem_channel",
+            "keys_under_root": true,
             "paths": [
                 "/var/log/sitch/gsm_modem_channel.log"
             ]
-        }, 
+        },
         {
-            "input_type": "log", 
-            "document_type": "kal_channel", 
-            "keys_under_root": true, 
+            "input_type": "log",
+            "document_type": "kal_channel",
+            "keys_under_root": true,
             "paths": [
                 "/var/log/sitch/kal_channel.log"
             ]
-        }, 
+        },
         {
-            "input_type": "log", 
-            "document_type": "arfcn_power", 
-            "keys_under_root": true, 
-            "paths": [
-                "/var/log/sitch/arfcn_power.log"
-            ]
-        }, 
-        {
-            "input_type": "log", 
-            "document_type": "radio_prio_arfcn", 
-            "keys_under_root": true, 
-            "paths": [
-                "/var/log/sitch/radio_prio_arfcn.log"
-            ]
-        }, 
-        {
-            "input_type": "log", 
-            "document_type": "arfcn_signal_strength", 
-            "keys_under_root": true, 
-            "paths": [
-                "/var/log/sitch/arfcn_rxl.log"
-            ]
-        }, 
-        {
-            "input_type": "log", 
-            "document_type": "arfcn_signal_quality", 
-            "keys_under_root": true, 
-            "paths": [
-                "/var/log/sitch/arfcn_rxq.log"
-            ]
-        }, 
-        {
-            "input_type": "log", 
-            "document_type": "afcn_mcc", 
-            "keys_under_root": true, 
-            "paths": [
-                "/var/log/sitch/arfcn_mcc.log"
-            ]
-        }, 
-        {
-            "input_type": "log", 
-            "document_type": "arfcn_mnc", 
-            "keys_under_root": true, 
-            "paths": [
-                "/var/log/sitch/arfcn_mnc.log"
-            ]
-        }, 
-        {
-            "input_type": "log", 
-            "document_type": "arfcn_bsic", 
-            "keys_under_root": true, 
-            "paths": [
-                "/var/log/sitch/arfcn_bsic.log"
-            ]
-        }, 
-        {
-            "input_type": "log", 
-            "document_type": "arfcn_cellid", 
-            "keys_under_root": true, 
-            "paths": [
-                "/var/log/sitch/arfcn_cellid.log"
-            ]
-        }, 
-        {
-            "input_type": "log", 
-            "document_type": "arfcn_rcv_level_access_minimum", 
-            "keys_under_root": true, 
-            "paths": [
-                "/var/log/sitch/arfcn_rla.log"
-            ]
-        }, 
-        {
-            "input_type": "log", 
-            "document_type": "arfcn_tx_power_maximum", 
-            "keys_under_root": true, 
-            "paths": [
-                "/var/log/sitch/arfcn_txp.log"
-            ]
-        }, 
-        {
-            "input_type": "log", 
-            "document_type": "arfcn_location_area_code", 
-            "keys_under_root": true, 
-            "paths": [
-                "/var/log/sitch/arfcn_lac.log"
-            ]
-        }, 
-        {
-            "input_type": "log", 
-            "document_type": "arfcn_timing_advance", 
-            "keys_under_root": true, 
-            "paths": [
-                "/var/log/sitch/arfcn_ta.log"
-            ]
-        }, 
-        {
-            "input_type": "log", 
-            "document_type": "geoip", 
-            "keys_under_root": true, 
+            "input_type": "log",
+            "document_type": "geoip",
+            "keys_under_root": true,
             "paths": [
                 "/var/log/sitch/geoip.log"
             ]
-        }, 
+        },
         {
-            "input_type": "log", 
-            "document_type": "gpsd", 
-            "keys_under_root": true, 
+            "input_type": "log",
+            "document_type": "gpsd",
+            "keys_under_root": true,
             "paths": [
                 "/var/log/sitch/gps.log"
             ]
-        }, 
+        },
         {
-            "input_type": "log", 
-            "document_type": "heartbeat", 
-            "keys_under_root": true, 
+            "input_type": "log",
+            "document_type": "heartbeat",
+            "keys_under_root": true,
             "paths": [
                 "/var/log/sitch/heartbeat.log"
             ]
-        }, 
+        },
         {
-            "input_type": "log", 
-            "document_type": "sitch_alert", 
-            "keys_under_root": true, 
+            "input_type": "log",
+            "document_type": "sitch_init",
+            "keys_under_root": true,
+            "paths": [
+                "/var/log/sitch/sitch_init.log"
+            ]
+        },
+        {
+            "input_type": "log",
+            "document_type": "sitch_alert",
+            "keys_under_root": true,
             "paths": [
                 "/var/log/sitch/sitch_alert.log"
             ]
