@@ -123,8 +123,8 @@ class GsmModemEnricher(object):
                 elif self.prior_bts != current_bts:
                     message = ("Primary BTS was %s " +
                                "now %s. Site: %s") % (
-                                   self.make_bts_frienldy(self.prior_bts),
-                                   self.make_bts_frienldy(current_bts),
+                                   self.make_bts_friendly(self.prior_bts),
+                                   self.make_bts_friendly(current_bts),
                                    channel["site_name"])
                     alert = self.alerts.build_alert(110, message)
                     results_set.append(alert)
