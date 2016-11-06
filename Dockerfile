@@ -67,4 +67,4 @@ RUN pip install virtualenv && \
     pip install pyudev && \
     pip install LatLon
 
-CMD /app/sitch/venv/bin/python ./runner.py
+CMD /app/sitch/venv/bin/python ./runner.py 2>&1
