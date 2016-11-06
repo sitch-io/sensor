@@ -123,13 +123,21 @@ class GsmModemEnricher(object):
                 elif self.prior_bts != current_bts:
                     message = ("Primary BTS was %s " +
                                "now %s. Site: %s") % (
-                                   json.dumps(self.prior_bts),
-                                   json.dumps(current_bts),
+                                   self.make_bts_frienldy(self.prior_bts),
+                                   self.make_bts_frienldy(current_bts),
                                    channel["site_name"])
                     alert = self.alerts.build_alert(110, message)
                     results_set.append(alert)
                     self.prior_bts = dict(current_bts)
         return results_set
+
+    def make_bts_friendly(self, bts_struct):
+        """ Expecting a dict with keys for mcc, mnc, lac, cellid"""
+        retval = "%s:%s:%s:%s" % (str(bts_struct["mcc"]),
+                                  str(bts_struct["mnc"]),
+                                  str(bts_struct["lac"]),
+                                  str(bts_struct["cellid"]))
+        return retval
 
     def get_feed_info(self, mcc, mnc, lac, cellid):
         if self.feed_cache != []:
