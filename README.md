@@ -49,6 +49,13 @@ Testing is done with pytest.  Coverage module optional.
 1. Set the environment variable to reach your SITCH feed: `export SITCH_FEED_BASE=https://MY.FEED.URL/base`
 1. Run `py.test --cov sitchlib` .
 
+## GSM modem device detection
+If you're using a GSM modem that's not recognized by the device detector, please
+add the output from running the `ATI` command against your GSM modem in the
+variable named `positive_match` in the `is_a_gsm_modem()` method, in the
+`sensor/sitch/sitchlib/device_detector.py` file.  Then send a pull request so
+that everyone can get the benefit of your discovery.
+
 ## Contributing
 * Please do PRs against the `test` branch.
 * To add an ID string to the device detector for GSM modems, add part of the ID string to the ```positive_match``` variable in the ```DeviceDetector.is_a_gsm_modem()``` function
