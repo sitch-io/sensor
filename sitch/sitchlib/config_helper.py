@@ -89,64 +89,6 @@ class ConfigHelper:
             yaml.safe_dump(fb, out_file)
         return
 
-    def build_logstash_config(self):
-        ls_config = {"network": {"servers": ["servername:serverport"],
-                                 "ssl ca": self.ls_ca_path,
-                                 "ssl certificate": self.ls_cert_path,
-                                 "ssl key": self.ls_key_path},
-                     "files": [{"paths": ["/var/log/cells.log"],
-                                "fields": {"type": "syslog"}},
-                               {"paths": ["/var/log/scanner.log"],
-                                "fields": {"type": "scan"}},
-                               {"paths": ["/var/log/kalibrate.log"],
-                                "fields": {"type": "kalibrate"}},
-                               {"paths": ["/var/log/channel.log"],
-                                "fields": {"type": "channel"}},
-                               {"paths": ["/var/log/gsm_modem_channel.log"],
-                                "fields": {"type": "gsm_modem_channel"}},
-                               {"paths": ["/var/log/kal_channel.log"],
-                                "fields": {"type": "kal_channel"}},
-                               {"paths": ["/var/log/arfcn_power.log"],
-                                "fields": {"type": "arfcn_power"}},
-                               {"paths": ["/var/log/radio_prio_arfcn.log"],
-                                "fields": {"type": "radio_prio_arfcn"}},
-                               {"paths": ["/var/log/arfcn_rxl.log"],
-                                "fields": {"type": "arfcn_signal_strength"}},
-                               {"paths": ["/var/log/arfcn_rxq.log"],
-                                "fields": {"type": "arfcn_signal_quality"}},
-                               {"paths": ["/var/log/arfcn_mcc.log"],
-                                "fields": {"type": "arfcn_mcc"}},
-                               {"paths": ["/var/log/arfcn_mnc.log"],
-                                "fields": {"type": "arfcn_mnc"}},
-                               {"paths": ["/var/log/arfcn_bsic.log"],
-                                "fields": {"type": "arfcn_bsic"}},
-                               {"paths": ["/var/log/arfcn_cellid.log"],
-                                "fields": {"type": "arfcn_cellid"}},
-                               {"paths": ["/var/log/arfcn_rla.log"],
-                                "fields": {"type":
-                                           "arfcn_rcv_level_access_minimum"}},
-                               {"paths": ["/var/log/arfcn_txp.log"],
-                                "fields": {"type": "arfcn_tx_power_maximum"}},
-                               {"paths": ["/var/log/arfcn_lac.log"],
-                                "fields": {"type":
-                                           "arfcn_location_area_code"}},
-                               {"paths": ["/var/log/arfcn_ta.log"],
-                                "fields": {"type": "arfcn_timing_advance"}},
-                               {"paths": ["/var/log/geoip.log"],
-                                "fields": {"type": "geoip"}},
-                               {"paths": ["/var/log/gps.log"],
-                                "fields": {"type": "gpsd"}},
-                               {"paths": ["/var/log/heartbeat.log"],
-                                "fields": {"type": "heartbeat"}},
-                               {"paths": ["/var/log/sitch_alert.log"],
-                                "fields": {"type": "sitch_alert"}}]}
-        log_host = self.log_host
-        log_prefix = self.log_prefix
-        ls_config["network"]["servers"][0] = log_host
-        # ls_config["network"]["ssl ca"] = cert_file_loc
-        for f in ls_config["files"]:
-            f["paths"][0] = f["paths"][0].replace('/var/log', log_prefix)
-        return json.dumps(ls_config)
 
     @classmethod
     def get_device_id(cls):

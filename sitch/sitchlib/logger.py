@@ -1,7 +1,4 @@
 import json
-# import logging
-# from logstash_formatter import LogstashFormatter
-# from logstash_handler import LogstashHandler
 import os
 from utility import Utility as utility
 
@@ -16,18 +13,7 @@ class LogHandler:
         self.logstash_ca_path = config.ls_ca_path
         self.logstash_cert_path = config.ls_cert_path
         self.logstash_key_path = config.ls_key_path
-#        self.ls_logger = logging.getLogger()
-#        self.ls_handler = LogstashHandler(self.logstash_host,
-#                                          int(self.logstash_port),
-#                                          ca_certs=self.logstash_ca_path,
-#                                          keyfile=self.logstash_key_path,
-#                                          certfile=self.logstash_cert_path)
-#        self.ls_formatter = LogstashFormatter()
-#        self.ls_handler.setFormatter(self.ls_formatter)
-#        self.ls_logger.addHandler(self.ls_handler)
         utility.create_path_if_nonexistent(self.log_prefix)
-#        print "Initialized Logstash host %s and port %s" % (self.logstash_host,
-#                                                            self.logstash_port)
 
     @classmethod
     def get_log_file_name(cls, ltype):
@@ -60,18 +46,12 @@ class LogHandler:
         return log_file
 
     def record_log_message(self, bolus):
-        # msg_type = bolus[0]
         msg_body = bolus[1]
         if type(msg_body) == dict:
             msg_string = json.dumps(msg_body)
-#            msg_json = msg_body
         elif type(msg_body) is str:
             msg_string = msg_body
-#            msg_json = json.loads(msg_body)
-#        if self.log_method == 'local_file':
         self.write_log_message(bolus[0], msg_string)
-#        elif self.log_method == 'direct':
-#            self.transmit_log_message(msg_json)
 
     def write_log_message(self, log_file_type, message):
         """You should only ever send a string to this method"""
@@ -80,11 +60,3 @@ class LogHandler:
         with open(log_file, 'a') as lf:
             lf.write(str(str(message) + '\n'))
         return
-
-#    def transmit_log_message(self, message):
-#        """You should only ever send a dict to this method"""
-#        if type(message) is not dict:
-#            print "Wrong type for output message!"
-#        print message
-#        self.ls_logger.warn("SITCH Messages", extra=message)
-#        return

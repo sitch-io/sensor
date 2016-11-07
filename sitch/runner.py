@@ -1,4 +1,4 @@
-""" Starts gpsd and logstash and runs a thread for collecting and enriching
+""" Starts gpsd and filebeat and runs a thread for collecting and enriching
 SIM808 engineering mode data.
   One thread for serial interaction and collection
   One thread for enrichment and appending to logfile:
@@ -28,7 +28,7 @@ def main():
             time.sleep(30)
             print "Mode is clutch.  Ain't doin' nothin'"
 
-    print "Writing Logstash key material..."
+    print "Writing Filebeat key material..."
     sitchlib.Utility.create_path_if_nonexistent(config.ls_crypto_base_path)
     sitchlib.Utility.write_file(config.ls_ca_path,
                                 config.vault_secrets["ca"])
@@ -38,10 +38,6 @@ def main():
                                 config.vault_secrets["key"])
     sitchlib.Utility.write_file("/etc/ssl/certs/logstash-ca.pem",
                                 config.vault_secrets["ca"])
-
-    # Write LS config
-    sitchlib.Utility.write_file("/etc/logstash-forwarder",
-                                config.build_logstash_config())
 
     # Write FB config
     config.write_filebeat_config()
@@ -171,7 +167,6 @@ def gsm_modem_consumer(config):
                     retval["band"] = config.gsm_modem_band
                     retval["scanner_public_ip"] = config.public_ip
                     scan_results_queue.append(retval.copy())
-                    # print "SIM808 results sent for enrichment..."
                 elif "lon" in report[0]:
                     retval = dict(scan_job_template)
                     retval["scan_results"] = report
@@ -311,14 +306,12 @@ def enricher(config):
                 if log_bolus[0] == 'sitch_alert':
                     if log_bolus[1]["id"] in override_suppression:
                         message_write_queue.append(log_bolus)
-                        print log_bolus
                         continue
                     else:
                         if log_bolus[1]["details"] in enr.suppressed_alerts:
                             continue
                         else:
                             enr.suppressed_alerts[log_bolus[1]["details"]] = datetime.datetime.now()  # NOQA
-                            print log_bolus
                 message_write_queue.append(log_bolus)
         except IndexError:
             time.sleep(1)
@@ -327,9 +320,8 @@ def output(config):
     time.sleep(5)
     l = sitchlib.LogHandler(config)
     print "Output module instantiated."
-    print "Starting Logstash forwarder..."
+    print "Starting Filebeat..."
     time.sleep(5)
-    # sitchlib.Utility.start_component("/etc/init.d/logstash-forwarder start")
     sitchlib.Utility.start_component("/usr/local/bin/filebeat-linux-arm -c /etc/filebeat.yml")
     while True:
         try:
@@ -337,7 +329,6 @@ def output(config):
             l.record_log_message(msg_bolus)
             del msg_bolus
         except IndexError:
-            # print "Output queue empty"
             time.sleep(3)
         except Exception as e:
             print "Exception caught while processing message for output:"
