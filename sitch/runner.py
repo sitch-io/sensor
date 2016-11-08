@@ -230,7 +230,7 @@ def kalibrate_consumer(config):
             while True:
                 time.sleep(120)
         gain = config.kal_gain
-        kal_scanner = kalibrate.Kal("/usr/local/bin/kal")
+        kal_scanner = kalibrate.Kal("/usr/local/bin/kal-linux-arm")
         start_time = sitchlib.Utility.get_now_string()
         kal_results = kal_scanner.scan_band(band, gain=gain)
         end_time = sitchlib.Utility.get_now_string()

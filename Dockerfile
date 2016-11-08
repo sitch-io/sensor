@@ -24,13 +24,8 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y \
     apt-get -y autoclean && \
     apt-get -y autoremove
 
-
-# Install Logstash
-# COPY packages/ /app/packages
-# RUN dpkg -i /app/packages/logstash-forwarder_0.4.0_armhf.deb
-
 # Place Kalibrate
-COPY binaries/kal /usr/local/bin/
+COPY binaries/kal-linux-arm /usr/local/bin/
 
 # Place Filebeat
 COPY binaries/filebeat-linux-arm /usr/local/bin
