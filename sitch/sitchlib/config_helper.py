@@ -44,9 +44,9 @@ class ConfigHelper:
 
     def print_devices_as_detected(self):
         pp = pprint.PrettyPrinter()
-        print "\nDetected GSM modems:"
+        print "\nConfigurator: Detected GSM modems:"
         pp.pprint(self.detector.gsm_radios)
-        print "Detected GPS devices:"
+        print "Configurator: Detected GPS devices:"
         pp.pprint(self.detector.gps_devices)
         return
 
@@ -98,18 +98,18 @@ class ConfigHelper:
         for x in [resin, override]:
             if x != '':
                 device_id = x
-                print "Detected device_id: %s" % x
+                print "Configurator: Detected device_id: %s" % x
         return device_id
 
     def get_secret_from_vault(self):
         client = hvac.Client(url=self.vault_url, token=self.vault_token)
-        print "Get secrets from %s, with path %s" % (self.vault_url,
-                                                     self.vault_path)
+        print "Configurator: Get secrets from %s, with path %s" % (self.vault_url,
+                                                                   self.vault_path)
         try:
             response = client.read(self.vault_path)
             secrets = response["data"]
         except Exception as e:
-            print "Error in getting secret from vault!"
+            print "Configurator: Error in getting secret from vault!"
             print e
             secrets = "NONE"
         return secrets
@@ -118,8 +118,8 @@ class ConfigHelper:
     def get_from_env(cls, k):
         retval = os.getenv(k)
         if retval is None:
-            print "Required config variable not set: %s" % k
-            print "Unable to continue.  Exiting."
+            print "Configurator: Required config variable not set: %s" % k
+            print "Configurator: Unable to continue.  Exiting."
             sys.exit(2)
         return retval
 
@@ -127,7 +127,7 @@ class ConfigHelper:
     def get_list_from_env(cls, k):
         retval = os.getenv(k).split(',')
         if retval is None:
-            print "Required config variable not set: %s" % k
-            print "Unable to continue.  Exiting."
+            print "Configurator: Required config variable not set: %s" % k
+            print "Configurator: Unable to continue.  Exiting."
             sys.exit(2)
         return retval

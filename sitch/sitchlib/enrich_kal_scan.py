@@ -17,7 +17,7 @@ class KalScanEnricher(object):
         kal_threshold = float(self.kal_threshold)
         # platform_name = scan_document["scanner_name"]
         if scan_document["scan_results"] == []:
-            print "No results found in scan document..."
+            print "EnrichKal: No results found in scan document..."
             return results_set
         else:
             for result in scan_document["scan_results"]:
@@ -37,13 +37,13 @@ class KalScanEnricher(object):
                     try:
                         msg["arfcn_int"] = int(result["channel"])
                     except:
-                        print "Unable to convert ARFCN to int"
+                        print "EnrichKal: Unable to convert ARFCN to int"
                         print result["channel"]
                         msg["arfcn_int"] = 0
                     chan_enriched = ('kal_channel', msg)
                     results_set.append(chan_enriched)
                 except Exception as e:
-                    print "Failed to enrich Kalibrate message."
+                    print "EnrichKal: Failed to enrich Kalibrate message."
                     print e
                     print msg
                     # Now we look at alerting...
@@ -55,8 +55,7 @@ class KalScanEnricher(object):
                         alert = self.alerts.build_alert(200, message)
                         results_set.append(alert)
                 except Exception as e:
-                    print "Failed to fire alert!"
+                    print "EnrichKal: Failed to fire alert!"
                     print e
                     print msg
-
         return results_set

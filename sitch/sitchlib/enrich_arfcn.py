@@ -26,9 +26,9 @@ class EnrichArfcn(object):
         if arfcn in self.observed_arfcn:
             return results_set
         if self.geo_state["gps"] == {}:
-            msg = "No gps state for comparison.  ARFCN: %s" % arfcn
+            msg = "EnrichARFCN: No gps state for comparison.  ARFCN: %s" % arfcn
             print msg
-        msg = "Cache miss.  Attempt to get %s from feed files..." % str(arfcn)
+        msg = "EnrichARFCN: Cache miss.  Attempt to get %s from feed files..." % str(arfcn)
         print msg
         for item in self.fcc_feed:
             if str(item["ARFCN"]) != str(arfcn):
@@ -69,6 +69,6 @@ class EnrichArfcn(object):
             latlon["lat"] = ll.to_string('D%')[0]
             latlon["lon"] = ll.to_string('D%')[1]
         except:
-            print "Unable to compose lat/lon from:"
+            print "EnrichARFCN: Unable to compose lat/lon from:"
             print item
         return latlon

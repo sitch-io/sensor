@@ -17,17 +17,17 @@ class GsmModem(object):
         self.echo_off = 'ATE0 \r\n'
         self.reg_info = 'AT+COPS? \r\n'
         self.config_dump = 'ATV1Q0&V \r\n'
-        print "opening serial port: %s" % ser_port
+        print "GSM: opening serial port: %s" % ser_port
         time.sleep(10)
         self.serconn = serial.Serial(ser_port, 4800, timeout=1)
         ser_open_iter = 0
         while not self.serconn.is_open:
-            print "Attempting to open %s again..." % ser_port
+            print "GSM: Attempting to open %s again..." % ser_port
             time.sleep(1)
             ser_open_iter = ser_open_iter + 1
             self.serconn.open()
             if ser_open_iter > 5:
-                print "Failed to init and open serial port %s!" % ser_port
+                print "GSM: Failed to init and open serial port %s!" % ser_port
                 sys.exit(2)
         return
 
@@ -92,7 +92,7 @@ class GsmModem(object):
                     "PCS_MODE", "EGSM_DCS_MODE", "GSM850_PCS_MODE",
                     "EGSM_PCS_MODE", "ALL_BAND"]:
             term_command = "AT+CBAND=\"%s\" \r\n" % band
-            print "Setting GSM band with: %s" % term_command
+            print "GSM: Setting GSM band with: %s" % term_command
             self.serconn.write(term_command)
             self.serconn.flush()
             time.sleep(2)
@@ -100,7 +100,7 @@ class GsmModem(object):
             print output
             self.serconn.flush()
         else:
-            print "Not setting band, unrecognized value: %s" % band
+            print "GSM: Not setting band, unrecognized value: %s" % band
 
     @classmethod
     def process_line(cls, line):
@@ -115,7 +115,7 @@ class GsmModem(object):
             elif len(line_parts) == 8:
                 processed = GsmModem.process_8(line_parts)
             else:
-                print "Unrecognized GSM message format:"
+                print "GSM: Unrecognized GSM message format:"
                 print line_parts
         elif line.startswith('AT+'):
             processed = {}
@@ -124,7 +124,7 @@ class GsmModem(object):
         elif re.match('^OK\s*$', line):
             processed = {}
         else:
-            print "Unprocessable line from SIM808!"
+            print "GSM: Unprocessable line from SIM808!"
             print line
             processed = {}
         return processed

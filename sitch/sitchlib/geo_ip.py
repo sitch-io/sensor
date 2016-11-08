@@ -37,5 +37,5 @@ class GeoIp(object):
                                lat_lon[0]]}}
             return
         except:
-            print "Unable to set geo by IP: %s" % self.ip
+            print "GeoIP: Unable to set geo by IP: %s" % self.ip
             return None

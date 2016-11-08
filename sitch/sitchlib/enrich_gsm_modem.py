@@ -37,7 +37,7 @@ class GsmModemEnricher(object):
             try:
                 channel["arfcn_int"] = int(channel["arfcn"])
             except:
-                print "Unable to convert ARFCN to int"
+                print "EnrichGSM: Unable to convert ARFCN to int"
                 print channel["arfcn"]
                 channel["arfcn_int"] = 0
             """ In the event we have incomplete information, we need to bypass
@@ -60,7 +60,7 @@ class GsmModemEnricher(object):
             try:
                 channel["cgi_int"] = int(cgi)
             except:
-                print "Unable to convert CGI to int"
+                print "EnrichGSM: Unable to convert CGI to int"
                 print cgi
                 channel["cgi_int"] = 0
 
@@ -76,7 +76,7 @@ class GsmModemEnricher(object):
                     here["lat"] = state["gps"]["geometry"]["coordinates"][0]
                     here["lon"] = state["gps"]["geometry"]["coordinates"][1]
                 except TypeError:
-                    print "Incomplete geo info..."
+                    print "EnrichGSM: Incomplete geo info..."
                     chan["lat"] = None
                     chan["lon"] = None
                     here["lat"] = None
@@ -148,7 +148,7 @@ class GsmModemEnricher(object):
                         x["cellid"] == cellid):
                     return x
             feed_string = "%s:%s:%s:%s" % (mcc, mnc, lac, cellid)
-            print "Cache miss!  Attempt to match %s from feed..." % feed_string
+            print "EnrichGSM: Cache miss!  Attempt to match %s from feed..." % feed_string
         normalized = self.get_feed_info_from_files(mcc, mnc, lac, cellid)
         self.feed_cache.append(normalized)
         return normalized

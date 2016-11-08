@@ -41,7 +41,7 @@ class LogHandler:
         if ltype in type_to_file:
             log_file = type_to_file[ltype]
         else:
-            print "Unable to determine log file for type %s" % ltype
+            print "Logger: Unable to determine log file for type %s" % ltype
             log_file = None
         return log_file
 

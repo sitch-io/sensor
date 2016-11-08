@@ -15,16 +15,16 @@ class FeedManager(object):
 
     def update_mcc_feeds(self):
         for mcc in self.mcc_list:
-            print "Pulling down feed for MCC %s" % str(mcc)
+            print "Feed: Pulling down feed for MCC %s" % str(mcc)
             FeedManager.update_mcc_feed_file(self.feed_dir, self.url_base, mcc)
-        print "Finished pulling all MCC feed files"
+        print "Feed: Finished pulling all MCC feed files"
         return
 
     def update_fcc_feed_files(self):
         for state in self.state_list:
-            print "Pulling down feed for state: %s" % str(state)
+            print "Feed: Pulling down feed for state: %s" % str(state)
             FeedManager.update_fcc_feed_file(self.feed_dir, self.url_base, state)
-        print "Finished pulling all state feed files"
+        print "Feed: Finished pulling all state feed files"
         return
 
     @classmethod
@@ -68,52 +68,3 @@ class FeedManager(object):
     def get_source_url(cls, url_base, mcc):
         src_url = "%s/%s.csv.gz" % (url_base, mcc)
         return src_url
-
-"""
-    def get_feed_info_for_tower(self, mcc, mnc, lac, cellid):
-        if self.feed_cache != []:
-            for x in self.feed_cache:
-                if (x["mcc"] == mcc and
-                        x["mnc"] == mnc and
-                        x["lac"] == lac and
-                        x["cellid"] == cellid):
-                    return x
-            print "Cache miss!  Attempt to get from feed files..."
-        normalized = self.get_feed_info_from_files(mcc, mnc, lac, cellid)
-        self.feed_cache.append(normalized)
-        return normalized
-
-
-    @classmethod
-    def normalize_feed_info_for_cache(cls, feed_item):
-        cache_item = {}
-        cache_item["mcc"] = feed_item["mcc"]
-        cache_item["mnc"] = feed_item["net"]
-        cache_item["lac"] = feed_item["area"]
-        cache_item["cellid"] = feed_item["cell"]
-        cache_item["lon"] = feed_item["lon"]
-        cache_item["lat"] = feed_item["lat"]
-        cache_item["range"] = feed_item["range"]
-        return cache_item
-"""
-"""
-    def get_feed_info_from_files(self, mcc, mnc, lac, cellid):
-        # Field names get changed when loaded into the cache, to
-        # match field IDs used elsewhere.
-        feed_file = FeedManager.construct_feed_file_name(self.feed_dir, mcc)
-        with gzip.open(feed_file, 'r') as feed_data:
-            consumer = csv.DictReader(feed_data)
-            for cell in consumer:
-                if (cell["mcc"] == mcc and
-                        cell["net"] == mnc and
-                        cell["area"] == lac and
-                        cell["cell"] == cellid):
-                    normalzed = FeedManager.normalize_feed_info_for_cache(cell)
-                    return normalzed
-        # Unable to locate cell in file, we populate the
-        # cache with obviously fake values
-        cell = {"mcc": mcc, "net": mnc, "area": lac, "cell": cellid,
-                "lon": 0, "lat": 0, "range": 0}
-        normalized = FeedManager.normalize_feed_info_for_cache(cell)
-        return normalized
-"""
