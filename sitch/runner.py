@@ -1,5 +1,5 @@
 """ Starts gpsd and filebeat and runs a thread for collecting and enriching
-SIM808 engineering mode data.
+  SIM808 engineering mode data as well as kalibrate's scan information.
   One thread for serial interaction and collection
   One thread for enrichment and appending to logfile:
   If log message is GPS, we update the location var for the enrichment
@@ -26,7 +26,7 @@ def main():
     if config.mode == 'clutch':
         while True:
             time.sleep(30)
-            print "Mode is clutch.  Ain't doin' nothin'"
+            print "Mode is clutch.  Wait cycle..."
 
     print "Writing Filebeat key material..."
     sitchlib.Utility.create_path_if_nonexistent(config.ls_crypto_base_path)
