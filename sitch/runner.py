@@ -1,5 +1,5 @@
-""" Starts gpsd and logstash and runs a thread for collecting and enriching
-SIM808 engineering mode data.
+""" Starts gpsd and filebeat and runs a thread for collecting and enriching
+  SIM808 engineering mode data as well as kalibrate's scan information.
   One thread for serial interaction and collection
   One thread for enrichment and appending to logfile:
   If log message is GPS, we update the location var for the enrichment
@@ -11,6 +11,7 @@ import kalibrate
 import threading
 import time
 from collections import deque
+from socket import error as SocketError
 
 
 def main():
@@ -20,20 +21,26 @@ def main():
     gps_location = {}
     scan_results_queue = deque([])
     message_write_queue = deque([])
+    print "Runner: Setting config..."
     config = sitchlib.ConfigHelper()
     if config.mode == 'clutch':
         while True:
             time.sleep(30)
-            print "Mode is clutch.  Ain't doin' nothin'"
+            print "Runner: Mode is clutch.  Wait cycle..."
 
-    # Write LS cert
-    sitchlib.Utility.create_path_if_nonexistent(config.logstash_cert_path)
-    sitchlib.Utility.write_file(config.logstash_cert_path,
-                                config.ls_cert)
+    print "Runner: Writing Filebeat key material..."
+    sitchlib.Utility.create_path_if_nonexistent(config.ls_crypto_base_path)
+    sitchlib.Utility.write_file(config.ls_ca_path,
+                                config.vault_secrets["ca"])
+    sitchlib.Utility.write_file(config.ls_cert_path,
+                                config.vault_secrets["crt"])
+    sitchlib.Utility.write_file(config.ls_key_path,
+                                config.vault_secrets["key"])
+    sitchlib.Utility.write_file("/etc/ssl/certs/logstash-ca.pem",
+                                config.vault_secrets["ca"])
 
-    # Write LS config
-    sitchlib.Utility.write_file("/etc/logstash-forwarder",
-                                config.build_logstash_config())
+    # Write FB config
+    config.write_filebeat_config()
 
     # Write logrotate config
     sitchlib.Utility.write_file("/etc/logrotate.d/sitch",
@@ -43,7 +50,7 @@ def main():
     try:
         sitchlib.Utility.start_component("modprobe -r dvb_usb_rtl28xxu")
     except:
-        print "Error trying to unload stock driver"
+        print "Runner: Error trying to unload stock driver"
 
     # Give everything a few seconds to catch up (writing files, etc...)
     time.sleep(5)
@@ -52,54 +59,54 @@ def main():
 
     # Configure threads
     kalibrate_consumer_thread = threading.Thread(target=kalibrate_consumer,
+                                                 name="kalibrate_consumer",
                                                  args=[config])
     gsm_modem_consumer_thread = threading.Thread(target=gsm_modem_consumer,
+                                                 name="gsm_modem_consumer",
                                                  args=[config])
+    geoip_consumer_thread = threading.Thread(target=geoip_consumer,
+                                             name="geoip_consumer",
+                                             args=[config])
     gps_consumer_thread = threading.Thread(target=gps_consumer,
+                                           name="gps_consumer",
                                            args=[config])
     enricher_thread = threading.Thread(target=enricher,
+                                       name="enricher",
                                        args=[config])
     writer_thread = threading.Thread(target=output,
+                                     name="writer",
                                      args=[config])
     kalibrate_consumer_thread.daemon = True
     gsm_modem_consumer_thread.daemon = True
-
+    geoip_consumer_thread.daemon = True
     gps_consumer_thread.daemon = True
     enricher_thread.daemon = True
     writer_thread.daemon = True
     # Kick off threads
-    print "Starting Kalibrate consumer thread..."
+    print "Runner: Starting Kalibrate consumer thread..."
     kalibrate_consumer_thread.start()
-    print "Starting GSM Modem consumer thread..."
+    print "Runner: Starting GSM Modem consumer thread..."
     gsm_modem_consumer_thread.start()
-    print "Starting GPS consumer thread..."
+    print "Runner: Starting GPS consumer thread..."
     gps_consumer_thread.start()
-    print "Starting enricher thread..."
+    print "Runner: Starting GeoIP consumer thread..."
+    geoip_consumer_thread.start()
+    print "Runner: Starting enricher thread..."
     enricher_thread.start()
-    print "Starting writer thread..."
+    print "Runner: Starting writer thread..."
     writer_thread.start()
     while True:
         time.sleep(60)
-        print "heartbeat..."
-        if kalibrate_consumer_thread.is_alive is False:
-            print "Kalibrate consumer is dead..."
-        #    print "Kalibrate thread died... restarting!"
-        #    kalibrate_consumer_thread.start()
-        if gsm_modem_consumer_thread.is_alive is False:
-            print "GSM Modem consumer is dead..."
-        #    print "SIM808 consumer thread died... restarting!"
-        #    sim808_consumer_thread.start()
-        if gps_consumer_thread.is_alive is False:
-            print "GPS consumer is dead..."
-        if enricher_thread.is_alive is False:
-            print "Enricher thread is dead..."
-            # print "Enricher thread died... restarting!"
-            # enricher_thread.start()
-        if writer_thread.is_alive is False:
-            print "Writer thread is dead..."
-        #    print "Writer thread died... restarting!"
-        #    writer_thread.start()
+        active_threads = threading.enumerate()
+        #  Heartbeat messages
+        for item in active_threads:
+            scan_results_queue.append(sitchlib.Utility.heartbeat(item.name))
     return
+
+def init_event_injector(init_event):
+    "Pass a dict into this fn."
+    evt = [("sitch_init"), init_event]
+    message_write_queue.append(evt)
 
 
 def gsm_modem_consumer(config):
@@ -111,11 +118,21 @@ def gsm_modem_consumer(config):
                          "scan_location": {},
                          "scanner_public_ip": config.public_ip}
     while True:
-        print "GSM modem configured for %s" % config.gsm_modem_port
+        print "Runner: GSM modem configured for %s" % config.gsm_modem_port
         tty_port = config.gsm_modem_port
         band = config.gsm_modem_band
         if band == "nope":
-            print "Disabling GSM Modem scanning..."
+            print "Runner: Disabling GSM Modem scanning..."
+            init_event_injector({"evt_cls": "gsm_consumer",
+                                 "evt_type": "config_state",
+                                 "evt_data": "GSM scanning disabled"})
+            while True:
+                time.sleep(120)
+        if tty_port is None:
+            print "Runner: No GSM modem auto-detected or otherwise configured!"
+            init_event_injector({"evt_cls": "gsm_consumer",
+                                 "evt_type": "config_state",
+                                 "evt_data": "GSM scanning not configured"})
             while True:
                 time.sleep(120)
         # Sometimes the buffer is full and instantiation fails the first time
@@ -123,9 +140,19 @@ def gsm_modem_consumer(config):
             consumer = sitchlib.GsmModem(tty_port)
         except:
             consumer = sitchlib.GsmModem(tty_port)
-        consumer.set_band(band)
         time.sleep(2)
-        # consumer.trigger_gps()
+        print "Runner: Getting registration info..."
+        reg_info = consumer.get_reg_info()
+        init_event_injector({"evt_cls": "gsm_consumer",
+                             "evt_type": "registration",
+                             "evt_data": str(reg_info)})
+        print "Runner: Dumping current GSM modem config..."
+        dev_config = consumer.dump_config()
+        init_event_injector({"evt_cls": "gsm_consumer",
+                             "evt_type": "device_config",
+                             "evt_data": " | ".join(dev_config)})
+        time.sleep(2)
+        consumer.set_band(band)
         time.sleep(2)
         consumer.set_eng_mode()
         time.sleep(2)
@@ -140,7 +167,6 @@ def gsm_modem_consumer(config):
                     retval["band"] = config.gsm_modem_band
                     retval["scanner_public_ip"] = config.public_ip
                     scan_results_queue.append(retval.copy())
-                    # print "SIM808 results sent for enrichment..."
                 elif "lon" in report[0]:
                     retval = dict(scan_job_template)
                     retval["scan_results"] = report
@@ -155,19 +181,36 @@ def gsm_modem_consumer(config):
 
 def gps_consumer(config):
     global gps_location
-    print "Starting GPS Consumer"
-    print "  gpsd configured for %s" % config.gps_device_port
+    print "Runner: Starting GPS Consumer"
+    print "Runner: gpsd configured for %s" % config.gps_device_port
     gpsd_command = "gpsd -n %s" % config.gps_device_port
     sitchlib.Utility.start_component(gpsd_command)
+    print "Runner: Starting gpsd with:"
+    print gpsd_command
     time.sleep(10)
+    gps_event = {"scan_program": "gps",
+                 "scan_results": {}}
     while True:
         try:
-            gps_listener = sitchlib.GpsListener()
+            gps_listener = sitchlib.GpsListener(delay=120)
             for fix in gps_listener:
-                gps_location = fix
+                gps_event["scan_results"] = fix
+                scan_results_queue.append(gps_event.copy())
         except IndexError:
-            # print "Output queue empty"
             time.sleep(3)
+        except SocketError as e:
+            print e
+
+
+def geoip_consumer(config):
+    print "Runner: Starting GeoIP Consumer"
+    geoip_event = {"scan_program": "geo_ip",
+                   "scan_results": {}}
+    while True:
+        geoip_listener = sitchlib.GeoIp(delay=600)
+        for result in geoip_listener:
+            geoip_event["scan_results"] = result
+            scan_results_queue.append(geoip_event.copy())
 
 
 def kalibrate_consumer(config):
@@ -180,11 +223,14 @@ def kalibrate_consumer(config):
                              "scan_location": {}}
         band = config.kal_band
         if band == "nope":
-            print "Disabling Kalibrate scanning..."
+            print "Runner: Disabling Kalibrate scanning..."
+            init_event_injector({"evt_cls": "kalibrate_consumer",
+                                 "evt_type": "config_state",
+                                 "evt_data": "Kalibrate scanning disabled"})
             while True:
                 time.sleep(120)
         gain = config.kal_gain
-        kal_scanner = kalibrate.Kal("/usr/local/bin/kal")
+        kal_scanner = kalibrate.Kal("/usr/local/bin/kal-linux-arm")
         start_time = sitchlib.Utility.get_now_string()
         kal_results = kal_scanner.scan_band(band, gain=gain)
         end_time = sitchlib.Utility.get_now_string()
@@ -197,7 +243,6 @@ def kalibrate_consumer(config):
         scan_document["scan_location"]["name"] = str(config.device_id)
         scan_document["scanner_public_ip"] = config.public_ip
         scan_results_queue.append(scan_document.copy())
-        # print "Kalibrate results sent for enrichment..."
     return
 
 
@@ -205,33 +250,51 @@ def enricher(config):
     """ Enricher breaks apart kalibrate doc into multiple log entries, and
     assembles lines from gsm_modem into a main doc as well as writing multiple
     lines to the output queue for metadata """
-    global gps_location
+    state = {"gps": {},
+             "geoip": {},
+             "geo_distance_meters": 0}
     override_suppression = [110]
-    print "Now starting enricher"
-    print "GPS is: %s" % str(gps_location)
-    enr = sitchlib.Enricher(config, gps_location)
+    print "Runner: Now starting enricher"
+    enr = sitchlib.Enricher(config, state)
+    enr.update_feeds()
     while True:
-        if abs((datetime.datetime.now() -
-                enr.born_on_date).total_seconds()) > 86400:
-            print "Recycling enricher..."
-            print "GPS is: %s" % str(gps_location)
-            enr = sitchlib.Enricher(config, gps_location)
         try:
             scandoc = scan_results_queue.popleft()
             doctype = enr.determine_scan_type(scandoc)
             outlist = []
             if doctype == 'Kalibrate':
-                # print "Enriching Kalibrate scan"
                 outlist = enr.enrich_kal_scan(scandoc)
+            elif doctype == 'HEARTBEAT':
+                outlist.append(("heartbeat", scandoc))
             elif doctype == 'GSM_MODEM':
-                # print "Enriching SIM808 scan"
-                outlist = enr.enrich_gsm_modem_scan(scandoc)
+                outlist = enr.enrich_gsm_modem_scan(scandoc, state)
             elif doctype == 'GPS':
-                # print "Updating GPS coordinates"
+                """ Every time we get a GPS reading, we check to make sure
+                that it is close to the same distance from GeoIP as it was
+                when it was last measured.  Alerts are generated if the drift
+                is beyond threshold."""
                 outlist = enr.enrich_gps_scan(scandoc.copy())
-                gps_location = scandoc
+                geo_problem = enr.geo_drift_check(state["geo_distance_meters"],
+                                                  state["geoip"],
+                                                  scandoc["scan_results"],
+                                                  config.gps_drift_threshold)
+                if geo_problem:
+                    outlist.append(geo_problem.copy())
+                state["gps"] = scandoc["scan_results"]
+                lat_1 = state["geoip"]["geometry"]["coordinates"][0]
+                lon_1 = state["geoip"]["geometry"]["coordinates"][1]
+                lat_2 = state["gps"]["geometry"]["coordinates"][0]
+                lon_2 = state["gps"]["geometry"]["coordinates"][1]
+                new_distance = (sitchlib.Utility.calculate_distance(lon_1,
+                                                                    lat_1,
+                                                                    lon_2,
+                                                                    lat_2))
+                state["geo_distance_meters"] = int(new_distance)
+            elif doctype == 'GEOIP':
+                outlist = enr.enrich_geoip_scan(scandoc.copy())
+                state["geoip"] = scandoc["scan_results"]
             else:
-                print "Can't determine scan type for: "
+                print "Runner: Can't determine scan type for: "
                 print scandoc
             # Clean the suppression list, everything over 12 hours
             for suppressed, tstamp in enr.suppressed_alerts.items():
@@ -243,35 +306,34 @@ def enricher(config):
                 if log_bolus[0] == 'sitch_alert':
                     if log_bolus[1]["id"] in override_suppression:
                         message_write_queue.append(log_bolus)
-                        print log_bolus
                         continue
                     else:
                         if log_bolus[1]["details"] in enr.suppressed_alerts:
                             continue
                         else:
                             enr.suppressed_alerts[log_bolus[1]["details"]] = datetime.datetime.now()  # NOQA
-                            print log_bolus
                 message_write_queue.append(log_bolus)
         except IndexError:
-            # print "Enricher queue empty"
             time.sleep(1)
-
 
 def output(config):
     time.sleep(5)
     l = sitchlib.LogHandler(config)
-    print "Output module instantiated."
-    print "Starting Logstash forwarder..."
+    print "Runner: Output module instantiated."
+    print "Runner: Starting Filebeat..."
     time.sleep(5)
-    sitchlib.Utility.start_component("/etc/init.d/logstash-forwarder start")
+    sitchlib.Utility.start_component("/usr/local/bin/filebeat-linux-arm -c /etc/filebeat.yml")
     while True:
         try:
             msg_bolus = message_write_queue.popleft()
             l.record_log_message(msg_bolus)
             del msg_bolus
         except IndexError:
-            # print "Output queue empty"
             time.sleep(3)
+        except Exception as e:
+            print "Runner: Exception caught while processing message for output:"
+            print e
+            print msg_bolus
 
 if __name__ == "__main__":
     main()

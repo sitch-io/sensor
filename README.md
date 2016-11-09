@@ -1,6 +1,11 @@
-# SITCH Sensor
+# SITCH Sensor v3.0
 
 [![Build Status](https://travis-ci.org/sitch-io/sensor.svg?branch=master)](https://travis-ci.org/sitch-io/sensor)
+
+[![Code Climate](https://codeclimate.com/github/sitch-io/sensor/badges/gpa.svg)](https://codeclimate.com/github/sitch-io/sensor)
+
+[![Test Coverage](https://codeclimate.com/github/sitch-io/sensor/badges/coverage.svg)](https://codeclimate.com/github/sitch-io/sensor/coverage)
+
 
 ## Getting Started
 
@@ -11,11 +16,12 @@
 * Access to the following services (See Service configuration for more information)
   * Logstash
   * Vault
-  * SITCH feed.  If you follow the Service configuration process, it will be located in AWS S3.
+  * SITCH feed.  See https://github.com/sitch-io/feed_builder for more information.
 * Hardware
   * Raspberry Pi 2
   * Fona SIM808 GSM modem w/ USB TTY cable
   * RTL-SDR device.  Tested with NooElec NESDR Mini and NooElec NESDR XTR
+  * GlobalSat USB GPS dongle
 
 ## Step by step...
 
@@ -25,22 +31,24 @@
 1. Push to your Resin application: `git push resin master`
 
 We expect the following environment variables to be set in Resin:
-```shell
-FEED_URL_BASE       # Base URL for feed data retrieval
-KAL_BAND            # Band to scan with Kalibrate (try GSM850)
-KAL_GAIN            # Gain setting for Kalibrate (try 80)
-KAL_THRESHOLD       # Threshold for creating alerts based on Kalibrate's signal strength metric
-LOCATION_NAME       # Override the default device naming, which is Resin device ID
-LOG_HOST            # host:port
-LOG_METHOD          # local_file or direct.  Local file expects that the logstash-forwarder daemon is shipping logs.  Direct sends right from the output thread, no file or logstash-forwarder daemon.  Not thoroughly tested.  No intelligent queue management in the event it's unable to reach the server.
-MCC_LIST            # Comma-separated list of MCCs to retrieve feed files for
-MODE                # setting this to 'clutch' will cause it to loop before all the fun stuff starts.  Great for when you're troubleshooting in the Resin console.
-GSM_MODEM_BAND         # Band to scan with SIM808 (try GSM850_MODE)
-GSM_MODEM_PORT         # Device for tty (try /dev/ttyUSB0)
-VAULT_LS_CERT_PATH  # Path to logstash cert (secret/logstash-fwd-crt)
-VAULT_TOKEN         # token for accessing credentials in vault
-VAULT_URL           # https://vault.mydomain.com:port
-```
+
+| Variable          | Purpose                                                  |
+|-------------------|----------------------------------------------------------|
+| FEED_URL_BASE     | Base URL for feed data retrieval                         |
+| GSM_MODEM_BAND    | Band to scan with SIM808 (try GSM850_MODE)               |
+| KAL_BAND          | Band to scan with Kalibrate (try GSM850)                 |
+| KAL_GAIN          | Gain setting for Kalibrate (try 60-80)                   |
+| KAL_THRESHOLD     | Threshold for alerting on Kalibrate ARFCN power          |
+| LOCATION_NAME     | Override the default device name (Resin UUID)            |
+| LOG_HOST          |  hostname:port                                           |
+| MCC_LIST          | Comma-separated list of MCCs to retrieve feed files for  |
+| MODE              | Set to 'clutch' to go into a wait loop (for debugging)   |
+| STATE_LIST        | List of states (in caps) for FCC feed.  ex: "CA,TX"      |
+| GSM_MODEM_PORT    | Override GSM modem autodetect                            |
+| VAULT_PATH        | Path to logstash cert/keys in Vault                      |
+| VAULT_TOKEN       | Token for accessing credentials in vault                 |
+| VAULT_URL         | URL for accessing Vault. ex: https://v.example.com:port  |
+
 
 ## Testing
 Testing is done with pytest.  Coverage module optional.
@@ -49,5 +57,13 @@ Testing is done with pytest.  Coverage module optional.
 1. Set the environment variable to reach your SITCH feed: `export SITCH_FEED_BASE=https://MY.FEED.URL/base`
 1. Run `py.test --cov sitchlib` .
 
+## GSM modem device detection
+If you're using a GSM modem that's not recognized by the device detector, please
+add the output from running the `ATI` command against your GSM modem in the
+variable named `positive_match` in the `is_a_gsm_modem()` method, in the
+`sensor/sitch/sitchlib/device_detector.py` file.  Then send a pull request so
+that everyone can get the benefit of your discovery.
+
 ## Contributing
-Please do PRs against the `test` branch.
+* Please do PRs against the `test` branch.
+* To add an ID string to the device detector for GSM modems, add part of the ID string to the ```positive_match``` variable in the ```DeviceDetector.is_a_gsm_modem()``` function

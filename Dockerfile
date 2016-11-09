@@ -24,20 +24,23 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y \
     apt-get -y autoclean && \
     apt-get -y autoremove
 
-
-# Install Logstash
-COPY packages/ /app/packages
-RUN dpkg -i /app/packages/logstash-forwarder_0.4.0_armhf.deb
-
 # Place Kalibrate
-COPY binaries/kal /usr/local/bin/
+COPY binaries/kal-linux-arm /usr/local/bin/
+
+# Place Filebeat
+COPY binaries/filebeat-linux-arm /usr/local/bin
+ADD https://raw.githubusercontent.com/elastic/beats/master/LICENSE /filebeat-lic
 
 # Get Kalibrate source for posterity
 ADD https://github.com/hainn8x/kalibrate-rtl/archive/master.zip /app/source
 
 
 # Place the Logstash init script
-COPY init/logstash-forwarder /etc/init.d/
+# COPY init/logstash-forwarder /etc/init.d/
+
+# Place config templates
+RUN mkdir -p /etc/templates
+COPY configs/filebeat.json /etc/templates
 
 # Get the scripts in place
 COPY sitch/ /app/sitch
@@ -49,6 +52,7 @@ RUN pip install virtualenv && \
     virtualenv --no-site-packages venv && \
     . ./venv/bin/activate && \
     pip install pyserial && \
+    pip install pyyaml && \
     pip install gps3 && \
     pip install hvac && \
     pip install kalibrate && \
@@ -56,10 +60,6 @@ RUN pip install virtualenv && \
     pip install python-geoip && \
     pip install python-geoip-geolite2 && \
     pip install pyudev && \
-    git clone https://github.com/klynch/python-logstash-handler && \
-    cd python-logstash-handler && \
-    git checkout c5574624c8cb4fdba14bef33303e8650eb2f3487 && \
-    pip install .
+    pip install LatLon
 
-# CMD cd /app/sitch && . ./venv/bin/activate && /app/sitch/venv/bin/python ./runner.py
-CMD /app/sitch/venv/bin/python ./runner.py
+CMD /app/sitch/venv/bin/python ./runner.py 2>&1

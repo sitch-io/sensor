@@ -1,9 +1,11 @@
 from gps3 import gps3
+import copy
 import time
 
 
 class GpsListener(object):
-    def __init__(self):
+    def __init__(self, delay=60):
+        self.delay = delay
         self.gps_socket = gps3.GPSDSocket()
         self.data_stream = gps3.DataStream()
         self.gps_socket.connect()
@@ -19,7 +21,7 @@ class GpsListener(object):
                                    "geometry": {
                                        "type": "Point",
                                        "coordinates": [
-                                           self.data_stream.TPV['lon'],
-                                           self.data_stream.TPV['lat']]}}
-                        yield geojson
-                        time.sleep(30)
+                                           self.data_stream.TPV["lon"],
+                                           self.data_stream.TPV["lat"]]}}
+                        yield copy.deepcopy(geojson)
+                        time.sleep(self.delay)

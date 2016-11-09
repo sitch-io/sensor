@@ -1,3 +1,4 @@
+import pprint
 import pyudev
 import serial
 import time
@@ -17,16 +18,28 @@ class DeviceDetector(object):
     """
 
     def __init__(self):
+        print "DeviceDetector: Initializing Device Detector..."
         self.usbtty_ports = DeviceDetector.get_devices_by_subsys('usb-serial')
+        self.pprinter(self.usbtty_ports)
+        time.sleep(1)
+        print "DeviceDetector: Searching for GSM modem..."
         self.gsm_radios = DeviceDetector.find_gsm_radios(self.usbtty_ports)
+        time.sleep(1)
+        print "DeviceDetector: Searching for GPS device..."
         self.gps_devices = DeviceDetector.find_gps_radios(self.usbtty_ports)
+        time.sleep(1)
         return
+
+    def pprinter(self, pprint_me):
+        pp = pprint.PrettyPrinter()
+        pp.pprint(pprint_me)
 
     @classmethod
     def find_gsm_radios(cls, usbtty_ports):
         retval = []
         for port in usbtty_ports:
             devpath = "/dev/%s" % port["sys_name"]
+            print "DeviceDetector:  Checking %s" % port["sys_name"]
             if DeviceDetector.is_a_gsm_modem(devpath):
                 gsm_modem_info = DeviceDetector.get_gsm_modem_info(devpath)
                 retval.append(gsm_modem_info)
@@ -37,6 +50,7 @@ class DeviceDetector(object):
         retval = []
         for port in usbtty_ports:
             devpath = "/dev/%s" % port["sys_name"]
+            print "DeviceDetector:  Checking %s" % port["sys_name"]
             if DeviceDetector.is_a_gps(devpath):
                 retval.append(devpath)
         return retval
@@ -58,10 +72,10 @@ class DeviceDetector(object):
 
     @classmethod
     def is_a_gps(cls, port):
+        time.sleep(2)
         positive_match = ["$GPGGA", "$GPGLL", "$GPGSA", "$GPGSV", "$GPRMC"]
         serconn = serial.Serial(port, 4800, timeout=1)
-        serconn.flushInput()
-        serconn.flushOutput()
+        serconn.flush()
         for i in xrange(10):
             line = None
             line = serconn.readline()
@@ -71,19 +85,23 @@ class DeviceDetector(object):
             else:
                 for pm in positive_match:
                     if pm in line:
+                        serconn.flush()
+                        serconn.close()
                         serconn = None
                         return True
+        serconn.flush()
+        serconn.close()
         serconn = None
         return False
 
     @classmethod
     def is_a_gsm_modem(cls, port):
-        test_command = "ATI\r\n"
+        time.sleep(2)
+        test_command = "ATI \r\n"
         positive_match = ["SIM808"]
         serconn = serial.Serial(port, 4800, timeout=1)
         serconn.write(test_command)
-        serconn.flushInput()
-        serconn.flushOutput()
+        serconn.flush()
         for i in xrange(10):
             line = None
             line = serconn.readline()
@@ -93,8 +111,12 @@ class DeviceDetector(object):
             else:
                 for pm in positive_match:
                     if pm in line:
+                        serconn.flush()
+                        serconn.close()
                         serconn = None
                         return True
+        serconn.flush()
+        serconn.close()
         serconn = None
         return False
 
@@ -112,11 +134,11 @@ class DeviceDetector(object):
 
     @classmethod
     def interrogate_gsm_modem(cls, port, command):
+        time.sleep(2)
         serconn = serial.Serial(port, 4800, timeout=1)
         cmd = "%s\r\n" % command
         serconn.write(cmd)
-        serconn.flushInput()
-        serconn.flushOutput()
+        serconn.flush()
         for i in xrange(10):
             line = None
             line = serconn.readline()
@@ -127,7 +149,11 @@ class DeviceDetector(object):
                 time.sleep(1)
                 pass
             else:
+                serconn.flush()
+                serconn.close()
                 serconn = None
                 return line
+        serconn.flush()
+        serconn.close()
         serconn = None
-        return ""
+        return ""  # Returning an empty string for return type consistency
