@@ -13,3 +13,6 @@ from utility import Utility
 from feed_manager import FeedManager
 from device_detector import DeviceDetector
 from enrich_kal_scan import KalScanEnricher
+
+__author__ = "Ash Wilson"
+__version__ = "3.0"
