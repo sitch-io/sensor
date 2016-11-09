@@ -16,7 +16,7 @@ class ConfigHelper:
         self.platform_name = utility.get_platform_name()
         self.log_prefix = "/var/log/sitch/"
         self.log_host = ConfigHelper.get_from_env("LOG_HOST")
-        self.log_method = ConfigHelper.get_from_env("LOG_METHOD")
+        self.log_method = "local_file"
         self.kal_band = ConfigHelper.get_from_env("KAL_BAND")
         self.kal_gain = ConfigHelper.get_from_env("KAL_GAIN")
         self.kal_threshold = ConfigHelper.get_from_env("KAL_THRESHOLD")
@@ -30,7 +30,7 @@ class ConfigHelper:
         self.vault_token = ConfigHelper.get_from_env("VAULT_TOKEN")
         self.vault_url = ConfigHelper.get_from_env("VAULT_URL")
         self.vault_path = ConfigHelper.get_from_env("VAULT_PATH")
-        self.mode = ConfigHelper.get_from_env("MODE")
+        self.mode = os.getenv("MODE", "GOGOGO")
         self.public_ip = str(utility.get_public_ip())
         self.feed_dir = feed_dir
         self.feed_url_base = ConfigHelper.get_from_env("FEED_URL_BASE")
