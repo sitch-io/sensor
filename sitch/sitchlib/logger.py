@@ -55,6 +55,12 @@ class LogHandler:
 
     def write_log_message(self, log_file_type, message):
         """You should only ever send a string to this method"""
+        if not isinstance(message, str):
+            print "Unable to log message with wrong type:"
+            print str(type(message))
+            print str(message)
+            print "Log file type:"
+            print log_file_type
         log_file = os.path.join(self.log_prefix,
                                 self.get_log_file_name(log_file_type))
         with open(log_file, 'a') as lf:
