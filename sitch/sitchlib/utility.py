@@ -3,6 +3,7 @@ import json
 import os
 import subprocess
 import requests
+from location_tool import LocationTool
 
 
 class Utility:
@@ -21,6 +22,7 @@ class Utility:
             raw_response = subprocess.check_output(lshw.split())
             platform_info = json.loads(raw_response.replace('\n', ''))
         except:
+            print "Utility: Unable to get platform info from lshw!"
             platform_info = {}
         return platform_info
 
@@ -39,8 +41,6 @@ class Utility:
             return
         elif os.path.exists(os.path.dirname(path)):
             return
-        # elif os.path.isfile(path):
-        #    os.remove(path)
         os.mkdir(os.path.dirname(path))
         return
 
@@ -50,7 +50,7 @@ class Utility:
         if os.path.isfile(fullpath):
             return
         else:
-            print "Creating log file: %s" % fullpath
+            print "Utility: Creating log file: %s" % fullpath
             open(fullpath, 'a').close()
         return
 
@@ -66,10 +66,12 @@ class Utility:
             raw_response = subprocess.check_output(lshw.split())
             platform_info = json.loads(raw_response.replace('\n', ''))
         except:
+            print "Utility: Failed to obtain platform info!"
             platform_info = {}
         try:
             platform_name = platform_info["product"]
         except:
+            print "Utility: Failed to obtain platform name!"
             platform_name = "Unspecified"
         return platform_name
 
@@ -86,3 +88,30 @@ class Utility:
         url = 'https://api.ipify.org/?format=json'
         result = (requests.get(url).json())['ip']
         return result
+
+    @classmethod
+    def calculate_distance(cls, lon_1, lat_1, lon_2, lat_2):
+        if None in [lon_1, lat_1, lon_2, lat_2]:
+            print "Utility: Zero geo coordinate detected, not resolving distance."
+            return 0
+        pos_1 = (lon_1, lat_1)
+        pos_2 = (lon_2, lat_2)
+        dist_in_km = LocationTool.get_distance_between_points(pos_1, pos_2)
+        dist_in_m = dist_in_km * 1000
+        return dist_in_m
+
+    @classmethod
+    def str_to_float(cls, s):
+        retval = None
+        try:
+            retval = float(s)
+        except:
+            print "Utility: Unable to convert %s to float" % str(s)
+        return retval
+
+    @classmethod
+    def heartbeat(cls, service_name):
+        scan = {"scan_program": "heartbeat",
+                "heartbeat_service_name": service_name,
+                "timestamp": Utility.get_now_string()}
+        return scan

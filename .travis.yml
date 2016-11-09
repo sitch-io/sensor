@@ -2,8 +2,12 @@ language: python
 python:
 - '2.7'
 install:
-- pip install pytest-cov pytest-pep8 python-coveralls
-- pip install pyserial hvac kalibrate haversine python-geoip python-geoip-geolite2 pyudev gps3
-- git clone https://github.com/klynch/python-logstash-handler && cd python-logstash-handler && git checkout c5574624c8cb4fdba14bef33303e8650eb2f3487 &&   pip install .
-- cd $OLDPWD
-script: py.test sitch/tests/unit/ --cov sitchlib --cov-report term-missing
+- pip install pytest-cov pytest-pep8 python-coveralls codeclimate-test-reporter
+- pip install pyserial hvac kalibrate haversine python-geoip python-geoip-geolite2
+  pyudev gps3 LatLon
+script: py.test sitch/tests/ --cov sitchlib
+after_success:
+- codeclimate-test-reporter --token $CODECLIMATE_REPO_TOKEN
+env:
+  global:
+    secure: YDiEDTMd1/lodlkCMJsctiL9PGjtAlPokPoNdux1YT4Qlb5sr5mhqg75lp61bstc2NXGExXHBtCKJdNH3xo06g2vJz+5nVIGYSH7Dbmx37+9xeS6H8TRoGf2EvnT+tFsJ3fAyKUFC8aXxB2UBgY8LOwk09xOJsNPsfa1hqIe3f3tBWqCpMiPLy3fsapNlQZIycq70JCt7rza4N0NuJKOaoJvhedg8E/0IHleWbHfXJ6kmnB83W3cFAO9p5quFB/h+UiIjPGwYtIRODunbb/dsJfaH60wbZqC3705ppF9d6/FMmL874npNIc+ZfnCqIP1RCqZgDGUer5qf9DuohCUH/X1d47rw6Ec0WtPPt5lf4AVbax2zGbOUzXQ99TZTdOTxde7n4XnVZq1P/+w8Bqgf0DuiTpMPxdGEGnfMlNysXTrwvGlDpv/XVA0jJjCxV6z9fnGfWNmxZWBqfQIE5/ZbaHY3BtMjbeTXPQvZ1EXglSbV7CshK+TWQG4o9KiYOdKI+JiQvIsvA9AW96+x2A7bOtyLn1PLsfntEUpyjih6g4d9r+H75qbPR7CGVcd9pNhavKy04gB7B6nh07xgaKLXlZ4L6rIf5ygecdq4jMcfcIEQXzxEfUfhU5VSFadTain2KXD6+l1LB7hXGOEPDwsa2mxXdkkNgDQ8vW6CyJgj7E=

@@ -1,0 +1,85 @@
+{
+    "output.logstash": {
+        "ssl.certificate_authorities": [],
+        "hosts": [],
+        "ssl.verification_mode": "full",
+        "ssl.key": "",
+        "ssl.enabled": true,
+        "enabled": true,
+        "ssl.certificate": ""
+    },
+    "filebeat.prospectors": [
+        {
+            "input_type": "log",
+            "document_type": "cells",
+            "keys_under_root": true,
+            "paths": [
+                "/var/log/sitch/cells.log"
+            ]
+        },
+        {
+            "input_type": "log",
+            "document_type": "scan",
+            "keys_under_root": true,
+            "paths": [
+                "/var/log/sitch/scanner.log"
+            ]
+        },
+        {
+            "input_type": "log",
+            "document_type": "gsm_modem_channel",
+            "keys_under_root": true,
+            "paths": [
+                "/var/log/sitch/gsm_modem_channel.log"
+            ]
+        },
+        {
+            "input_type": "log",
+            "document_type": "kal_channel",
+            "keys_under_root": true,
+            "paths": [
+                "/var/log/sitch/kal_channel.log"
+            ]
+        },
+        {
+            "input_type": "log",
+            "document_type": "geoip",
+            "keys_under_root": true,
+            "paths": [
+                "/var/log/sitch/geoip.log"
+            ]
+        },
+        {
+            "input_type": "log",
+            "document_type": "gpsd",
+            "keys_under_root": true,
+            "paths": [
+                "/var/log/sitch/gps.log"
+            ]
+        },
+        {
+            "input_type": "log",
+            "document_type": "heartbeat",
+            "keys_under_root": true,
+            "paths": [
+                "/var/log/sitch/heartbeat.log"
+            ]
+        },
+        {
+            "input_type": "log",
+            "document_type": "sitch_init",
+            "keys_under_root": true,
+            "paths": [
+                "/var/log/sitch/sitch_init.log"
+            ]
+        },
+        {
+            "input_type": "log",
+            "document_type": "sitch_alert",
+            "keys_under_root": true,
+            "paths": [
+                "/var/log/sitch/sitch_alert.log"
+            ]
+        }
+    ]
+}
