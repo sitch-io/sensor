@@ -15,48 +15,48 @@ class FeedManager(object):
 
     def update_mcc_feeds(self):
         for mcc in self.mcc_list:
-            print "Feed: Pulling down feed for MCC %s" % str(mcc)
-            FeedManager.update_mcc_feed_file(self.feed_dir, self.url_base, mcc)
+            msg = "Feed: Pulling down feed for MCC %s" % str(mcc)
+            print msg
+            FeedManager.place_feed_file(self.feed_dir, self.url_base, mcc)
         print "Feed: Finished pulling all MCC feed files"
         return
 
     def update_fcc_feed_files(self):
         for state in self.state_list:
-            print "Feed: Pulling down feed for state: %s" % str(state)
-            FeedManager.update_fcc_feed_file(self.feed_dir, self.url_base, state)
+            msg = "Feed: Pulling down feed for state: %s" % str(state)
+            print msg
+            FeedManager.place_feed_file(self.feed_dir, self.url_base, state)
         print "Feed: Finished pulling all state feed files"
         return
 
     @classmethod
-    def update_mcc_feed_file(cls, feed_dir, url_base, mcc):
-        destination_file = FeedManager.construct_feed_file_name(feed_dir, mcc)
-        temp_file = "%s.TEMP" % destination_file
-        origin_url = FeedManager.get_source_url(url_base, mcc)
-        print "Feed: Downloading %s to %s" % (origin_url, temp_file)
-        response = requests.get(origin_url, stream=True)
-        with open(temp_file, 'wb') as out_file:
-            for chunk in response.iter_content(chunk_size=1024):
-                if chunk:
-                    out_file.write(chunk)
-        time.sleep(2)
-        print "Feed: Moving %s to %s" % (temp_file, destination_file)
-        os.rename(temp_file, destination_file)
+    def place_feed_file(cls, feed_dir, url_base, item_id):
+        """ Retrieves and places feed files for use by the Enricher modules
 
-    @classmethod
-    def update_fcc_feed_file(cls, feed_dir, url_base, state):
+        Args:
+            feed_dir (str): Destination directory for feed files
+            url_base (str): Base URL for hosted feed files
+            item_id(str): For FCC, this is the two-letter ("CA" or "TN",
+             for example), which is used in the retrieval of the feed file as
+             well as the construction of the local feed file name.  For MCC this
+             is the MCC, but in string form.  Not integer.
+
+        """
         destination_file = FeedManager.construct_feed_file_name(feed_dir,
-                                                                state)
+                                                                item_id)
         temp_file = "%s.TEMP" % destination_file
-        origin_url = FeedManager.get_source_url(url_base, state)
-        print "Feed: Downloading %s to %s" % (origin_url, temp_file)
+        origin_url = FeedManager.get_source_url(url_base, item_id)
+        msg = "Feed: Downloading %s to %s" % (origin_url, temp_file)
+        print msg
         response = requests.get(origin_url, stream=True)
         with open(temp_file, 'wb') as out_file:
             for chunk in response.iter_content(chunk_size=1024):
                 if chunk:
                     out_file.write(chunk)
-        time.sleep(2)
+        time.sleep(1)
         print "Feed: Moving %s to %s" % (temp_file, destination_file)
         os.rename(temp_file, destination_file)
+        return
 
     @classmethod
     def construct_feed_file_name(cls, feed_dir, prefix):
