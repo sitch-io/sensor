@@ -51,6 +51,8 @@ class Enricher:
         scan_type = None
         try:
             if scan is str:
+                print "SCAN IS STRING"
+                print scan
                 scan = json.loads(str)
             if scan["scan_program"] == 'Kalibrate':
                 scan_type = 'Kalibrate'
