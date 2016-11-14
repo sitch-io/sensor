@@ -1,6 +1,5 @@
 import csv
 import gzip
-import json
 import os
 import alert_manager
 from utility import Utility
@@ -22,64 +21,129 @@ class GsmModemEnricher(object):
         self.bad_arfcns = []
         return
 
+    @classmethod
+    def enrich_channel_from_scan_document(cls, channel, scan_document):
+        """ Enriches channel with scan document metadata """
+        channel["band"] = scan_document["band"]
+        channel["scan_finish"] = scan_document["scan_finish"]
+        channel["site_name"] = scan_document["scan_location"]["name"]
+        channel["scanner_public_ip"] = scan_document["scanner_public_ip"]
+        return channel
+
+    @classmethod
+    def arfcn_int(cls, arfcn):
+        """ Attempts to derive an integer representation of ARFCN, or return
+        zero if unable to convert.
+        """
+        try:
+            arfcn_int = int(arfcn)
+        except:
+            msg = "EnrichGSM: Unable to convert ARFCN to int"
+            print msg
+            print arfcn
+            arfcn_int = 0
+        return arfcn_int
+
+    @classmethod
+    def should_skip_feed(cls, channel):
+        skip_feed_comparison = False
+        skip_feed_trigger_values = ['', '0000', '00', '0']
+        for x in ["mcc", "mnc", "lac", "cellid"]:
+            if channel[x] in skip_feed_trigger_values:
+                skip_feed_comparison = True
+        return skip_feed_comparison
+
+    @classmethod
+    def get_cgi_int(cls, channel):
+        """ Attempts to create an integer representation of CGI """
+        try:
+            cgi_int = int(channel["cgi_str"].replace(':', ''))
+        except:
+            print "EnrichGSM: Unable to convert CGI to int"
+            print channel["cgi_str"]
+            cgi_int = 0
+        return cgi_int
+
+    @classmethod
+    def build_chan_here(cls, channel, state):
+        chan = {}
+        here = {}
+        try:
+            chan["lat"] = channel["feed_info"]["lat"]
+            chan["lon"] = channel["feed_info"]["lon"]
+            here["lat"] = state["gps"]["geometry"]["coordinates"][0]
+            here["lon"] = state["gps"]["geometry"]["coordinates"][1]
+        except TypeError:
+            print "EnrichGSM: Incomplete geo info..."
+            chan["lat"] = None
+            chan["lon"] = None
+            here["lat"] = None
+            here["lon"] = None
+        return(chan, here)
+
+    @classmethod
+    def channel_in_feed_db(cls, channel):
+        result = True
+        if (channel["feed_info"]["range"] == 0 and
+            channel["feed_info"]["lon"] == 0 and
+            channel["feed_info"]["lat"] == 0):
+           result = False
+        return result
+
+    @classmethod
+    def channel_out_of_range(cls, channel):
+        result = False
+        if int(channel["distance"]) > int(channel["feed_info"]["range"]):
+            result = True
+        return result
+
+    @classmethod
+    def bts_from_channel(cls, channel):
+        bts = {"mcc": channel["mcc"],
+               "mnc": channel["mnc"],
+               "lac": channel["lac"],
+               "cellid": channel["cellid"]}
+        return bts
+
+    @classmethod
+    def primary_bts_changed(cls, prior_bts, channel):
+        result = False
+        current_bts = GsmModemEnricher.bts_from_channel(channel)
+        if prior_bts == {}:
+            prior_bts = dict(current_bts)
+        elif prior_bts != current_bts:
+            result = False
+        return result
+
+
     def enrich_gsm_modem_scan(self, scan_document):
         chan = {}
         here = {}
         state = self.state
         results_set = [("cell", scan_document)]
-        # platform_name = scan_document["scan_location"]["name"]
         scan_items = scan_document["scan_results"]
         for channel in scan_items:
-            channel["band"] = scan_document["band"]
-            channel["scan_finish"] = scan_document["scan_finish"]
-            channel["site_name"] = scan_document["scan_location"]["name"]
-            channel["scanner_public_ip"] = scan_document["scanner_public_ip"]
-            try:
-                channel["arfcn_int"] = int(channel["arfcn"])
-            except:
-                msg = "EnrichGSM: Unable to convert ARFCN to int"
-                print msg
-                print channel["arfcn"]
-                channel["arfcn_int"] = 0
+            channel = GsmModemEnricher.enrich_channel_with_scan(channel,
+                                                                scan_document)
+
+            channel["arfcn_int"] = GsmModemEnricher.arfcn_int(channel["arfcn"])
             """ In the event we have incomplete information, we need to bypass
             comparison.
             """
-            skip_feed_comparison = False
-            skip_feed_trigger_values = ['', '0000', '00', '0']
-            for x in ["mcc", "mnc", "lac", "cellid"]:
-                if channel[x] in skip_feed_trigger_values:
-                    skip_feed_comparison = True
-
+            skip_feed_comparison = GsmModemEnricher.should_skip_feed(channel)
             """ Now we bring the hex values to decimal..."""
             channel = self.convert_hex_targets(channel)
             channel = self.convert_float_targets(channel)
-
-            """ Setting CGI """
+            """ Setting CGI identifiers """
             channel["cgi_str"] = GsmModemEnricher.make_bts_friendly(channel)
-            try:
-                channel["cgi_int"] = int(channel["cgi_str"].replace(':', ''))
-            except:
-                print "EnrichGSM: Unable to convert CGI to int"
-                print channel["cgi_str"]
-                channel["cgi_int"] = 0
-
+            channel["cgi_int"] = GsmModemEnricher.get_cgi_int(channel)
             """ Here's the feed comparison part """
             if skip_feed_comparison is False:
                 channel["feed_info"] = self.get_feed_info(channel["mcc"],
                                                           channel["mnc"],
                                                           channel["lac"],
                                                           channel["cellid"])
-                try:
-                    chan["lat"] = channel["feed_info"]["lat"]
-                    chan["lon"] = channel["feed_info"]["lon"]
-                    here["lat"] = state["gps"]["geometry"]["coordinates"][0]
-                    here["lon"] = state["gps"]["geometry"]["coordinates"][1]
-                except TypeError:
-                    print "EnrichGSM: Incomplete geo info..."
-                    chan["lat"] = None
-                    chan["lon"] = None
-                    here["lat"] = None
-                    here["lon"] = None
+                chan, here = GsmModemEnricher.build_chan_here(channel, state)
                 channel["distance"] = Utility.calculate_distance(chan["lon"],
                                                                  chan["lat"],
                                                                  here["lon"],
@@ -90,42 +154,33 @@ class GsmModemEnricher(object):
             if skip_feed_comparison is True:
                 continue
             # Alert if tower is not in feed DB
-            if (channel["feed_info"]["range"] == 0 and
-                    channel["feed_info"]["lon"] == 0 and
-                    channel["feed_info"]["lat"] == 0):
-                bts_info = "ARFCN: %s mcc: %s mnc: %s lac: %s cellid: %s" % (
-                    channel["arfcn"], channel["mcc"], channel["mnc"],
-                    channel["lac"], channel["cellid"])
+            if GsmModemEnricher.channel_in_feed_db(channel) is False:
+                bts_info = "ARFCN: %s CGI: %s" % (channel["arfcn"],
+                                                  channel["cgi_str"])
                 message = "BTS not in feed database! Info: %s Site: %s" % (
-                    bts_info, channel["site_name"])
+                    bts_info, str(channel["site_name"]))
                 alert = self.alerts.build_alert(120, message)
                 results_set.append(alert)
             # Else, be willing to alert if channel is not in range
-            elif int(channel["distance"]) > int(channel["feed_info"]["range"]):
-                message = ("ARFCN: %s Expected range: %s  Actual distance:" +
-                           " %s Channel info: %s Site: %s") % (
-                           channel["arfcn"],
+            elif GsmModemEnricher.channel_out_of_range(channel):
+                message = ("ARFCN: %s Expected range: %s Actual distance:" +
+                           " %s CGI: %s Site: %s") % ( channel["arfcn"],
                            str(channel["feed_info"]["range"]),
                            str(channel["distance"]),
-                           json.dumps(channel),
+                           channel["cgi_str"],
                            channel["site_name"])
                 alert = self.alerts.build_alert(100, message)
                 results_set.append(alert)
             # Test for primary BTS change
             if channel["cell"] == '0':
-                current_bts = {"mcc": channel["mcc"],
-                               "mnc": channel["mnc"],
-                               "lac": channel["lac"],
-                               "cellid": channel["cellid"]}
-                if self.prior_bts == {}:
-                    self.prior_bts = dict(current_bts)
-                elif self.prior_bts != current_bts:
+                if GsmModemEnricher.primary_bts_changed(self.prior_bts, channel):
+                    current_bts = GsmModemEnricher.bts_from_channel(channel)
                     msg = ("Primary BTS was %s " +
                            "now %s. Site: %s") % (
                             GsmModemEnricher.make_bts_friendly(self.prior_bts),
                             GsmModemEnricher.make_bts_friendly(current_bts),
                             channel["site_name"])
-                    alert = self.alerts.build_alert(110, message)
+                    alert = self.alerts.build_alert(110, msg)
                     results_set.append(alert)
                     self.prior_bts = dict(current_bts)
         return results_set
