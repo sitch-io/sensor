@@ -115,3 +115,11 @@ class Utility:
                 "heartbeat_service_name": service_name,
                 "timestamp": Utility.get_now_string()}
         return scan
+
+    @classmethod
+    def is_valid_json(in_str):
+        try:
+            json.loads(in_str)
+            return True
+        except:
+            return False
