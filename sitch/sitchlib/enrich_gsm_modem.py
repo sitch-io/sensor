@@ -22,7 +22,7 @@ class GsmModemEnricher(object):
         return
 
     @classmethod
-    def enrich_channel_from_scan_document(cls, channel, scan_document):
+    def enrich_channel_with_scan(cls, channel, scan_document):
         """ Enriches channel with scan document metadata """
         channel["band"] = scan_document["band"]
         channel["scan_finish"] = scan_document["scan_finish"]
@@ -110,9 +110,9 @@ class GsmModemEnricher(object):
         result = False
         current_bts = GsmModemEnricher.bts_from_channel(channel)
         if prior_bts == {}:
-            prior_bts = dict(current_bts)
+            pass
         elif prior_bts != current_bts:
-            result = False
+            result = True
         return result
 
 
@@ -173,8 +173,8 @@ class GsmModemEnricher(object):
                 results_set.append(alert)
             # Test for primary BTS change
             if channel["cell"] == '0':
+                current_bts = GsmModemEnricher.bts_from_channel(channel)
                 if GsmModemEnricher.primary_bts_changed(self.prior_bts, channel):
-                    current_bts = GsmModemEnricher.bts_from_channel(channel)
                     msg = ("Primary BTS was %s " +
                            "now %s. Site: %s") % (
                             GsmModemEnricher.make_bts_friendly(self.prior_bts),
@@ -182,7 +182,7 @@ class GsmModemEnricher(object):
                             channel["site_name"])
                     alert = self.alerts.build_alert(110, msg)
                     results_set.append(alert)
-                    self.prior_bts = dict(current_bts)
+                self.prior_bts = dict(current_bts)
         return results_set
 
     @classmethod
