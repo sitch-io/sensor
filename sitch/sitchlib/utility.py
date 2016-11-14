@@ -117,7 +117,7 @@ class Utility:
         return scan
 
     @classmethod
-    def is_valid_json(in_str):
+    def is_valid_json(cls, in_str):
         try:
             json.loads(in_str)
             return True
