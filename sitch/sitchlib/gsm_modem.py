@@ -57,17 +57,13 @@ class GsmModem(object):
         self.serconn.flush()
         return
 
-    def unset_eng_mode(self):
-        self.serconn.write(self.unset_eng)
-        self.serconn.flush()
-        time.sleep(2)
-        output = self.serconn.readline()
-        print output
-        self.serconn.flush()
-        return
-
-    def set_eng_mode(self):
-        self.serconn.write(self.eng_init)
+    def eng_mode(self, status):
+        """ Status is bool. """
+        if status is False:
+            mode_string = self.unset_eng
+        else:
+            mode_string = self.eng_init
+        self.serconn.write(mode_string)
         self.serconn.flush()
         time.sleep(2)
         output = self.serconn.readline()
