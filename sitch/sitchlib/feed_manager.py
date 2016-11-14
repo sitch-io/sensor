@@ -13,16 +13,11 @@ class FeedManager(object):
         self.feed_cache = []
         self.born_on_date = datetime.now()
 
-    def update_mcc_feeds(self):
-        for mcc in self.mcc_list:
-            FeedManager.place_feed_file(self.feed_dir, self.url_base, mcc)
-        print "Feed: Finished pulling all MCC feed files"
-        return
-
-    def update_fcc_feed_files(self):
-        for state in self.state_list:
-            FeedManager.place_feed_file(self.feed_dir, self.url_base, state)
-        print "Feed: Finished pulling all state feed files"
+    def update_feed_files(self):
+        all_feed_ids = self.state_list + self.mcc_list
+        for feed_id in all_feed_ids:
+            FeedManager.place_feed_file(self.feed_dir, self.url_base, feed_id)
+        print "Feed: Finished pulling all feed files"
         return
 
     @classmethod

@@ -44,8 +44,7 @@ class Enricher:
         return
 
     def update_feeds(self):
-        self.feed_obj.update_mcc_feeds()
-        self.feed_obj.update_fcc_feed_files()
+        self.feed_obj.update_feed_files()
 
     @classmethod
     def determine_scan_type(cls, scan):
