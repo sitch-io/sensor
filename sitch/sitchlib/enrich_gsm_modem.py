@@ -37,7 +37,8 @@ class GsmModemEnricher(object):
             try:
                 channel["arfcn_int"] = int(channel["arfcn"])
             except:
-                print "EnrichGSM: Unable to convert ARFCN to int"
+                msg = "EnrichGSM: Unable to convert ARFCN to int"
+                print msg
                 print channel["arfcn"]
                 channel["arfcn_int"] = 0
             """ In the event we have incomplete information, we need to bypass
@@ -54,14 +55,12 @@ class GsmModemEnricher(object):
             channel = self.convert_float_targets(channel)
 
             """ Setting CGI """
-            cgi = "%s%s%s%s" % (str(channel["mcc"]), str(channel["mnc"]),
-                                str(channel["lac"]), str(channel["cellid"]))
-            channel["cgi_str"] = cgi
+            channel["cgi_str"] = GsmModemEnricher.make_bts_friendly(channel)
             try:
-                channel["cgi_int"] = int(cgi)
+                channel["cgi_int"] = int(channel["cgi_str"].replace(':', ''))
             except:
                 print "EnrichGSM: Unable to convert CGI to int"
-                print cgi
+                print channel["cgi_str"]
                 channel["cgi_int"] = 0
 
             """ Here's the feed comparison part """
@@ -121,17 +120,18 @@ class GsmModemEnricher(object):
                 if self.prior_bts == {}:
                     self.prior_bts = dict(current_bts)
                 elif self.prior_bts != current_bts:
-                    message = ("Primary BTS was %s " +
-                               "now %s. Site: %s") % (
-                                   self.make_bts_friendly(self.prior_bts),
-                                   self.make_bts_friendly(current_bts),
-                                   channel["site_name"])
+                    msg = ("Primary BTS was %s " +
+                           "now %s. Site: %s") % (
+                            GsmModemEnricher.make_bts_friendly(self.prior_bts),
+                            GsmModemEnricher.make_bts_friendly(current_bts),
+                            channel["site_name"])
                     alert = self.alerts.build_alert(110, message)
                     results_set.append(alert)
                     self.prior_bts = dict(current_bts)
         return results_set
 
-    def make_bts_friendly(self, bts_struct):
+    @classmethod
+    def make_bts_friendly(cls, bts_struct):
         """ Expecting a dict with keys for mcc, mnc, lac, cellid"""
         retval = "%s:%s:%s:%s" % (str(bts_struct["mcc"]),
                                   str(bts_struct["mnc"]),
