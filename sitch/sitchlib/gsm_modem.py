@@ -13,6 +13,7 @@ class GsmModem(object):
     """
     def __init__(self, ser_port):
         self.eng_init = 'AT+CENG=2,1 \r\n'
+        self.unset_eng = 'AT+CENG=0 \r\n'
         self.gps_init = 'AT+CGPSINF=0 \r\n'
         self.echo_off = 'ATE0 \r\n'
         self.reg_info = 'AT+COPS? \r\n'
@@ -53,6 +54,15 @@ class GsmModem(object):
 
     def trigger_gps(self):
         self.serconn.write(self.gps_init)
+        self.serconn.flush()
+        return
+
+    def unset_eng_mode(self):
+        self.serconn.write(self.unset_eng)
+        self.serconn.flush()
+        time.sleep(2)
+        output = self.serconn.readline()
+        print output
         self.serconn.flush()
         return
 
