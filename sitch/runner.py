@@ -317,6 +317,13 @@ def enricher(config):
                         else:
                             enr.suppressed_alerts[log_bolus[1]["details"]] = datetime.datetime.now()  # NOQA
                 message_write_queue.append(log_bolus)
+            for log_bolus in outlist:
+                channel_events = ["gsm_modem_channel", "kal_channel"]
+                if log_bolus[0] in channel_events:
+                    target_arfcn = log_bolus[1]["arfcn_int"]
+                    enriched_arfcn = enr.check_arfcn_in_range(target_arfcn)
+                    message_write_queue.append(enriched_arfcn)
+
         except IndexError:
             time.sleep(1)
 
