@@ -60,9 +60,12 @@ class GsmModem(object):
     def eng_mode(self, status):
         """ Status is bool. """
         if status is False:
+            print "GsmModem: Unsetting engineering mode"
             mode_string = self.unset_eng
         else:
+            print "GsmModem: setting engineering mode"
             mode_string = self.eng_init
+        self.serconn.flush()
         self.serconn.write(mode_string)
         self.serconn.flush()
         time.sleep(2)

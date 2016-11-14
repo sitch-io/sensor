@@ -144,7 +144,6 @@ def gsm_modem_consumer(config):
         except:
             consumer = sitchlib.GsmModem(tty_port)
         time.sleep(2)
-        print "Runner: Unsetting engineering mode..."
         consumer.eng_mode(False)
         print "Runner: Getting registration info..."
         reg_info = consumer.get_reg_info()
