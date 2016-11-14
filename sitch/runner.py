@@ -21,6 +21,9 @@ def main():
     gps_location = {}
     scan_results_queue = deque([])
     message_write_queue = deque([])
+    sensor_version = sitchlib.__version__
+    startup_string = "Starting SITCH Sensor v%s" % sensor_version
+    print startup_string
     print "Runner: Setting config..."
     config = sitchlib.ConfigHelper()
     if config.mode == 'clutch':
