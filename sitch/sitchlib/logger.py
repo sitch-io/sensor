@@ -52,6 +52,9 @@ class LogHandler:
             msg_string = json.dumps(msg_body)
         elif type(msg_body) is str:
             msg_string = msg_body
+        else:
+            print("Logger: Unanticipated message type: %s" % str(type(msg_body)))
+            msg_string = str(msg_body)
         self.write_log_message(bolus[0], msg_string)
 
     def write_log_message(self, log_file_type, message):
