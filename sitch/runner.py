@@ -324,7 +324,6 @@ def enricher(config):
                     enriched_arfcn = enr.check_arfcn_in_range(target_arfcn)
                     for item in enriched_arfcn:
                         message_write_queue.append(item)
-
         except IndexError:
             time.sleep(1)
 

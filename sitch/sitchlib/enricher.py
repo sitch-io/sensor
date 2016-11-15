@@ -88,8 +88,8 @@ class Enricher:
         """ Checks to make sure ARFCN is licensed for this area """
         scan_job = {"platform": self.platform_name,
                     "scan_results": [{"arfcn": arfcn}],
-                    "scan_start": datetime.now(),
-                    "scan_finish": datetime.now(),
+                    "scan_start": Utility.get_now_string(),
+                    "scan_finish": Utility.get_now_string(),
                     "scan_program": "ARFCN_ENRICHER",
                     "scan_location": {"name": self.device_id},
                     "scanner_public_ip": self.public_ip}
