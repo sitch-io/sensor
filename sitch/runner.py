@@ -322,7 +322,8 @@ def enricher(config):
                 if log_bolus[0] in channel_events:
                     target_arfcn = log_bolus[1]["arfcn_int"]
                     enriched_arfcn = enr.check_arfcn_in_range(target_arfcn)
-                    message_write_queue.append([enriched_arfcn])
+                    for item in enriched_arfcn:
+                        message_write_queue.append(item)
 
         except IndexError:
             time.sleep(1)
