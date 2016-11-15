@@ -18,7 +18,7 @@ class GsmModem(object):
         self.echo_off = 'ATE0 \r\n'
         self.reg_info = 'AT+COPS? \r\n'
         self.config_dump = 'ATV1Q0&V \r\n'
-        print "GSM: opening serial port: %s" % ser_port
+        print("GSM: opening serial port: %s" % ser_port)
         time.sleep(10)
         self.serconn = serial.Serial(ser_port, 4800, timeout=1)
         ser_open_iter = 0

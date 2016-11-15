@@ -115,7 +115,7 @@ class TestEnricher:
         enricher = self.create_enricher()
         result = enricher.enrich_kal_scan(samp_kal)
         for entry in result:
-            print entry
+            print(entry)
         desired_item_count = 5
         assert len(result) == desired_item_count
         for item in result:
