@@ -23,12 +23,12 @@ class GsmModem(object):
         self.serconn = serial.Serial(ser_port, 4800, timeout=1)
         ser_open_iter = 0
         while not self.serconn.is_open:
-            print "GSM: Attempting to open %s again..." % ser_port
+            print("GSM: Attempting to open %s again..." % ser_port)
             time.sleep(1)
             ser_open_iter = ser_open_iter + 1
             self.serconn.open()
             if ser_open_iter > 5:
-                print "GSM: Failed to init and open serial port %s!" % ser_port
+                print("GSM: Failed to init and open serial port %s!" % ser_port)
                 sys.exit(2)
         return
 
@@ -61,21 +61,21 @@ class GsmModem(object):
         """ Status is bool. """
         self.serconn.flush()
         if status is False:
-            print "GsmModem: Unsetting engineering mode, flushing"
+            print("GsmModem: Unsetting engineering mode, flushing")
             self.serconn.write(self.unset_eng)
             while True:
                 output = self.serconn.readline()
                 if output == '':
                     break
                 else:
-                    print output
+                    print(output)
         else:
-            print "GsmModem: Setting engineering mode"
+            print("GsmModem: Setting engineering mode")
             self.serconn.write(self.eng_init)
         self.serconn.flush()
         time.sleep(2)
         output = self.serconn.readline()
-        print output
+        print(output)
         self.serconn.flush()
         return
 
@@ -84,7 +84,7 @@ class GsmModem(object):
         self.serconn.flush()
         time.sleep(2)
         output = self.serconn.readline()
-        print output
+        print(output)
         self.serconn.flush()
         return output
 
@@ -106,15 +106,15 @@ class GsmModem(object):
                     "PCS_MODE", "EGSM_DCS_MODE", "GSM850_PCS_MODE",
                     "EGSM_PCS_MODE", "ALL_BAND"]:
             term_command = "AT+CBAND=\"%s\" \r\n" % band
-            print "GSM: Setting GSM band with: %s" % term_command
+            print("GSM: Setting GSM band with: %s" % term_command)
             self.serconn.write(term_command)
             self.serconn.flush()
             time.sleep(2)
             output = self.serconn.readline()
-            print output
+            print(output)
             self.serconn.flush()
         else:
-            print "GSM: Not setting band, unrecognized value: %s" % band
+            print("GSM: Not setting band, unrecognized value: %s" % band)
 
     @classmethod
     def process_line(cls, line):
@@ -129,8 +129,8 @@ class GsmModem(object):
             elif len(line_parts) == 8:
                 processed = GsmModem.process_8(line_parts)
             else:
-                print "GSM: Unrecognized GSM message format:"
-                print line_parts
+                print("GSM: Unrecognized GSM message format:")
+                print(line_parts)
         elif line.startswith('AT+'):
             processed = {}
         elif re.match('^\s*$', line):
@@ -138,8 +138,8 @@ class GsmModem(object):
         elif re.match('^OK\s*$', line):
             processed = {}
         else:
-            print "GSM: Unprocessable line from SIM808!"
-            print line
+            print("GSM: Unprocessable line from SIM808!")
+            print(line)
             processed = {}
         return processed
 

@@ -17,7 +17,7 @@ class FeedManager(object):
         all_feed_ids = self.state_list + self.mcc_list
         for feed_id in all_feed_ids:
             FeedManager.place_feed_file(self.feed_dir, self.url_base, feed_id)
-        print "Feed: Finished pulling all feed files"
+        print("Feed: Finished pulling all feed files")
         return
 
     @classmethod
@@ -38,14 +38,14 @@ class FeedManager(object):
         temp_file = "%s.TEMP" % destination_file
         origin_url = FeedManager.get_source_url(url_base, item_id)
         msg = "Feed: Downloading %s to %s" % (origin_url, temp_file)
-        print msg
+        print(msg)
         response = requests.get(origin_url, stream=True)
         with open(temp_file, 'wb') as out_file:
             for chunk in response.iter_content(chunk_size=1024):
                 if chunk:
                     out_file.write(chunk)
         time.sleep(1)
-        print "Feed: Moving %s to %s" % (temp_file, destination_file)
+        print("Feed: Moving %s to %s" % (temp_file, destination_file))
         os.rename(temp_file, destination_file)
         return
 

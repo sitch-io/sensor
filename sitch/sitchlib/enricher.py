@@ -63,8 +63,8 @@ class Enricher:
             elif scan["scan_program"] == 'heartbeat':
                 scan_type = 'HEARTBEAT'
         except:
-            print "Enricher: Failure to determine scan type"
-            print scan
+            print("Enricher: Failure to determine scan type")
+            print(scan)
         return scan_type
 
     def enrich_gsm_modem_scan(self, scan, state):

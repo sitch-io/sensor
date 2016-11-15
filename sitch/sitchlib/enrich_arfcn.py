@@ -27,14 +27,14 @@ class EnrichArfcn(object):
             return results_set
         if self.geo_state["gps"] == {}:
             msg = "EnrichARFCN: No gps state for comparison.  ARFCN: %s" % arfcn
-            print msg
+            print(msg)
         msg = "EnrichARFCN: Cache miss.  Attempt to get %s from feed files..." % str(arfcn)
-        print msg
+        print(msg)
         for item in self.fcc_feed:
             if str(item["ARFCN"]) != str(arfcn):
                 continue
             item_gps = self.assemble_gps(item)
-            print item
+            print(item)
             if self.is_in_range(item_gps, self.geo_state["gps"]):
                 return results_set
         msg = "Unable to locate a license for ARFCN %s" % str(arfcn)
@@ -69,6 +69,6 @@ class EnrichArfcn(object):
             latlon["lat"] = ll.to_string('D%')[0]
             latlon["lon"] = ll.to_string('D%')[1]
         except:
-            print "EnrichARFCN: Unable to compose lat/lon from:"
-            print item
+            print("EnrichARFCN: Unable to compose lat/lon from:")
+            print(item)
         return latlon
