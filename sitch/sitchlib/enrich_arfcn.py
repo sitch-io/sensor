@@ -23,6 +23,8 @@ class EnrichArfcn(object):
         Bool represents if the commparison was good, false if it failed."""
         arfcn = scan_document["scan_results"][0]["arfcn"]
         results_set = [("scan", scan_document)]
+        if str(arfcn) == "0":
+            return results_set
         if arfcn in self.observed_arfcn:
             return results_set
         if self.geo_state["gps"] == {}:
