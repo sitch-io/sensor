@@ -36,7 +36,6 @@ class EnrichArfcn(object):
             if str(item["ARFCN"]) != str(arfcn):
                 continue
             item_gps = self.assemble_gps(item)
-            print(item)
             if self.is_in_range(item_gps, self.geo_state["gps"]):
                 return results_set
         results_set[0][1]["scan_finish"] = Utility.get_now_string()
