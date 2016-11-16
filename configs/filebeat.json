@@ -59,6 +59,14 @@
         },
         {
             "input_type": "log",
+            "document_type": "arfcn_enricher",
+            "keys_under_root": true,
+            "paths": [
+                "/var/log/sitch/arfcn_enricher.log"
+            ]
+        },
+        {
+            "input_type": "log",
             "document_type": "heartbeat",
             "keys_under_root": true,
             "paths": [

@@ -33,6 +33,7 @@ class LogHandler:
                         "arfcn_ta": "arfcn_ta.log",  # sim808 ##
                         "kal_channel": "kal_channel.log",  # cells from Kal
                         "gsm_modem_channel": "gsm_modem_channel.log",  # sim808 cells
+                        "arfcn_enricher": "arfcn_enricher.log",
                         "geoip": "geoip.log",
                         "gps": "gps.log",
                         "heartbeat": "heartbeat.log",
