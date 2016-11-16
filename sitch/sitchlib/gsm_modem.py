@@ -84,6 +84,8 @@ class GsmModem(object):
         self.serconn.flush()
         time.sleep(2)
         output = self.serconn.readline()
+        if self.reg_info in output:
+            output = self.serconn.readline()
         print(output)
         self.serconn.flush()
         return output
