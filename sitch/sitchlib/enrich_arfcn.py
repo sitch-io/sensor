@@ -37,6 +37,7 @@ class EnrichArfcn(object):
             print(item)
             if self.is_in_range(item_gps, self.geo_state["gps"]):
                 return results_set
+        results_set[0][1]["scan_finish"] = Utility.get_now_string()
         msg = "Unable to locate a license for ARFCN %s" % str(arfcn)
         alert = self.alerts.build_alert(400, msg)
         results_set.append(alert)
