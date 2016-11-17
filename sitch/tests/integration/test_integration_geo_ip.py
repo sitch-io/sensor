@@ -25,7 +25,7 @@ class TestIntegrationGeoIp:
         results = []
         for x in geoip:
             results.append(x)
-            print x
+            print(x)
             if len(results) > 2:
                 break
         for g in results:

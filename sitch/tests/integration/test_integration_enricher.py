@@ -125,7 +125,7 @@ class TestIntegrationEnricher:
         results = enricher.enrich_gsm_modem_scan(scan, state)
         alert_types = []
         for result in results:
-            print result
+            print(result)
             if result[0] == "sitch_alert":
                 alert_types.append(result[1]["id"])
         assert 100 in alert_types
@@ -140,7 +140,7 @@ class TestIntegrationEnricher:
         results = enricher.enrich_gsm_modem_scan(scan, state)
         alert_types = []
         for result in results:
-            print result
+            print(result)
             if result[0] == "sitch_alert":
                 alert_types.append(result[1]["id"])
         assert 110 in alert_types
@@ -152,7 +152,7 @@ class TestIntegrationEnricher:
         results = enricher.enrich_gsm_modem_scan(scan, state)
         alert_types = []
         for result in results:
-            print result
+            print(result)
             if result[0] == "sitch_alert":
                 alert_types.append(result[1]["id"])
         assert 120 in alert_types
@@ -164,7 +164,7 @@ class TestIntegrationEnricher:
         results = enricher.enrich_kal_scan(scan)
         alert_types = []
         for result in results:
-            print result
+            print(result)
             if result[0] == "sitch_alert":
                 alert_types.append(result[1]["id"])
         assert 200 in alert_types

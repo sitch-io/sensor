@@ -23,20 +23,22 @@ class EnrichArfcn(object):
         Bool represents if the commparison was good, false if it failed."""
         arfcn = scan_document["scan_results"][0]["arfcn"]
         results_set = [("scan", scan_document)]
+        if str(arfcn) == "0":
+            return results_set
         if arfcn in self.observed_arfcn:
             return results_set
         if self.geo_state["gps"] == {}:
             msg = "EnrichARFCN: No gps state for comparison.  ARFCN: %s" % arfcn
-            print msg
+            print(msg)
         msg = "EnrichARFCN: Cache miss.  Attempt to get %s from feed files..." % str(arfcn)
-        print msg
+        print(msg)
         for item in self.fcc_feed:
             if str(item["ARFCN"]) != str(arfcn):
                 continue
             item_gps = self.assemble_gps(item)
-            print item
             if self.is_in_range(item_gps, self.geo_state["gps"]):
                 return results_set
+        results_set[0][1]["scan_finish"] = Utility.get_now_string()
         msg = "Unable to locate a license for ARFCN %s" % str(arfcn)
         alert = self.alerts.build_alert(400, msg)
         results_set.append(alert)
@@ -69,6 +71,6 @@ class EnrichArfcn(object):
             latlon["lat"] = ll.to_string('D%')[0]
             latlon["lon"] = ll.to_string('D%')[1]
         except:
-            print "EnrichARFCN: Unable to compose lat/lon from:"
-            print item
+            print("EnrichARFCN: Unable to compose lat/lon from:")
+            print(item)
         return latlon

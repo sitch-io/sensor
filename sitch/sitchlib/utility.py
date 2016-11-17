@@ -22,7 +22,7 @@ class Utility:
             raw_response = subprocess.check_output(lshw.split())
             platform_info = json.loads(raw_response.replace('\n', ''))
         except:
-            print "Utility: Unable to get platform info from lshw!"
+            print("Utility: Unable to get platform info from lshw!")
             platform_info = {}
         return platform_info
 
@@ -31,7 +31,7 @@ class Utility:
         try:
             subprocess.Popen(runcmd.split())
         except KeyError as e:
-            print e
+            print(e)
             return False
         return True
 
@@ -50,7 +50,8 @@ class Utility:
         if os.path.isfile(fullpath):
             return
         else:
-            print "Utility: Creating log file: %s" % fullpath
+            logmsg = "Utility: Creating log file: %s" % fullpath
+            print(logmsg)
             open(fullpath, 'a').close()
         return
 
@@ -66,12 +67,12 @@ class Utility:
             raw_response = subprocess.check_output(lshw.split())
             platform_info = json.loads(raw_response.replace('\n', ''))
         except:
-            print "Utility: Failed to obtain platform info!"
+            print("Utility: Failed to obtain platform info!")
             platform_info = {}
         try:
             platform_name = platform_info["product"]
         except:
-            print "Utility: Failed to obtain platform name!"
+            print("Utility: Failed to obtain platform name!")
             platform_name = "Unspecified"
         return platform_name
 
@@ -92,7 +93,7 @@ class Utility:
     @classmethod
     def calculate_distance(cls, lon_1, lat_1, lon_2, lat_2):
         if None in [lon_1, lat_1, lon_2, lat_2]:
-            print "Utility: Zero geo coordinate detected, not resolving distance."
+            print("Utility: Geo coordinate is zero, not resolving distance.")
             return 0
         pos_1 = (lon_1, lat_1)
         pos_2 = (lon_2, lat_2)
@@ -106,7 +107,8 @@ class Utility:
         try:
             retval = float(s)
         except:
-            print "Utility: Unable to convert %s to float" % str(s)
+            errmsg = "Utility: Unable to convert %s to float" % str(s)
+            print(errmsg)
         return retval
 
     @classmethod
@@ -115,3 +117,11 @@ class Utility:
                 "heartbeat_service_name": service_name,
                 "timestamp": Utility.get_now_string()}
         return scan
+
+    @classmethod
+    def is_valid_json(cls, in_str):
+        try:
+            json.loads(in_str)
+            return True
+        except:
+            return False

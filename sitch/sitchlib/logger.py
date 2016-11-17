@@ -33,6 +33,7 @@ class LogHandler:
                         "arfcn_ta": "arfcn_ta.log",  # sim808 ##
                         "kal_channel": "kal_channel.log",  # cells from Kal
                         "gsm_modem_channel": "gsm_modem_channel.log",  # sim808 cells
+                        "arfcn_enricher": "arfcn_enricher.log",
                         "geoip": "geoip.log",
                         "gps": "gps.log",
                         "heartbeat": "heartbeat.log",
@@ -41,7 +42,8 @@ class LogHandler:
         if ltype in type_to_file:
             log_file = type_to_file[ltype]
         else:
-            print "Logger: Unable to determine log file for type %s" % ltype
+            msg = "Logger: Unable to determine log file for type %s" % ltype
+            print(msg)
             log_file = None
         return log_file
 
@@ -51,16 +53,19 @@ class LogHandler:
             msg_string = json.dumps(msg_body)
         elif type(msg_body) is str:
             msg_string = msg_body
+        else:
+            print("Logger: Unanticipated message type: %s" % str(type(msg_body)))
+            msg_string = str(msg_body)
         self.write_log_message(bolus[0], msg_string)
 
     def write_log_message(self, log_file_type, message):
         """You should only ever send a string to this method"""
         if not isinstance(message, str):
-            print "Unable to log message with wrong type:"
-            print str(type(message))
-            print str(message)
-            print "Log file type:"
-            print log_file_type
+            print("Unable to log message with wrong type:")
+            print(str(type(message)))
+            print(str(message))
+            print("Log file type:")
+            print(log_file_type)
         log_file = os.path.join(self.log_prefix,
                                 self.get_log_file_name(log_file_type))
         with open(log_file, 'a') as lf:
