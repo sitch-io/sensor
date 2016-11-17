@@ -44,8 +44,7 @@ class Enricher:
         return
 
     def update_feeds(self):
-        self.feed_obj.update_mcc_feeds()
-        self.feed_obj.update_fcc_feed_files()
+        self.feed_obj.update_feed_files()
 
     @classmethod
     def determine_scan_type(cls, scan):
@@ -64,8 +63,8 @@ class Enricher:
             elif scan["scan_program"] == 'heartbeat':
                 scan_type = 'HEARTBEAT'
         except:
-            print "Enricher: Failure to determine scan type"
-            print scan
+            print("Enricher: Failure to determine scan type")
+            print(scan)
         return scan_type
 
     def enrich_gsm_modem_scan(self, scan, state):
@@ -89,9 +88,9 @@ class Enricher:
         """ Checks to make sure ARFCN is licensed for this area """
         scan_job = {"platform": self.platform_name,
                     "scan_results": [{"arfcn": arfcn}],
-                    "scan_start": datetime.now(),
-                    "scan_finish": datetime.now(),
-                    "scan_program": "ARFCN_ENRICHER",
+                    "scan_start": Utility.get_now_string(),
+                    "scan_finish": Utility.get_now_string(),
+                    "scan_program": "arfcn_enricher",
                     "scan_location": {"name": self.device_id},
                     "scanner_public_ip": self.public_ip}
         retval = self.arfcn_enricher.compare_arfcn_to_feed(scan_job)

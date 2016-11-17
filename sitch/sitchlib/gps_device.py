@@ -1,4 +1,5 @@
 from gps3 import gps3
+from utility import Utility
 import copy
 import time
 
@@ -13,7 +14,7 @@ class GpsListener(object):
 
     def __iter__(self):
         for new_data in self.gps_socket:
-            if new_data:
+            if Utility.is_valid_json(new_data):
                 self.data_stream.unpack(new_data)
                 if "lon" in self.data_stream.TPV:
                     if self.data_stream.TPV['lon'] != 'n/a':

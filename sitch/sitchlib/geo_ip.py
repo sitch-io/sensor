@@ -1,6 +1,6 @@
 import copy
-import requests
 import time
+from utility import Utility
 from geoip import geolite2
 
 
@@ -21,7 +21,8 @@ class GeoIp(object):
             time.sleep(self.delay)
 
     def set_ip(self):
-        ip = requests.get('https://api.ipify.org').text
+        print("GeoIp: Setting public IP address")
+        ip = Utility.get_public_ip()
         self.ip = ip
         return
 
@@ -37,5 +38,5 @@ class GeoIp(object):
                                lat_lon[0]]}}
             return
         except:
-            print "GeoIP: Unable to set geo by IP: %s" % self.ip
+            print("GeoIP: Unable to set geo by IP: %s" % self.ip)
             return None

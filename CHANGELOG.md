@@ -1,8 +1,73 @@
 # Changelog
 
-## v3.0
+## v3.1
 
 ### Other
+
+* Removing debug print statement. [Ash Wilson]
+
+* Shouldn't attempt to enrich if arfcn == 0. [Ash Wilson]
+
+* Corrections for GSM modem provider detection. [Ash Wilson]
+
+* Improving scan start and end times for ARFCN enrichment- now re-sets finish time when the arfcn enricher is ready to pass the event back to the main enricher module. [Ash Wilson]
+
+* Adding support for ARFCN events. [Ash Wilson]
+
+* ARFCN scan date normalization fix. [Ash Wilson]
+
+* Changing approach to getting enriched ARFCNs in queue. [Ash Wilson]
+
+* Improving enriched ARFCN messages. [Ash Wilson]
+
+* Fixing print statements, in a parentetical sense. [Ash Wilson]
+
+* Modernizing some print statements. [Ash Wilson]
+
+* Better exception handling in build_chan_here() [Ash Wilson]
+
+* Correcting is_valid_json args. [Ash Wilson]
+
+* Wiring up ARFCN enricher/alerter. [Ash Wilson]
+
+* Checking JSON validity before unpacking GPSD output. [Ash Wilson]
+
+* Refactoring to use utility's public IP getter. [Ash Wilson]
+
+* Trying to catch a rogue JSON error. [Ash Wilson]
+
+* Adding a routine to flush after stopping engineering mode. [Ash Wilson]
+
+* Better messaging for GSM engineering mode enable/disable. [Ash Wilson]
+
+* Re-factoring GSM modem engineering mode handling. [Ash Wilson]
+
+* Corrected mistake in refactoring, TYVM, unit tests. [Ash Wilson]
+
+* Big re-factor inside GsmModemEnricher to simplify enrich_gsm_modem_scan() [Ash Wilson]
+
+* Fixes #24 by stopping engineering mode before interrogating GSM modem for registration and configuration information. [Ash Wilson]
+
+* Re-factor and consolidate feed file retrieval mechanism. [Ash Wilson]
+
+* Removal of unnecessarily verbose output in FeedManager. [Ash Wilson]
+
+* Minor re-factoring in GsmModemEnricher. [Ash Wilson]
+
+* Adding version identifier to startup output. [Ash Wilson]
+
+* Re-factor GsmModemEnricher to reduce duplicate code. [Ash Wilson]
+
+* Re-factor duplicated functionality in FeedManager() [Ash Wilson]
+
+
+## v3.0 (2016-11-09)
+
+### Other
+
+* Tweaking codeclimate-related configs. [Ash Wilson]
+
+* Adding CHANGELOG. [Ash Wilson]
 
 * Making log method and mode in ConfigHelper easier to deal with. [Ash Wilson]
 

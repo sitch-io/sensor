@@ -1,4 +1,4 @@
-# SITCH Sensor v3.0
+# SITCH Sensor v3.1
 
 [![Build Status](https://travis-ci.org/sitch-io/sensor.svg?branch=master)](https://travis-ci.org/sitch-io/sensor)
 
