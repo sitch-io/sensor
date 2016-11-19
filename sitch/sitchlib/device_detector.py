@@ -74,33 +74,24 @@ class DeviceDetector(object):
     def is_a_gps(cls, port):
         time.sleep(2)
         positive_match = ["$GPGGA", "$GPGLL", "$GPGSA", "$GPGSV", "$GPRMC"]
-        serconn = serial.Serial(port, 4800, timeout=1)
-        serconn.flush()
-        for i in xrange(10):
-            line = None
-            line = serconn.readline()
-            if line is None:
-                time.sleep(1)
-                pass
-            else:
-                for pm in positive_match:
-                    if pm in line:
-                        serconn.flush()
-                        serconn.close()
-                        serconn = None
-                        return True
-        serconn.flush()
-        serconn.close()
-        serconn = None
-        return False
+        result = DeviceDetector.interrogator(positive_match, port)
+        return result
 
     @classmethod
     def is_a_gsm_modem(cls, port):
         time.sleep(2)
         test_command = "ATI \r\n"
         positive_match = ["SIM808"]
+        result = DeviceDetector.interrogator(positive_match, port, test_command)
+        return result
+
+    @classmethod
+    def interrogator(cls, match_list, port, test_command=None):
+        time.sleep(2)
+        positive_match = match_list
         serconn = serial.Serial(port, 4800, timeout=1)
-        serconn.write(test_command)
+        if test_command:
+            serconn.write(test_command)
         serconn.flush()
         for i in xrange(10):
             line = None
