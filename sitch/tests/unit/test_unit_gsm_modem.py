@@ -35,4 +35,5 @@ class TestGsmModem:
     def test_clean_operator_string(self):
         example = '+COPS: 0,0,"T-Mobile USA"'
         desired = "T-Mobile USA"
-        assert sitchlib.GsmModem.clean_operator_string(example) == desired
+        cleaned = sitchlib.GsmModem.clean_operator_string(example)
+        assert cleaned == desired
