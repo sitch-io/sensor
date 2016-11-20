@@ -87,8 +87,8 @@ class DeviceDetector(object):
 
     @classmethod
     def interrogator(cls, match_list, port, test_command=None):
+        detected = False
         time.sleep(2)
-        positive_match = match_list
         serconn = serial.Serial(port, 4800, timeout=1)
         if test_command:
             serconn.write(test_command)
@@ -99,17 +99,23 @@ class DeviceDetector(object):
             if line is None:
                 time.sleep(1)
                 pass
+            elif DeviceDetector.interrogator_matcher(match_list, line):
+                detected = True
+                break
             else:
-                for pm in positive_match:
-                    if pm in line:
-                        serconn.flush()
-                        serconn.close()
-                        serconn = None
-                        return True
+                pass
         serconn.flush()
         serconn.close()
         serconn = None
-        return False
+        return detected
+
+    @classmethod
+    def interrogator_matcher(cls, matchers, line):
+        match = False
+        for m in matchers:
+            if m in line:
+                match = True
+        return match
 
     @classmethod
     def get_gsm_modem_info(cls, port):
