@@ -150,17 +150,30 @@ class GsmModemEnricher(object):
             # Stop here if we don't process against the feed...
             if skip_feed_comparison is True:
                 continue
-            # Alert if tower is not in feed DB
-            results_set.append(self.check_channel_against_feed(channel))
-            # Else, be willing to alert if channel is not in range
-            results_set.append(self.check_channel_range(channel))
-            # Test for primary BTS change
-            if channel["cell"] == '0':
-                results_set.append(self.process_cell_zero(channel))
+            feed_comparison_results = self.feed_comparison(channel)
+            for feed_alert in feed_comparison_results:
+                results_set.append(feed_alert)
         return results_set
 
+    def feed_comparison(self, channel):
+        comparison_results = []
+        retval = []
+        # Alert if tower is not in feed DB
+        comparison_results.append(self.check_channel_against_feed(channel))
+        # Else, be willing to alert if channel is not in range
+        if comparison_results == [()]:
+            comparison_results.append(self.check_channel_range(channel))
+        # Test for primary BTS change
+        if channel["cell"] == '0':
+            comparison_results.append(self.process_cell_zero(channel))
+        for result in comparison_results:
+            if result != ():
+                retval.append(result)
+        return retval
+
+
     def check_channel_against_feed(self, channel):
-        alert = ("null", "channel_against_feed clean")
+        alert = ()
         if GsmModemEnricher.channel_in_feed_db(channel) is False:
             bts_info = "ARFCN: %s CGI: %s" % (channel["arfcn"],
                                               channel["cgi_str"])
@@ -170,7 +183,7 @@ class GsmModemEnricher(object):
         return alert
 
     def check_channel_range(self, channel):
-        alert = ("null", "channel_range clean")
+        alert = ()
         if GsmModemEnricher.channel_out_of_range(channel):
             message = ("ARFCN: %s Expected range: %s Actual distance:" +
                        " %s CGI: %s Site: %s") % ( channel["arfcn"],
@@ -184,7 +197,7 @@ class GsmModemEnricher(object):
     def process_cell_zero(self, channel):
         """ Accepts channel (zero) as arg, returns a list which will
         be populated with any alerts we decide to fire """
-        alert = ("null", "cell_zero clean")
+        alert = ()
         current_bts = GsmModemEnricher.bts_from_channel(channel)
         if GsmModemEnricher.primary_bts_changed(self.prior_bts, channel):
             msg = ("Primary BTS was %s " +
@@ -193,7 +206,7 @@ class GsmModemEnricher(object):
                     GsmModemEnricher.make_bts_friendly(current_bts),
                     channel["site_name"])
             alert = self.alerts.build_alert(110, msg)
-            self.prior_bts = dict(current_bts)
+        self.prior_bts = dict(current_bts)
         return alert
 
 
