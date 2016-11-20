@@ -111,21 +111,24 @@ def init_event_injector(init_event):
     evt = [("sitch_init"), init_event]
     message_write_queue.append(evt)
 
+def gsm_modem_circuit_breaker(band, tty_port):
+    if band == "nope":
+        disable_scanner({"evt_cls": "gsm_consumer",
+                         "evt_type": "config_state",
+                         "evt_data": "GSM scanning disabled"})
+    if tty_port is None:
+        print("Runner: No GSM modem auto-detected or otherwise configured!")
+        disable_scanner({"evt_cls": "gsm_consumer",
+                         "evt_type": "config_state",
+                         "evt_data": "GSM scanning not configured"})
 
 def gsm_modem_consumer(config):
     while True:
         print("Runner: GSM modem configured for %s" % config.gsm_modem_port)
         tty_port = config.gsm_modem_port
         band = config.gsm_modem_band
-        if band == "nope":
-            disable_scanner({"evt_cls": "gsm_consumer",
-                             "evt_type": "config_state",
-                             "evt_data": "GSM scanning disabled"})
-        if tty_port is None:
-            print("Runner: No GSM modem auto-detected or otherwise configured!")
-            disable_scanner({"evt_cls": "gsm_consumer",
-                             "evt_type": "config_state",
-                             "evt_data": "GSM scanning not configured"})
+        # Catch this thread before initialization if configis insufficient
+        gsm_modem_circuit_breaker(band, tty_port)
         # Sometimes the buffer is full and instantiation fails the first time
         try:
             consumer = sitchlib.GsmModem(tty_port)
