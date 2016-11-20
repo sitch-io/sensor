@@ -1,10 +1,7 @@
-""" Starts gpsd and filebeat and runs a thread for collecting and enriching
-  SIM808 engineering mode data as well as kalibrate's scan information.
-  One thread for serial interaction and collection
-  One thread for enrichment and appending to logfile:
-  If log message is GPS, we update the location var for the enrichment
-  thread.
+""" This is the main process which runs collector, enricher, and output
+threads.
 """
+
 import sitchlib
 import datetime
 import kalibrate

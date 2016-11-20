@@ -1,4 +1,4 @@
-FROM ioft/armhf-ubuntu:16.04
+FROM resin/armv7hf-debian
 MAINTAINER Ash
 
 RUN apt-get update && apt-get upgrade -y && apt-get install -y \
