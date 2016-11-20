@@ -128,8 +128,6 @@ def gsm_modem_consumer(config):
             disable_with_nope({"evt_cls": "gsm_consumer",
                                "evt_type": "config_state",
                                "evt_data": "GSM scanning disabled"})
-            while True:
-                time.sleep(120)
         if tty_port is None:
             print("Runner: No GSM modem auto-detected or otherwise configured!")
             init_event_injector({"evt_cls": "gsm_consumer",
@@ -221,6 +219,8 @@ def disable_with_nope(event_struct):
     stdout_msg = "Runner: %s" % event_struct["evt_data"]
     print(stdout_msg)
     init_event_injector(event_struct)
+    while True:
+        time.sleep(120)
     return
 
 def kalibrate_consumer(config):
@@ -236,8 +236,6 @@ def kalibrate_consumer(config):
             disable_with_nope({"evt_cls": "kalibrate_consumer",
                                "evt_type": "config_state",
                                "evt_data": "Kalibrate scanning disabled"})
-            while True:
-                time.sleep(120)
         gain = config.kal_gain
         kal_scanner = kalibrate.Kal("/usr/local/bin/kal-linux-arm")
         start_time = sitchlib.Utility.get_now_string()
