@@ -1,6 +1,7 @@
 import datetime
 import json
 import os
+import pprint
 import subprocess
 import requests
 from location_tool import LocationTool
@@ -125,3 +126,13 @@ class Utility:
             return True
         except:
             return False
+
+    @classmethod
+    def pretty_string(cls, structure):
+        result = ""
+        pp = pprint.PrettyPrinter()
+        formatted = pp.pformat(structure)
+        for line in formatted.splitlines():
+            nextline = "    %s\n" % line
+            result = result + nextline
+        return result
