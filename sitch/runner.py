@@ -125,10 +125,9 @@ def gsm_modem_consumer(config):
         tty_port = config.gsm_modem_port
         band = config.gsm_modem_band
         if band == "nope":
-            print("Runner: Disabling GSM Modem scanning...")
-            init_event_injector({"evt_cls": "gsm_consumer",
-                                 "evt_type": "config_state",
-                                 "evt_data": "GSM scanning disabled"})
+            disable_with_nope({"evt_cls": "gsm_consumer",
+                               "evt_type": "config_state",
+                               "evt_data": "GSM scanning disabled"})
             while True:
                 time.sleep(120)
         if tty_port is None:
@@ -198,8 +197,7 @@ def gps_consumer(config):
         try:
             gps_listener = sitchlib.GpsListener(delay=120)
             for fix in gps_listener:
-                gps_event["scan_results"] = fix
-                scan_results_queue.append(gps_event.copy())
+                scan_compile_and_queue(gps_event, fix)
         except IndexError:
             time.sleep(3)
         except SocketError as e:
@@ -213,9 +211,17 @@ def geoip_consumer(config):
     while True:
         geoip_listener = sitchlib.GeoIp(delay=600)
         for result in geoip_listener:
-            geoip_event["scan_results"] = result
-            scan_results_queue.append(geoip_event.copy())
+            scan_compile_and_queue(geoip_event, result)
 
+def scan_compile_and_queue(scan_template, result):
+    scan_template["scan_results"] = result
+    scan_results_queue.append(scan_template.copy())
+
+def disable_with_nope(event_struct):
+    stdout_msg = "Runner: %s" % event_struct["evt_data"]
+    print(stdout_msg)
+    init_event_injector(event_struct)
+    return
 
 def kalibrate_consumer(config):
     while True:
@@ -227,10 +233,9 @@ def kalibrate_consumer(config):
                              "scan_location": {}}
         band = config.kal_band
         if band == "nope":
-            print("Runner: Disabling Kalibrate scanning...")
-            init_event_injector({"evt_cls": "kalibrate_consumer",
-                                 "evt_type": "config_state",
-                                 "evt_data": "Kalibrate scanning disabled"})
+            disable_with_nope({"evt_cls": "kalibrate_consumer",
+                               "evt_type": "config_state",
+                               "evt_data": "Kalibrate scanning disabled"})
             while True:
                 time.sleep(120)
         gain = config.kal_gain
