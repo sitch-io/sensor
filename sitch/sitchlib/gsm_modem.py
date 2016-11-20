@@ -117,6 +117,12 @@ class GsmModem(object):
             print("GSM: Not setting band, unrecognized value: %s" % band)
 
     @classmethod
+    def clean_operator_string(cls, operator_string):
+        rx = r'^[^\"]+\"(?P<operator_name>[^\"]+)\"$'
+        cleaned = re.match(rx, operator_string).group("operator_name")
+        return cleaned
+
+    @classmethod
     def process_line(cls, line):
         processed = None
         if line.startswith('+CENG: '):
