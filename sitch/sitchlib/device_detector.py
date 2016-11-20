@@ -1,7 +1,7 @@
-import pprint
 import pyudev
 import serial
 import time
+import utility
 
 
 class DeviceDetector(object):
@@ -20,7 +20,8 @@ class DeviceDetector(object):
     def __init__(self):
         print("DeviceDetector: Initializing Device Detector...")
         self.usbtty_ports = DeviceDetector.get_devices_by_subsys('usb-serial')
-        self.pprinter(self.usbtty_ports)
+        usbtty_message = "DeviceDetector: Detected USB devices: \n"
+        print(usbtty_message + utility.Utility.pretty_string(self.usbtty_ports))
         time.sleep(1)
         print("DeviceDetector: Searching for GSM modem...")
         self.gsm_radios = DeviceDetector.find_gsm_radios(self.usbtty_ports)
@@ -29,10 +30,6 @@ class DeviceDetector(object):
         self.gps_devices = DeviceDetector.find_gps_radios(self.usbtty_ports)
         time.sleep(1)
         return
-
-    def pprinter(self, pprint_me):
-        pp = pprint.PrettyPrinter()
-        pp.pprint(pprint_me)
 
     @classmethod
     def find_gsm_radios(cls, usbtty_ports):
