@@ -113,13 +113,6 @@ def init_event_injector(init_event):
 
 
 def gsm_modem_consumer(config):
-    scan_job_template = {"platform": config.platform_name,
-                         "scan_results": [],
-                         "scan_start": "",
-                         "scan_finish": "",
-                         "scan_program": "",
-                         "scan_location": {},
-                         "scanner_public_ip": config.public_ip}
     while True:
         print("Runner: GSM modem configured for %s" % config.gsm_modem_port)
         tty_port = config.gsm_modem_port
@@ -158,26 +151,37 @@ def gsm_modem_consumer(config):
         consumer.eng_mode(True)
         time.sleep(2)
         for report in consumer:
-            if report != {}:
-                if "cell" in report[0]:
-                    retval = dict(scan_job_template)
-                    retval["scan_results"] = report
-                    retval["scan_finish"] = sitchlib.Utility.get_now_string()
-                    retval["scan_location"]["name"] = str(config.device_id)
-                    retval["scan_program"] = "GSM_MODEM"
-                    retval["band"] = config.gsm_modem_band
-                    retval["scanner_public_ip"] = config.public_ip
-                    scan_results_queue.append(retval.copy())
-                elif "lon" in report[0]:
-                    retval = dict(scan_job_template)
-                    retval["scan_results"] = report
-                    retval["scan_finish"] = sitchlib.Utility.get_now_string()
-                    retval["scan_location"]["name"] = str(config.device_id)
-                    retval["scan_program"] = "GPS"
-                    scan_results_queue.append(retval.copy())
-                else:
-                    print("No match!")
-                    print(report)
+            process_gsm_modem_report(report, config)
+
+
+def process_gsm_modem_report(report, config):
+    if report != {}:
+        scan_job_template = {"platform": config.platform_name,
+                             "scan_results": [],
+                             "scan_start": "",
+                             "scan_finish": "",
+                             "scan_program": "",
+                             "scan_location": {},
+                             "scanner_public_ip": config.public_ip}
+        if "cell" in report[0]:
+            retval = dict(scan_job_template)
+            retval["scan_results"] = report
+            retval["scan_finish"] = sitchlib.Utility.get_now_string()
+            retval["scan_location"]["name"] = str(config.device_id)
+            retval["scan_program"] = "GSM_MODEM"
+            retval["band"] = config.gsm_modem_band
+            retval["scanner_public_ip"] = config.public_ip
+            scan_results_queue.append(retval.copy())
+        elif "lon" in report[0]:
+            retval = dict(scan_job_template)
+            retval["scan_results"] = report
+            retval["scan_finish"] = sitchlib.Utility.get_now_string()
+            retval["scan_location"]["name"] = str(config.device_id)
+            retval["scan_program"] = "GPS"
+            scan_results_queue.append(retval.copy())
+        else:
+            print("No match!")
+            print(report)
 
 
 def gps_consumer(config):
