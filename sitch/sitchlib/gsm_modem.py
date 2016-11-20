@@ -42,8 +42,6 @@ class GsmModem(object):
                 pass
             elif processed_line == {}:
                 pass
-            elif "lon" in processed_line:
-                yield [processed_line]
             elif "cell" in processed_line:
                 if (str(processed_line["cell"]) == str(0) and page != []):
                     yield page
@@ -84,7 +82,7 @@ class GsmModem(object):
         self.serconn.flush()
         time.sleep(2)
         output = self.serconn.readline()
-        if self.reg_info in output:
+        if "AT+" in output:
             output = self.serconn.readline()
         print(output)
         self.serconn.flush()

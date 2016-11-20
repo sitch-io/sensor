@@ -118,16 +118,14 @@ def gsm_modem_consumer(config):
         tty_port = config.gsm_modem_port
         band = config.gsm_modem_band
         if band == "nope":
-            disable_with_nope({"evt_cls": "gsm_consumer",
-                               "evt_type": "config_state",
-                               "evt_data": "GSM scanning disabled"})
+            disable_scanner({"evt_cls": "gsm_consumer",
+                             "evt_type": "config_state",
+                             "evt_data": "GSM scanning disabled"})
         if tty_port is None:
             print("Runner: No GSM modem auto-detected or otherwise configured!")
-            init_event_injector({"evt_cls": "gsm_consumer",
-                                 "evt_type": "config_state",
-                                 "evt_data": "GSM scanning not configured"})
-            while True:
-                time.sleep(120)
+            disable_scanner({"evt_cls": "gsm_consumer",
+                             "evt_type": "config_state",
+                             "evt_data": "GSM scanning not configured"})
         # Sometimes the buffer is full and instantiation fails the first time
         try:
             consumer = sitchlib.GsmModem(tty_port)
@@ -151,19 +149,13 @@ def gsm_modem_consumer(config):
         consumer.eng_mode(True)
         time.sleep(2)
         for report in consumer:
-            process_gsm_modem_report(report, config)
-
-
-def process_gsm_modem_report(report, config):
-    if report != {}:
-        scan_job_template = {"platform": config.platform_name,
-                             "scan_results": [],
-                             "scan_start": "",
-                             "scan_finish": "",
-                             "scan_program": "",
-                             "scan_location": {},
-                             "scanner_public_ip": config.public_ip}
-        if "cell" in report[0]:
+            scan_job_template = {"platform": config.platform_name,
+                                 "scan_results": [],
+                                 "scan_start": "",
+                                 "scan_finish": "",
+                                 "scan_program": "",
+                                 "scan_location": {},
+                                 "scanner_public_ip": config.public_ip}
             retval = dict(scan_job_template)
             retval["scan_results"] = report
             retval["scan_finish"] = sitchlib.Utility.get_now_string()
@@ -171,17 +163,8 @@ def process_gsm_modem_report(report, config):
             retval["scan_program"] = "GSM_MODEM"
             retval["band"] = config.gsm_modem_band
             retval["scanner_public_ip"] = config.public_ip
-            scan_results_queue.append(retval.copy())
-        elif "lon" in report[0]:
-            retval = dict(scan_job_template)
-            retval["scan_results"] = report
-            retval["scan_finish"] = sitchlib.Utility.get_now_string()
-            retval["scan_location"]["name"] = str(config.device_id)
-            retval["scan_program"] = "GPS"
-            scan_results_queue.append(retval.copy())
-        else:
-            print("No match!")
-            print(report)
+            processed = retval.copy()
+            scan_results_queue.append(processed)
 
 
 def gps_consumer(config):
@@ -219,7 +202,7 @@ def scan_compile_and_queue(scan_template, result):
     scan_template["scan_results"] = result
     scan_results_queue.append(scan_template.copy())
 
-def disable_with_nope(event_struct):
+def disable_scanner(event_struct):
     stdout_msg = "Runner: %s" % event_struct["evt_data"]
     print(stdout_msg)
     init_event_injector(event_struct)
@@ -237,9 +220,9 @@ def kalibrate_consumer(config):
                              "scan_location": {}}
         band = config.kal_band
         if band == "nope":
-            disable_with_nope({"evt_cls": "kalibrate_consumer",
-                               "evt_type": "config_state",
-                               "evt_data": "Kalibrate scanning disabled"})
+            disable_scanner({"evt_cls": "kalibrate_consumer",
+                             "evt_type": "config_state",
+                             "evt_data": "Kalibrate scanning disabled"})
         gain = config.kal_gain
         kal_scanner = kalibrate.Kal("/usr/local/bin/kal-linux-arm")
         start_time = sitchlib.Utility.get_now_string()
