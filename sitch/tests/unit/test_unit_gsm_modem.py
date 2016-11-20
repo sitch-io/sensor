@@ -31,3 +31,8 @@ class TestGsmModem:
         for line in fixture.splitlines():
             parsed_result = sitchlib.GsmModem.process_line(line)
             assert type(parsed_result) is dict
+
+    def test_clean_operator_string(self):
+        example = '+COPS: 0,0,"T-Mobile USA"'
+        desired = "T-Mobile USA"
+        assert sitchlib.GsmModem.clean_operator_string(example) == desired
