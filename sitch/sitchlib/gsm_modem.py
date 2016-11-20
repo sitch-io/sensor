@@ -118,7 +118,7 @@ class GsmModem(object):
 
     @classmethod
     def clean_operator_string(cls, operator_string):
-        rx = re.complile(r'^[^\"]+\"([^\"]+)\"$')
+        rx = re.compile(r'^[^\"]+\"([^\"]+)\"$')
         cleaned = rx.search(operator_string)
         return cleaned
 
