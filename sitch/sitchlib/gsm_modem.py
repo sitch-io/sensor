@@ -83,7 +83,7 @@ class GsmModem(object):
         time.sleep(2)
         output = self.serconn.readline()
         if "AT+" in output:
-            output = self.serconn.readline()
+            output = GsmModem.clean_operator_string(self.serconn.readline())
         print(output)
         self.serconn.flush()
         return output
