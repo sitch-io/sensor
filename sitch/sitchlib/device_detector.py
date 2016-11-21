@@ -1,7 +1,7 @@
-import pprint
 import pyudev
 import serial
 import time
+import utility
 
 
 class DeviceDetector(object):
@@ -20,7 +20,8 @@ class DeviceDetector(object):
     def __init__(self):
         print("DeviceDetector: Initializing Device Detector...")
         self.usbtty_ports = DeviceDetector.get_devices_by_subsys('usb-serial')
-        self.pprinter(self.usbtty_ports)
+        usbtty_message = "DeviceDetector: Detected USB devices: \n"
+        print(usbtty_message + utility.Utility.pretty_string(self.usbtty_ports))
         time.sleep(1)
         print("DeviceDetector: Searching for GSM modem...")
         self.gsm_radios = DeviceDetector.find_gsm_radios(self.usbtty_ports)
@@ -29,10 +30,6 @@ class DeviceDetector(object):
         self.gps_devices = DeviceDetector.find_gps_radios(self.usbtty_ports)
         time.sleep(1)
         return
-
-    def pprinter(self, pprint_me):
-        pp = pprint.PrettyPrinter()
-        pp.pprint(pprint_me)
 
     @classmethod
     def find_gsm_radios(cls, usbtty_ports):
@@ -74,33 +71,24 @@ class DeviceDetector(object):
     def is_a_gps(cls, port):
         time.sleep(2)
         positive_match = ["$GPGGA", "$GPGLL", "$GPGSA", "$GPGSV", "$GPRMC"]
-        serconn = serial.Serial(port, 4800, timeout=1)
-        serconn.flush()
-        for i in xrange(10):
-            line = None
-            line = serconn.readline()
-            if line is None:
-                time.sleep(1)
-                pass
-            else:
-                for pm in positive_match:
-                    if pm in line:
-                        serconn.flush()
-                        serconn.close()
-                        serconn = None
-                        return True
-        serconn.flush()
-        serconn.close()
-        serconn = None
-        return False
+        result = DeviceDetector.interrogator(positive_match, port)
+        return result
 
     @classmethod
     def is_a_gsm_modem(cls, port):
         time.sleep(2)
         test_command = "ATI \r\n"
         positive_match = ["SIM808"]
+        result = DeviceDetector.interrogator(positive_match, port, test_command)
+        return result
+
+    @classmethod
+    def interrogator(cls, match_list, port, test_command=None):
+        detected = False
+        time.sleep(2)
         serconn = serial.Serial(port, 4800, timeout=1)
-        serconn.write(test_command)
+        if test_command:
+            serconn.write(test_command)
         serconn.flush()
         for i in xrange(10):
             line = None
@@ -108,17 +96,23 @@ class DeviceDetector(object):
             if line is None:
                 time.sleep(1)
                 pass
+            elif DeviceDetector.interrogator_matcher(match_list, line):
+                detected = True
+                break
             else:
-                for pm in positive_match:
-                    if pm in line:
-                        serconn.flush()
-                        serconn.close()
-                        serconn = None
-                        return True
+                pass
         serconn.flush()
         serconn.close()
         serconn = None
-        return False
+        return detected
+
+    @classmethod
+    def interrogator_matcher(cls, matchers, line):
+        match = False
+        for m in matchers:
+            if m in line:
+                match = True
+        return match
 
     @classmethod
     def get_gsm_modem_info(cls, port):

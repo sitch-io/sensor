@@ -42,8 +42,6 @@ class GsmModem(object):
                 pass
             elif processed_line == {}:
                 pass
-            elif "lon" in processed_line:
-                yield [processed_line]
             elif "cell" in processed_line:
                 if (str(processed_line["cell"]) == str(0) and page != []):
                     yield page
@@ -84,7 +82,7 @@ class GsmModem(object):
         self.serconn.flush()
         time.sleep(2)
         output = self.serconn.readline()
-        if self.reg_info in output:
+        if "AT+" in output:
             output = self.serconn.readline()
         print(output)
         self.serconn.flush()
@@ -117,6 +115,12 @@ class GsmModem(object):
             self.serconn.flush()
         else:
             print("GSM: Not setting band, unrecognized value: %s" % band)
+
+    @classmethod
+    def clean_operator_string(cls, operator_string):
+        rx = r'^[^\"]+\"(?P<operator_name>[^\"]+)\"$'
+        cleaned = re.match(rx, operator_string).group("operator_name")
+        return cleaned
 
     @classmethod
     def process_line(cls, line):
