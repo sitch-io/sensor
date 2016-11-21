@@ -1,11 +1,11 @@
-FROM ioft/armhf-ubuntu:16.04
+FROM resin/armv7hf-debian:jessie
 MAINTAINER Ash
 
-RUN apt-get update && apt-get upgrade -y && apt-get install -y \
+RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
-    vim \
     logrotate \
     cron \
+    gcc \
     gpsd \
     gpsd-clients \
     kmod \
@@ -19,10 +19,12 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y \
     libudev1 \
     python \
     python-gps \
-    python-pip && \
+    python-pip \
+    python-dev && \
     apt-get clean && \
     apt-get -y autoclean && \
-    apt-get -y autoremove
+    apt-get -y autoremove && \
+    rm -rf /var/lib/apt/lists/*
 
 # Place Kalibrate
 COPY binaries/kal-linux-arm /usr/local/bin/
@@ -49,17 +51,18 @@ WORKDIR /app/sitch
 
 RUN pip install virtualenv && \
     cd /app/sitch && \
-    virtualenv --no-site-packages venv && \
+    virtualenv venv && \
     . ./venv/bin/activate && \
-    pip install pyserial && \
-    pip install pyyaml && \
-    pip install gps3 && \
-    pip install hvac && \
-    pip install kalibrate && \
-    pip install haversine && \
-    pip install python-geoip && \
-    pip install python-geoip-geolite2 && \
-    pip install pyudev && \
-    pip install LatLon
+    pip install \
+    pyserial \
+    pyyaml \
+    gps3 \
+    hvac \
+    kalibrate \
+    haversine \
+    python-geoip \
+    python-geoip-geolite2 \
+    pyudev \
+    LatLon
 
 CMD /app/sitch/venv/bin/python ./runner.py 2>&1

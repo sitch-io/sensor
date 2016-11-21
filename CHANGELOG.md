@@ -1,8 +1,43 @@
 # Changelog
 
-## v3.1
+## v3.1.1
 
 ### Other
+
+* Changing to resin-produced base image (Debian, for now) [Ash Wilson]
+
+* Changing over to Resin-provided Debian Jessie base image. [Ash Wilson]
+
+* GSM modem operator ID string cleanup. [Ash Wilson]
+
+* Added a circuit breaker to catch unusable gsm_modem_consumer configuration. [Ash Wilson]
+
+* GsmModem cleanup and complexity reduction in runner. [Ash Wilson]
+
+* Reducing complexity, refactor of gsm_modem_consumer. [Ash Wilson]
+
+* Further consolidation around disabled service handling. [Ash Wilson]
+
+* Reducing duplicate code for disabled services alerting. [Ash Wilson]
+
+* Correcting parsing logic to avoid unnecessary alerts if BTS is not in DB. [Ash Wilson]
+
+* Refactoring GsmModemEnricher.enrich_gsm_modem_scan() to reduce complexity. [Ash Wilson]
+
+* Improving output readability from DeviceDetector, creating more general indented pretty printer in Utility. [Ash Wilson]
+
+* Adding integration and unit tests for DeviceDetector. [Ash Wilson]
+
+* Reducing complexity in interrogator, adding interrogator_matcher() [Ash Wilson]
+
+* Refactor in DeviceDetector. [Ash Wilson]
+
+
+## v3.1 (2016-11-17)
+
+### Other
+
+* Updating README, __init__.__version__, and CHANGELOG for v3.1. [Ash Wilson]
 
 * Removing debug print statement. [Ash Wilson]
 
