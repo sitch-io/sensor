@@ -83,13 +83,6 @@ class TestGsmModemEnricher:
         assert result["lac"] == "6029"
         assert result["cellid"] == "15"
 
-    def test_hex_to_dec(self):
-        testval = 'ffff'
-        desired_result = '65535'
-        enr = self.create_modem_enricher()
-        result = enr.hex_to_dec(testval)
-        assert result == desired_result
-
     def test_str_to_float_badval(self):
         testval = "I AINT"
         result = sitchlib.Utility.str_to_float(testval)
