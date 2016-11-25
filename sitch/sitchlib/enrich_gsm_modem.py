@@ -1,6 +1,5 @@
 import csv
 import gzip
-import os
 import alert_manager
 from utility import Utility
 
