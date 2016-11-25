@@ -104,13 +104,6 @@ class TestEnricher:
         scantype = enricher.determine_scan_type(samp_sim)
         assert scantype == 'GSM_MODEM'
 
-    def test_hex_to_dec(self):
-        testval = 'ffff'
-        desired_result = '65535'
-        enricher = self.create_enricher()
-        result = enricher.gsm_modem_enricher.hex_to_dec(testval)
-        assert result == desired_result
-
     def test_enrich_kal(self):
         enricher = self.create_enricher()
         result = enricher.enrich_kal_scan(samp_kal)

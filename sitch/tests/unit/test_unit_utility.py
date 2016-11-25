@@ -33,3 +33,9 @@ class TestUtility:
                                                      chattanooga[0],
                                                      chattanooga[1])
         assert result != 0
+
+    def test_hex_to_dec(self):
+        testval = 'ffff'
+        desired_result = '65535'
+        result = sitchlib.Utility.hex_to_dec(testval)
+        assert result == desired_result

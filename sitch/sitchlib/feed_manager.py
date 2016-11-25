@@ -2,6 +2,7 @@ import os
 import requests
 import time
 from datetime import datetime
+from utility import Utility
 
 
 class FeedManager(object):
@@ -33,7 +34,7 @@ class FeedManager(object):
              is the MCC, but in string form.  Not integer.
 
         """
-        destination_file = FeedManager.construct_feed_file_name(feed_dir,
+        destination_file = Utility.construct_feed_file_name(feed_dir,
                                                                 item_id)
         temp_file = "%s.TEMP" % destination_file
         origin_url = FeedManager.get_source_url(url_base, item_id)
@@ -48,12 +49,6 @@ class FeedManager(object):
         print("Feed: Moving %s to %s" % (temp_file, destination_file))
         os.rename(temp_file, destination_file)
         return
-
-    @classmethod
-    def construct_feed_file_name(cls, feed_dir, prefix):
-        file_name = "%s.csv.gz" % prefix
-        dest_file_name = os.path.join(feed_dir, file_name)
-        return dest_file_name
 
     @classmethod
     def get_source_url(cls, url_base, mcc):

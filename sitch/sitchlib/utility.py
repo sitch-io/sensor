@@ -63,13 +63,7 @@ class Utility:
 
     @classmethod
     def get_platform_name(cls):
-        lshw = "/usr/bin/lshw -json"
-        try:
-            raw_response = subprocess.check_output(lshw.split())
-            platform_info = json.loads(raw_response.replace('\n', ''))
-        except:
-            print("Utility: Failed to obtain platform info!")
-            platform_info = {}
+        platform_info = Utility.get_platform_info
         try:
             platform_name = platform_info["product"]
         except:
@@ -136,3 +130,14 @@ class Utility:
             nextline = "    %s\n" % line
             result = result + nextline
         return result
+
+    @classmethod
+    def hex_to_dec(cls, hx):
+        integer = int(hx, 16)
+        return str(integer)
+
+    @classmethod
+    def construct_feed_file_name(cls, feed_dir, prefix):
+        file_name = "%s.csv.gz" % prefix
+        dest_file_name = os.path.join(feed_dir, file_name)
+        return dest_file_name

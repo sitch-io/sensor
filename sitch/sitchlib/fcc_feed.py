@@ -1,6 +1,6 @@
 import csv
 import gzip
-from feed_manager import FeedManager
+from utility import Utility
 
 
 class FccFeed(object):
@@ -17,6 +17,6 @@ class FccFeed(object):
     def build_feed_file_names(self, states, feed_base):
         file_names = []
         for state in states:
-            file_names.append(FeedManager.construct_feed_file_name(feed_base,
+            file_names.append(Utility.construct_feed_file_name(feed_base,
                                                                    state))
         return file_names
