@@ -246,6 +246,7 @@ def enricher(config):
     lines to the output queue for metadata """
     state = {"gps": {},
              "geoip": {},
+             "geo_anchor": {},
              "geo_distance_meters": 0}
     override_suppression = [110]
     print("Runner: Now starting enricher")
@@ -267,6 +268,10 @@ def enricher(config):
                 that it is close to the same distance from GeoIP as it was
                 when it was last measured.  Alerts are generated if the drift
                 is beyond threshold."""
+                if state["geo_anchor"] == {}:
+                    state["geo_anchor"] = scandoc["scan_results"].copy()
+                    msg = "Runner: Geo anchor: %s" % sitchlib.Utility.pretty_string(state["geo_anchor"])
+                    print(msg)
                 outlist = enr.enrich_gps_scan(scandoc.copy())
                 geo_problem = enr.geo_drift_check(state["geo_distance_meters"],
                                                   state["geoip"],
@@ -275,8 +280,8 @@ def enricher(config):
                 if geo_problem:
                     outlist.append(geo_problem.copy())
                 state["gps"] = scandoc["scan_results"]
-                lat_1 = state["geoip"]["geometry"]["coordinates"][0]
-                lon_1 = state["geoip"]["geometry"]["coordinates"][1]
+                lat_1 = state["geo_anchor"]["geometry"]["coordinates"][0]
+                lon_1 = state["geo_anchor"]["geometry"]["coordinates"][1]
                 lat_2 = state["gps"]["geometry"]["coordinates"][0]
                 lon_2 = state["gps"]["geometry"]["coordinates"][1]
                 new_distance = (sitchlib.Utility.calculate_distance(lon_1,
