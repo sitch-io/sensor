@@ -97,15 +97,15 @@ class Enricher:
         return retval
 
     @classmethod
-    def geo_drift_check(cls, prior_distance, geoip_scan, gps_scan, threshold):
+    def geo_drift_check(cls, prior_distance, geo_anchor, gps_scan, threshold):
         """ We take the prior distance (in meters) and compare to the
         distance between the geoip_scan and gps_scan results.  If the
         difference is greater than the threshold value, we alarm on a potential
         GPS spoofing attack."""
         if prior_distance == 0:
             return
-        lat_1 = geoip_scan["geometry"]["coordinates"][0]
-        lon_1 = geoip_scan["geometry"]["coordinates"][1]
+        lat_1 = geo_anchor["geometry"]["coordinates"][0]
+        lon_1 = geo_anchor["geometry"]["coordinates"][1]
         lat_2 = gps_scan["geometry"]["coordinates"][0]
         lon_2 = gps_scan["geometry"]["coordinates"][1]
         current_distance = Utility.calculate_distance(lon_1, lat_1,

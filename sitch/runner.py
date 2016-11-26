@@ -274,7 +274,7 @@ def enricher(config):
                     print(msg)
                 outlist = enr.enrich_gps_scan(scandoc.copy())
                 geo_problem = enr.geo_drift_check(state["geo_distance_meters"],
-                                                  state["geoip"],
+                                                  state["geo_anchor"],
                                                   scandoc["scan_results"],
                                                   config.gps_drift_threshold)
                 if geo_problem:
