@@ -1,26 +1,24 @@
 FROM resin/armv7hf-debian:jessie
-MAINTAINER Ash
+MAINTAINER http://sitch.io
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    git \
-    logrotate \
-    cron \
-    gcc \
-    gpsd \
-    gpsd-clients \
-    kmod \
-    lshw \
-    libfftw3-double3 \
-    librtlsdr0 \
-    libusb-1.0-0 \
-    libc6 \
-    libstdc++6 \
-    libgcc1 \
-    libudev1 \
-    python \
-    python-gps \
-    python-pip \
-    python-dev && \
+    git=1:2.1.4-2.1+deb8u2 \
+    logrotate=3.8.7-1+b1 \
+    cron=3.0pl1-127+deb8u1 \
+    gcc=4:4.9.2-2 \
+    gpsd=3.11-3 \
+    gpsd-clients=3.11-3 \
+    kmod=18-3 \
+    lshw=02.17-1.1 \
+    libfftw3-double3=3.3.4-2 \
+    librtlsdr0=0.5.3-3 \
+    libusb-1.0-0=2:1.0.19-1 \
+    libc6=2.19-18+deb8u6 \
+    libudev1=215-17+deb8u5 \
+    python=2.7.9-1 \
+    python-gps=3.11-3 \
+    python-pip=1.5.6-5 \
+    python-dev=2.7.9-1 && \
     apt-get clean && \
     apt-get -y autoclean && \
     apt-get -y autoremove && \
@@ -49,20 +47,19 @@ COPY sitch/ /app/sitch
 
 WORKDIR /app/sitch
 
-RUN pip install virtualenv && \
-    cd /app/sitch && \
+RUN pip install virtualenv==15.1.0 && \
     virtualenv venv && \
     . ./venv/bin/activate && \
     pip install \
-    pyserial \
-    pyyaml \
-    gps3 \
-    hvac \
-    kalibrate \
-    haversine \
-    python-geoip \
-    python-geoip-geolite2 \
-    pyudev \
-    LatLon
+    pyserial==3.2.1 \
+    pyyaml==3.12 \
+    gps3==0.33.3 \
+    hvac==0.2.16 \
+    kalibrate==1.1 \
+    haversine==0.4.5 \
+    python-geoip==1.2 \
+    python-geoip-geolite2==2015.303 \
+    pyudev==0.21.0 \
+    LatLon==1.0.2
 
 CMD /app/sitch/venv/bin/python ./runner.py 2>&1

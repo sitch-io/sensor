@@ -1,6 +1,7 @@
 import LatLon
 import alert_manager
 from fcc_feed import FccFeed
+from string import Template
 from utility import Utility
 
 
@@ -60,13 +61,16 @@ class EnrichArfcn(object):
             return True
 
     @classmethod
+    def assemble_latlon(cls, item):
+        lat_tmpl = Template('$LOC_LAT_DEG $LOC_LAT_MIN $LOC_LAT_SEC $LOC_LAT_DIR')
+        long_tmpl = Template('$LOC_LONG_DEG $LOC_LONG_MIN $LOC_LONG_SEC $LOC_LONG_DIR')
+        return(lat_tmpl.substitute(item), long_tmpl.substitute(item))
+
+    @classmethod
     def assemble_gps(cls, item):
         latlon = {}
         try:
-            lat = "%s %s %s %s" % (item["LOC_LAT_DEG"], item["LOC_LAT_MIN"],
-                                   item["LOC_LAT_SEC"], item["LOC_LAT_DIR"])
-            lon = "%s %s %s %s" % (item["LOC_LONG_DEG"], item["LOC_LONG_MIN"],
-                                   item["LOC_LONG_SEC"], item["LOC_LONG_DIR"])
+            lat, lon = EnrichArfcn.assemble_latlon(item)
             ll = LatLon.string2latlon(lat, lon, "d% %m% %S% %H")
             latlon["lat"] = ll.to_string('D%')[0]
             latlon["lon"] = ll.to_string('D%')[1]

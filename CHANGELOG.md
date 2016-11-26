@@ -1,8 +1,33 @@
 # Changelog
 
-## v3.1.1
+## v3.2.0
+
+### New
+
+* Geo_anchor replaces geo_ip as point of reference for geo_drift_check(), which alerts on the operation of a GPS spoofing device. [Ash Wilson]
+
+### Changes
+
+* Improved regex for parsing operator string. [Ash Wilson]
+
+### Fix
+
+* Completed implementation of geo_anchor instead of geoip for GPS drift check. [Ash Wilson]
+
+* Corrected bad logic involved in processing GPS alerts. [Ash Wilson]
+
+* Exception handling added for when cell operator string sanitizing fails. [Ash Wilson]
 
 ### Other
+
+* Wiring up GSM registration string cleaner. [Ash Wilson]
+
+
+## v3.1.1 (2016-11-21)
+
+### Other
+
+* Updating CHANGELOG, sitchlib version. [Ash Wilson]
 
 * Changing to resin-produced base image (Debian, for now) [Ash Wilson]
 
