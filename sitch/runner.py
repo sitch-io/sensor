@@ -278,7 +278,7 @@ def enricher(config):
                                                   scandoc["scan_results"],
                                                   config.gps_drift_threshold)
                 if geo_problem:
-                    outlist.append(geo_problem.copy())
+                    outlist.append(geo_problem)
                 state["gps"] = scandoc["scan_results"]
                 lat_1 = state["geo_anchor"]["geometry"]["coordinates"][0]
                 lon_1 = state["geo_anchor"]["geometry"]["coordinates"][1]
