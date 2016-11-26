@@ -119,7 +119,12 @@ class GsmModem(object):
     @classmethod
     def clean_operator_string(cls, operator_string):
         rx = r'^[^\"]+\"(?P<operator_name>[^\"]+)\"$'
-        cleaned = re.match(rx, operator_string).group("operator_name")
+        try:
+            cleaned = re.match(rx, operator_string).group("operator_name")
+        except AttributeError as e:
+            print("GSM: Unable to clean up operator string")
+            print(e)
+            cleaned = operator_string
         return cleaned
 
     @classmethod
