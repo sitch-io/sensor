@@ -1,6 +1,5 @@
 import csv
 import gzip
-import os
 import alert_manager
 from utility import Utility
 
@@ -222,10 +221,8 @@ class GsmModemEnricher(object):
     def get_feed_info(self, mcc, mnc, lac, cellid):
         if self.feed_cache != []:
             for x in self.feed_cache:
-                if (x["mcc"] == mcc and
-                        x["mnc"] == mnc and
-                        x["lac"] == lac and
-                        x["cellid"] == cellid):
+                if GsmModemEnricher.cell_matches(x, mcc, mnc,
+                                                 lac, cellid):
                     return x
             feed_string = "%s:%s:%s:%s" % (mcc, mnc, lac, cellid)
             msg = "EnrichGSM: Cache miss: %s" % feed_string
@@ -234,19 +231,27 @@ class GsmModemEnricher(object):
         self.feed_cache.append(normalized)
         return normalized
 
+    @classmethod
+    def cell_matches(cls, cell, mcc, mnc, lac, cellid):
+        result = False
+        if (cell["mcc"] == mcc and
+            cell["mnc"] == mnc and
+            cell["lac"] == lac and
+            cell["cellid"] == cellid):
+            result = True
+        return result
+
     def get_feed_info_from_files(self, mcc, mnc, lac, cellid):
         """ Field names get changed when loaded into the cache, to
         match field IDs used elsewhere. """
-        feed_file = self.construct_feed_file_name(self.feed_dir, mcc)
+        feed_file = Utility.construct_feed_file_name(self.feed_dir, mcc)
         with gzip.open(feed_file, 'r') as feed_data:
             consumer = csv.DictReader(feed_data)
             for cell in consumer:
-                if (cell["mcc"] == mcc and
-                        cell["net"] == mnc and
-                        cell["area"] == lac and
-                        cell["cell"] == cellid):
-                    normalzed = self.normalize_feed_info_for_cache(cell)
-                    return normalzed
+                normalized = self.normalize_feed_info_for_cache(cell)
+                if GsmModemEnricher.cell_matches(normalized, mcc, mnc,
+                                                 lac, cellid):
+                    return normalized
         """If unable to locate cell in file, we populate the
         cache with obviously fake values """
         cell = {"mcc": mcc, "net": mnc, "area": lac, "cell": cellid,
@@ -267,26 +272,15 @@ class GsmModemEnricher(object):
         return cache_item
 
     @classmethod
-    def construct_feed_file_name(cls, feed_dir, mcc):
-        file_name = "%s.csv.gz" % mcc
-        dest_file_name = os.path.join(feed_dir, file_name)
-        return dest_file_name
-
-    @classmethod
     def convert_hex_targets(cls, channel):
         for target in ['lac', 'cellid']:
             if target in channel:
-                channel[target] = GsmModemEnricher.hex_to_dec(channel[target])
+                channel[target] = Utility.hex_to_dec(channel[target])
         return channel
 
     @classmethod
     def convert_float_targets(cls, channel):
         for target in ['rxq', 'rxl']:
             if target in channel:
-                channel[target] = GsmModemEnricher.hex_to_dec(channel[target])
+                channel[target] = Utility.str_to_float(channel[target])
         return channel
-
-    @classmethod
-    def hex_to_dec(cls, hx):
-        integer = int(hx, 16)
-        return str(integer)
