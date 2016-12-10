@@ -116,8 +116,6 @@ class GsmModemEnricher(object):
             pass
         elif prior_bts != current_bts:
             result = True
-        print current_bts
-        print prior_bts
         return result
 
 
