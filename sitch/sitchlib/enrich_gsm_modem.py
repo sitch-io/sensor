@@ -73,7 +73,7 @@ class GsmModemEnricher(object):
             chan["lon"] = channel["feed_info"]["lon"]
             here["lat"] = state["gps"]["geometry"]["coordinates"][0]
             here["lon"] = state["gps"]["geometry"]["coordinates"][1]
-        except (TypeError, ValueError):
+        except (TypeError, ValueError, KeyError):
             print("EnrichGSM: Incomplete geo info...")
             chan["lat"] = None
             chan["lon"] = None
