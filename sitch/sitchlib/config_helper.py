@@ -139,5 +139,6 @@ class ConfigHelper:
             print("Configurator: Required config variable not set: %s" % k)
             print("Configurator: Unable to continue.  Exiting.")
             sys.exit(2)
-        else: retval = []
+        elif retval is None and optional is True:
+            retval = []
         return retval
