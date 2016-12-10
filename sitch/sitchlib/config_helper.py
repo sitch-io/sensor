@@ -131,7 +131,10 @@ class ConfigHelper:
 
         If optional=True, the absence of this var will cause a hard exit.
         """
-        retval = os.getenv(k).split(',')
+        try:
+            retval = os.getenv(k).split(',')
+        except AttributeError:
+            retval = None
         if retval is None and optional is False:
             print("Configurator: Required config variable not set: %s" % k)
             print("Configurator: Unable to continue.  Exiting.")
