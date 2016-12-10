@@ -19,7 +19,14 @@ class GsmModemEnricher(object):
         self.good_arfcns = []
         self.bad_arfcns = []
         self.cgi_whitelist = cgi_whitelist
+        print GsmModemEnricher.cgi_whitelist_message(self.cgi_whitelist)
         return
+
+    @classmethod
+    def cgi_whitelist_message(cls, cgi_wl):
+        wl_string = ",".join(cgi_wl)
+        message = "EnrichGSM: Initializing with CGI whitelist: %s" % wl_string
+        return message
 
     @classmethod
     def enrich_channel_with_scan(cls, channel, scan_document):
