@@ -53,7 +53,7 @@ samp_sim = {'platform': u'AMLOGIC',
 
 class TestIntegrationEnrichGsmModem:
     def instantiate_gsm_enricher(self, state):
-        gsm_enricher = sitchlib.GsmModemEnricher(state, feedpath)
+        gsm_enricher = sitchlib.GsmModemEnricher(state, feedpath, [])
         return gsm_enricher
 
     def test_instantiate_gsm_enricher(self):

@@ -5,7 +5,7 @@ from utility import Utility
 
 
 class GsmModemEnricher(object):
-    def __init__(self, state, feed_dir):
+    def __init__(self, state, feed_dir, cgi_whitelist):
         """ State looks like this:
         {"gps": {},
          "geoip": {},
@@ -18,6 +18,7 @@ class GsmModemEnricher(object):
         self.feed_cache = []
         self.good_arfcns = []
         self.bad_arfcns = []
+        self.cgi_whitelist = cgi_whitelist
         return
 
     @classmethod
@@ -105,10 +106,13 @@ class GsmModemEnricher(object):
         return bts
 
     @classmethod
-    def primary_bts_changed(cls, prior_bts, channel):
+    def primary_bts_changed(cls, prior_bts, channel, cgi_whitelist):
         result = False
         current_bts = GsmModemEnricher.bts_from_channel(channel)
+        cgi_string = channel["cgi_str"]
         if prior_bts == {}:
+            pass
+        elif cgi_string in cgi_whitelist:
             pass
         elif prior_bts != current_bts:
             result = True
@@ -198,7 +202,8 @@ class GsmModemEnricher(object):
         be populated with any alerts we decide to fire """
         alert = ()
         current_bts = GsmModemEnricher.bts_from_channel(channel)
-        if GsmModemEnricher.primary_bts_changed(self.prior_bts, channel):
+        if GsmModemEnricher.primary_bts_changed(self.prior_bts, channel,
+                                                self.cgi_whitelist):
             msg = ("Primary BTS was %s " +
                    "now %s. Site: %s") % (
                     GsmModemEnricher.make_bts_friendly(self.prior_bts),

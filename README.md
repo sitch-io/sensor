@@ -48,6 +48,13 @@ We expect the following environment variables to be set in Resin:
 | VAULT_PATH        | Path to logstash cert/keys in Vault                      |
 | VAULT_TOKEN       | Token for accessing credentials in vault                 |
 | VAULT_URL         | URL for accessing Vault. ex: https://v.example.com:port  |
+| CGI_WHITELIST     | List of CGIs we trust (see below)                        |
+
+The CGI_WHITELIST will suppress alert 110 (BTS metadata changed) if the CGI of
+channel 0 in your GSM modem output matches an item in CGI_WHITELIST.  This is
+the format you should use: `MCC:MNC:LAC:CELLID,MCC:MNC:LAC:CELLID`  This is
+what the contents of that environment variable should look like:
+`310:411:11:22,310:411:11:23`.  This environment variable is not required.
 
 
 ## Testing
