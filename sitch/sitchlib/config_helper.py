@@ -40,6 +40,8 @@ class ConfigHelper:
         self.gps_drift_threshold = 1000
         self.filebeat_template = self.get_filebeat_template()
         self.filebeat_config_file_path = "/etc/filebeat.yml"
+        self.cgi_whitelist = ConfigHelper.get_list_from_env("CGI_WHITELIST",
+                                                            optional=True)
         return
 
     def print_devices_as_detected(self):
@@ -124,10 +126,15 @@ class ConfigHelper:
         return retval
 
     @classmethod
-    def get_list_from_env(cls, k):
+    def get_list_from_env(cls, k, optional=False):
+        """Gets a list from environment variables.
+
+        If optional=True, the absence of this var will cause a hard exit.
+        """
         retval = os.getenv(k).split(',')
-        if retval is None:
+        if retval is None and optional is False:
             print("Configurator: Required config variable not set: %s" % k)
             print("Configurator: Unable to continue.  Exiting.")
             sys.exit(2)
+        else: retval = []
         return retval
