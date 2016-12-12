@@ -29,7 +29,8 @@ class TestConfigHelper:
         assert sitchlib.ConfigHelper.get_from_env("PATH")
 
     def test_unit_config_helper_get_list_from_env(self):
-        assert sitchlib.ConfigHelper.get_from_env("PATH")
+        assert sitchlib.ConfigHelper.get_list_from_env("PATH")
 
     def test_unit_config_helper_get_list_from_env_2(self):
-        assert sitchlib.ConfigHelper.get_from_env("NONEXIST", optional=True)
+        assert sitchlib.ConfigHelper.get_list_from_env("NONEXIST",
+                                                       optional=True)
