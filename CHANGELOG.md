@@ -1,6 +1,19 @@
 # Changelog
 
-## v3.2.0
+## v3.3.0
+
+### New
+
+* Checks CGI against whitelist before alerting. [Ash Wilson]
+
+### Changes
+
+* Better exception handling in GsmModemEnricher.build_chan_here() [Ash Wilson]
+
+* Added kwarg named 'optional' to ConfigHelper.get_list_from_env().  Setting optional=True will allow the method to return an empty list instead of causing a hard exit. [Ash Wilson]
+
+
+## v3.2.0 (2016-11-26)
 
 ### New
 
