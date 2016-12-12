@@ -28,10 +28,10 @@ class TestUnitLogHandler:
         assert self.create_log_handler_object()
 
     def test_unit_log_handler_get_log_file_name_success(self):
-        assert sitchlib.LogHandler.get_log_file_type("sitch_init")
+        assert sitchlib.LogHandler.get_log_file_name("sitch_init")
 
     def test_unit_log_handler_get_log_file_name_fail(self):
-        assert sitchlib.LogHandler.get_log_file_type("sitch_nonexist")
+        assert sitchlib.LogHandler.get_log_file_name("sitch_nonexist")
 
     def test_unit_log_handler_record_log_message(self):
         bolus = ('sitch_init', "init your mom")
