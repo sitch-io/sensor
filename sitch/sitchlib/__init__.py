@@ -15,4 +15,4 @@ from device_detector import DeviceDetector
 from enrich_kal_scan import KalScanEnricher
 
 __author__ = "Ash Wilson"
-__version__ = "3.2.0"
+__version__ = "3.3.0"

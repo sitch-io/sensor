@@ -35,9 +35,11 @@ class Enricher:
         self.alerts = AlertManager()
         # VVV mcc, mnc, lac, cellid
         self.current_primary = {}
+        self.cgi_whitelist = config.cgi_whitelist
         self.kal_threshold = config.kal_threshold
         self.suppressed_alerts = {}
-        self.gsm_modem_enricher = GsmModemEnricher(geo_state, self.feed_dir)
+        self.gsm_modem_enricher = GsmModemEnricher(geo_state, self.feed_dir,
+                                                   self.cgi_whitelist)
         self.kal_enricher = KalScanEnricher(self.kal_threshold)
         self.arfcn_enricher = EnrichArfcn(geo_state, config.state_list,
                                           self.feed_dir)

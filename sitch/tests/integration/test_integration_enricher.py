@@ -109,6 +109,7 @@ class TestIntegrationEnricher:
         config.public_ip = "1.1.1.1"
         config.platform_name = "yourmom.com"
         config.state_list = ["CA"]
+        config.cgi_whitelist = []
         return config
 
     def create_enricher(self):
