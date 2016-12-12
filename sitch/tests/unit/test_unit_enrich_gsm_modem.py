@@ -67,12 +67,14 @@ class TestGsmModemEnricher:
         config.mcc_list = []
         config.feed_url_base = sitch_feed_base
         config.feed_dir = feedpath
+        config.cgi_whitelist = []
         return config
 
     def create_modem_enricher(self):
         config = self.create_config()
         state = self.create_empty_state()
-        enricher = sitchlib.GsmModemEnricher(state, config.feed_dir)
+        enricher = sitchlib.GsmModemEnricher(state, config.feed_dir,
+                                             config.cgi_whitelist)
         enricher.alerts = sitchlib.AlertManager()
         return enricher
 
@@ -164,3 +166,34 @@ class TestGsmModemEnricher:
                                                    current_gps,
                                                    threshold)
         assert not result
+
+    def test_unit_enrich_gsm_modem_primary_bts_changed_false(self):
+        gsm_enr = sitchlib.GsmModemEnricher
+        prior_bts = {'mcc': '310', 'lac': '178d',
+                     'mnc': '411', 'cellid': '000f'}
+        channel = {'bsic': '12', 'mcc': '310', 'rla': '00', 'lac': '178d',
+                   'mnc': '411', 'txp': '05', 'rxl': '33',
+                   'cell': '0', 'rxq': '00', 'ta': '255', 'cellid': '000f',
+                   'arfcn': '0154'}
+        channel["cgi_str"] = "1:2:3:4"
+        cgi_whitelist = []
+        assert gsm_enr.primary_bts_changed(prior_bts, channel,
+                                           cgi_whitelist) is False
+
+    def test_unit_enrich_gsm_modem_primary_bts_changed_true(self):
+        gsm_enr = sitchlib.GsmModemEnricher
+        prior_bts = {"mcc": "310", "mnc": "411", "lac": "234", "cellid": "22"}
+        channel = {"mcc": "310", "mnc": "411", "lac": "234", "cellid": "23"}
+        channel["cgi_str"] = "310:411:234:23"
+        cgi_whitelist = []
+        assert gsm_enr.primary_bts_changed(prior_bts, channel,
+                                           cgi_whitelist) is True
+
+    def test_unit_enrich_gsm_modem_primary_bts_changed_suppressed(self):
+        gsm_enr = sitchlib.GsmModemEnricher
+        prior_bts = {"mcc": "310", "mnc": "411", "lac": "234", "cellid": "22"}
+        channel = {"mcc": "310", "mnc": "411", "lac": "234", "cellid": "23"}
+        channel["cgi_str"] = "310:411:234:23"
+        cgi_whitelist = ["310:411:234:22", "310:411:234:23"]
+        assert gsm_enr.primary_bts_changed(prior_bts, channel,
+                                           cgi_whitelist) is False
