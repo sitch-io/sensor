@@ -1,8 +1,9 @@
 language: python
+sudo: required
 python:
 - '2.7'
 install:
-- apt-get update && apt-get install -y lshw
+- sudo apt-get update && sudo apt-get install -y lshw
 - pip install pytest-cov pytest-pep8 python-coveralls codeclimate-test-reporter
 - pip install pyserial hvac kalibrate haversine python-geoip python-geoip-geolite2
   pyudev gps3 LatLon
