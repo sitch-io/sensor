@@ -13,10 +13,12 @@
 * Accounts with the following providers:
   * Resin.io
   * Github
-* Access to the following services (See Service configuration for more information)
+* Access to the following services (See Service configuration for more
+  information)
   * Logstash
   * Vault
-  * SITCH feed.  See https://github.com/sitch-io/feed_builder for more information.
+  * SITCH feed.  See https://github.com/sitch-io/feed_builder for more
+  information.
 * Hardware
   * Raspberry Pi 2
   * Fona SIM808 GSM modem w/ USB TTY cable
@@ -26,7 +28,8 @@
 ## Step by step...
 
 1. Create an application in Resin.
-1. Fork this project and clone it on your workstation.  Or clone it directly... but forking makes modifications and PRs easier to deal with.
+1. Fork this project and clone it on your workstation.  Or clone it directly...
+but forking makes modifications and PRs easier to deal with.
 1. Add the Resin application as a remote repo (`git remote add resin myusername@git.resin.io/myusername/myapplicationname.git`)
 1. Push to your Resin application: `git push resin master`
 
@@ -60,17 +63,28 @@ what the contents of that environment variable should look like:
 ## Testing
 Testing is done with pytest.  Coverage module optional.
 
+Testing requirements (local testing possible only on Linux):
+* lshw
+* pip packages: pytest-cov pytest-pep8 pyserial hvac kalibrate haversine
+python-geoip python-geoip-geolite2 pyudev gps3 LatLon
+
+
 1. Navigate to the base directory of the repository.
-1. Set the environment variable to reach your SITCH feed: `export SITCH_FEED_BASE=https://MY.FEED.URL/base`
+1. Set the environment variable to reach your SITCH feed:
+`export SITCH_FEED_BASE=https://MY.FEED.URL/base`
 1. Run `py.test --cov sitchlib` .
 
+* OR, offer a PR and let travis-ci build and run the tests for you.
+
 ## GSM modem device detection
-If you're using a GSM modem that's not recognized by the device detector, please
-add the output from running the `ATI` command against your GSM modem in the
-variable named `positive_match` in the `is_a_gsm_modem()` method, in the
+If you're using a GSM modem that's not recognized by the device detector,
+please add the output from running the `ATI` command against your GSM modem in
+the variable named `positive_match` in the `is_a_gsm_modem()` method, in the
 `sensor/sitch/sitchlib/device_detector.py` file.  Then send a pull request so
 that everyone can get the benefit of your discovery.
 
 ## Contributing
 * Please do PRs against the `test` branch.
-* To add an ID string to the device detector for GSM modems, add part of the ID string to the ```positive_match``` variable in the ```DeviceDetector.is_a_gsm_modem()``` function
+* To add an ID string to the device detector for GSM modems, add part of the
+ID string to the ```positive_match``` variable in the
+```DeviceDetector.is_a_gsm_modem()``` function
