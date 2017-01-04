@@ -23,10 +23,10 @@ class ConfigHelper:
         self.gsm_modem_band = ConfigHelper.get_from_env("GSM_MODEM_BAND")
         self.gsm_modem_port = self.get_gsm_modem_port()
         self.gps_device_port = self.get_gps_device_port()
-        self.ls_ca_path = "/run/dbus/crypto/ca.crt"
-        self.ls_cert_path = "/run/dbus/crypto/logstash.crt"
-        self.ls_key_path = "/run/dbus/crypto/logstash.key"
-        self.ls_crypto_base_path = "/run/dbus/crypto/"
+        self.ls_ca_path = "/host/run/dbus/crypto/ca.crt"
+        self.ls_cert_path = "/host/run/dbus/crypto/logstash.crt"
+        self.ls_key_path = "/host/run/dbus/crypto/logstash.key"
+        self.ls_crypto_base_path = "/host/run/dbus/crypto/"
         self.vault_token = ConfigHelper.get_from_env("VAULT_TOKEN")
         self.vault_url = ConfigHelper.get_from_env("VAULT_URL")
         self.vault_path = ConfigHelper.get_from_env("VAULT_PATH")
