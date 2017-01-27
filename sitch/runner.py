@@ -143,6 +143,11 @@ def gsm_modem_consumer(config):
         init_event_injector({"evt_cls": "gsm_consumer",
                              "evt_type": "device_config",
                              "evt_data": " | ".join(dev_config)})
+        print("Runner: Getting IMSI from SIM...")
+        imsi = consumer.get_imsi()
+        init_event_injector({"evt_cls": "gsm_consumer",
+                             "evt_type": "sim_imsi",
+                             "evt_data": str(imsi)})
         time.sleep(2)
         consumer.set_band(band)
         time.sleep(2)
