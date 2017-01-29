@@ -103,7 +103,7 @@ class GsmModem(object):
         return retval
 
     def get_imsi(self):
-        rx = r'^[^\"]+\"(?P<imsi>[^\"]+)\"'
+        rx = r'(?P<imsi>\S+)'
         self.serconn.write(self.imsi_info)
         self.serconn.flush()
         time.sleep(2)
@@ -112,12 +112,19 @@ class GsmModem(object):
             output = self.serconn.readline()
             if output == '':
                 break
+            if "AT+CIMI" in output:
+                continue
+            if output == "\r\n":
+                continue
+            if "OK\r\n" in output:
+                continue
             retval.append(str(output))
         self.serconn.flush()
         try:
-            retval = re.match(rx, retval).group("imsi")
+            test_string = "".join(retval).replace('\r\n', '')
+            retval = re.match(rx, test_string).group("imsi")
         except AttributeError as e:
-            print("GSM: Unable to extract IMSI")
+            print("GSM: Unable to clean up IMSI")
             print(e)
         return retval
 
