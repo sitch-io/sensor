@@ -1,10 +1,13 @@
-# SITCH Sensor v3.1
+# SITCH Sensor
+
+[![Join the chat at https://gitter.im/sitch-io/sensor](https://badges.gitter.im/sitch-io/sensor.svg)](https://gitter.im/sitch-io/sensor?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 [![Build Status](https://travis-ci.org/sitch-io/sensor.svg?branch=master)](https://travis-ci.org/sitch-io/sensor)
 
 [![Code Climate](https://codeclimate.com/github/sitch-io/sensor/badges/gpa.svg)](https://codeclimate.com/github/sitch-io/sensor)
 
 [![Test Coverage](https://codeclimate.com/github/sitch-io/sensor/badges/coverage.svg)](https://codeclimate.com/github/sitch-io/sensor/coverage)
+
 
 
 ## Getting Started
