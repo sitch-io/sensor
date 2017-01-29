@@ -96,11 +96,12 @@ def main():
     print("Runner: Starting writer thread...")
     writer_thread.start()
     while True:
-        time.sleep(60)
+        time.sleep(120)
         active_threads = threading.enumerate()
         #  Heartbeat messages
         for item in active_threads:
             scan_results_queue.append(sitchlib.Utility.heartbeat(item.name))
+        scan_results_queue.append(sitchlib.Utility.get_performance_metrics)
     return
 
 def init_event_injector(init_event):

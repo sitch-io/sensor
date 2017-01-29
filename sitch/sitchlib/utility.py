@@ -148,6 +148,7 @@ class Utility:
         retval = {}
         cpu_times = psutil.cpu_times()
         retval["scan_program"] = "health_check"
+        retval["timestamp"] = Utility.get_now_string()
         retval["cpu_percent"] = psutil.cpu_percent(percpu=True)
         retval["cpu_times"] = {"user": cpu_times.user,
                                "system": cpu_times.system,
