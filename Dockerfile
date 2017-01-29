@@ -51,6 +51,7 @@ RUN pip install virtualenv==15.1.0 && \
     virtualenv venv && \
     . ./venv/bin/activate && \
     pip install \
+    psutil==5.0.1 \
     pyserial==3.2.1 \
     pyyaml==3.12 \
     gps3==0.33.3 \

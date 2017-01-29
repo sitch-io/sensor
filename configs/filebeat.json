@@ -75,6 +75,14 @@
         },
         {
             "input_type": "log",
+            "document_type": "health_check",
+            "keys_under_root": true,
+            "paths": [
+                "/var/log/sitch/health_check.log"
+            ]
+        },
+        {
+            "input_type": "log",
             "document_type": "sitch_init",
             "keys_under_root": true,
             "paths": [

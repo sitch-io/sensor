@@ -2,6 +2,7 @@ import datetime
 import json
 import os
 import pprint
+import psutil
 import subprocess
 import requests
 from location_tool import LocationTool
@@ -141,3 +142,19 @@ class Utility:
         file_name = "%s.csv.gz" % prefix
         dest_file_name = os.path.join(feed_dir, file_name)
         return dest_file_name
+
+    @classmethod
+    def get_performance_metrics(cls):
+        retval = {}
+        cpu_times = psutil.cpu_times()
+        retval["scan_program"] = "health_check"
+        retval["cpu_percent"] = psutil.cpu_percent(percpu=True)
+        retval["cpu_times"] = {"user": cpu_times.user,
+                               "system": cpu_times.system,
+                               "idle": cpu_times.idle,
+                               "iowait": cpu_times.iowait}
+        retval["mem"] = {"free": psutil.virtual_memory().free,
+                         "swap_percent_used": psutil.swap_memory().percent}
+        retval["root_vol"] = psutil.disk_usage('/').percent
+        retval["data_vol"] = psutil.disk_usage('/data/').percent
+        return retval
