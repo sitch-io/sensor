@@ -1,6 +1,19 @@
 # Changelog
 
-## v3.3.0
+## v3.4.0
+
+### New
+
+* Health check metrics for CPU, memory, and disk utilization. [Ash Wilson]
+
+* Logs IMSI of SIM installed in sensor. [Ash Wilson]
+
+### Fix
+
+* Corrected path for dropping certs. https://github.com/resin-io/resin-supervisor/issues/208 indicates that the path we used before is no longer available. [Ash Wilson]
+
+
+## v3.3 (2016-12-12)
 
 ### New
 
@@ -10,7 +23,7 @@
 
 * Better exception handling in GsmModemEnricher.build_chan_here() [Ash Wilson]
 
-* Added kwarg named 'optional' to ConfigHelper.get_list_from_env().  Setting optional=True will allow the method to return an empty list instead of causing a hard exit. [Ash Wilson]
+* Added kwarg named &#x27;optional&#x27; to ConfigHelper.get_list_from_env().  Setting optional=True will allow the method to return an empty list instead of causing a hard exit. [Ash Wilson]
 
 
 ## v3.2.0 (2016-11-26)
@@ -79,7 +92,7 @@
 
 * Removing debug print statement. [Ash Wilson]
 
-* Shouldn't attempt to enrich if arfcn == 0. [Ash Wilson]
+* Shouldn&#x27;t attempt to enrich if arfcn == 0. [Ash Wilson]
 
 * Corrections for GSM modem provider detection. [Ash Wilson]
 
@@ -105,7 +118,7 @@
 
 * Checking JSON validity before unpacking GPSD output. [Ash Wilson]
 
-* Refactoring to use utility's public IP getter. [Ash Wilson]
+* Refactoring to use utility&#x27;s public IP getter. [Ash Wilson]
 
 * Trying to catch a rogue JSON error. [Ash Wilson]
 
@@ -164,7 +177,7 @@
 
 * Removing some supporting code for logstash-forwarder, general cleanup. [Ash Wilson]
 
-* That's not how you spell friendly... [Ash Wilson]
+* That&#x27;s not how you spell friendly... [Ash Wilson]
 
 * Fixing json parse issues for primary BTS change alerts. [Ash Wilson]
 
@@ -454,7 +467,7 @@
 
 * Kal enrich returns scan even if no towers found. [Ash Wilson]
 
-* Corrected shite logic that didn't reset primary BTS. [Ash Wilson]
+* Corrected shite logic that didn&#x27;t reset primary BTS. [Ash Wilson]
 
 * Adding ARFCN to anomaly messaging. [Ash Wilson]
 
