@@ -101,7 +101,7 @@ def main():
         #  Heartbeat messages
         for item in active_threads:
             scan_results_queue.append(sitchlib.Utility.heartbeat(item.name))
-        scan_results_queue.append(sitchlib.Utility.get_performance_metrics)
+        scan_results_queue.append(sitchlib.Utility.get_performance_metrics())
     return
 
 def init_event_injector(init_event):
@@ -267,6 +267,8 @@ def enricher(config):
                 outlist = enr.enrich_kal_scan(scandoc)
             elif doctype == 'HEARTBEAT':
                 outlist.append(("heartbeat", scandoc))
+            elif doctype == 'HEALTHCHECK':
+                outlist.append(("health_check", scandoc))
             elif doctype == 'GSM_MODEM':
                 outlist = enr.enrich_gsm_modem_scan(scandoc, state)
             elif doctype == 'GPS':
