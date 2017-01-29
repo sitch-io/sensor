@@ -19,7 +19,7 @@ class GsmModemEnricher(object):
         self.good_arfcns = []
         self.bad_arfcns = []
         self.cgi_whitelist = cgi_whitelist
-        print GsmModemEnricher.cgi_whitelist_message(self.cgi_whitelist)
+        print(GsmModemEnricher.cgi_whitelist_message(self.cgi_whitelist))
         return
 
     @classmethod

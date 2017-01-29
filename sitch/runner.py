@@ -96,11 +96,12 @@ def main():
     print("Runner: Starting writer thread...")
     writer_thread.start()
     while True:
-        time.sleep(60)
+        time.sleep(120)
         active_threads = threading.enumerate()
         #  Heartbeat messages
         for item in active_threads:
             scan_results_queue.append(sitchlib.Utility.heartbeat(item.name))
+        scan_results_queue.append(sitchlib.Utility.get_performance_metrics())
     return
 
 def init_event_injector(init_event):
@@ -143,6 +144,11 @@ def gsm_modem_consumer(config):
         init_event_injector({"evt_cls": "gsm_consumer",
                              "evt_type": "device_config",
                              "evt_data": " | ".join(dev_config)})
+        print("Runner: Getting IMSI from SIM...")
+        imsi = consumer.get_imsi()
+        init_event_injector({"evt_cls": "gsm_consumer",
+                             "evt_type": "sim_imsi",
+                             "evt_data": str(imsi)})
         time.sleep(2)
         consumer.set_band(band)
         time.sleep(2)
@@ -261,6 +267,8 @@ def enricher(config):
                 outlist = enr.enrich_kal_scan(scandoc)
             elif doctype == 'HEARTBEAT':
                 outlist.append(("heartbeat", scandoc))
+            elif doctype == 'HEALTHCHECK':
+                outlist.append(("health_check", scandoc))
             elif doctype == 'GSM_MODEM':
                 outlist = enr.enrich_gsm_modem_scan(scandoc, state)
             elif doctype == 'GPS':

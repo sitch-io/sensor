@@ -17,6 +17,7 @@ class GsmModem(object):
         self.gps_init = 'AT+CGPSINF=0 \r\n'
         self.echo_off = 'ATE0 \r\n'
         self.reg_info = 'AT+COPS? \r\n'
+        self.imsi_info = 'AT+CIMI \r\n'
         self.config_dump = 'ATV1Q0&V \r\n'
         print("GSM: opening serial port: %s" % ser_port)
         time.sleep(10)
@@ -99,6 +100,32 @@ class GsmModem(object):
                 break
             retval.append(str(output))
         self.serconn.flush()
+        return retval
+
+    def get_imsi(self):
+        rx = r'(?P<imsi>\S+)'
+        self.serconn.write(self.imsi_info)
+        self.serconn.flush()
+        time.sleep(2)
+        retval = []
+        while True:
+            output = self.serconn.readline()
+            if output == '':
+                break
+            if "AT+CIMI" in output:
+                continue
+            if output == "\r\n":
+                continue
+            if "OK\r\n" in output:
+                continue
+            retval.append(str(output))
+        self.serconn.flush()
+        try:
+            test_string = "".join(retval).replace('\r\n', '')
+            retval = re.match(rx, test_string).group("imsi")
+        except AttributeError as e:
+            print("GSM: Unable to clean up IMSI")
+            print(e)
         return retval
 
     def set_band(self, band):
