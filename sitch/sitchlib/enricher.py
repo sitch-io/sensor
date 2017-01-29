@@ -64,6 +64,8 @@ class Enricher:
                 scan_type = 'GEOIP'
             elif scan["scan_program"] == 'heartbeat':
                 scan_type = 'HEARTBEAT'
+            elif scan["scan_program"] == 'health_check':
+                scan_type = 'HEALTHCHECK'
         except:
             print("Enricher: Failure to determine scan type")
             print(scan)

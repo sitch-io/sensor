@@ -13,8 +13,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libfftw3-double3=3.3.4-2 \
     librtlsdr0=0.5.3-3 \
     libusb-1.0-0=2:1.0.19-1 \
-    libc6=2.19-18+deb8u6 \
-    libudev1=215-17+deb8u5 \
+    libc6=2.19-18+deb8u7 \
+    libudev1=215-17+deb8u6 \
     python=2.7.9-1 \
     python-gps=3.11-3 \
     python-pip=1.5.6-5 \
@@ -51,11 +51,12 @@ RUN pip install virtualenv==15.1.0 && \
     virtualenv venv && \
     . ./venv/bin/activate && \
     pip install \
+    psutil==5.0.1 \
     pyserial==3.2.1 \
     pyyaml==3.12 \
     gps3==0.33.3 \
     hvac==0.2.16 \
-    kalibrate==1.1 \
+    kalibrate==1.1.2 \
     haversine==0.4.5 \
     python-geoip==1.2 \
     python-geoip-geolite2==2015.303 \

@@ -39,3 +39,14 @@ class TestUtility:
         desired_result = '65535'
         result = sitchlib.Utility.hex_to_dec(testval)
         assert result == desired_result
+
+    def test_unit_utility_get_platform_info(self):
+        result = sitchlib.Utility.get_platform_info()
+        assert result
+
+    def test_unit_utility_start_component(self):
+        result = sitchlib.Utility.start_component("/bin/true")
+        assert result
+
+    def test_unit_utility_get_performance_metrics(self):
+        assert sitchlib.Utility.get_performance_metrics()

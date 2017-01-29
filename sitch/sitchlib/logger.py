@@ -37,6 +37,7 @@ class LogHandler:
                         "geoip": "geoip.log",
                         "gps": "gps.log",
                         "heartbeat": "heartbeat.log",
+                        "health_check": "health_check.log",
                         "sitch_alert": "sitch_alert.log",
                         "sitch_init":"sitch_init.log"}
         if ltype in type_to_file:
