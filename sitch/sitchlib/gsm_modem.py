@@ -103,6 +103,7 @@ class GsmModem(object):
         return retval
 
     def get_imsi(self):
+        rx = r'^[^\"]+\"(?P<imsi>[^\"]+)\"'
         self.serconn.write(self.imsi_info)
         self.serconn.flush()
         time.sleep(2)
@@ -113,6 +114,11 @@ class GsmModem(object):
                 break
             retval.append(str(output))
         self.serconn.flush()
+        try:
+            retval = re.match(rx, retval).group("imsi")
+        except AttributeError as e:
+            print("GSM: Unable to extract IMSI")
+            print(e)
         return retval
 
     def set_band(self, band):
