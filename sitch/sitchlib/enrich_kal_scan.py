@@ -1,7 +1,3 @@
-# import csv
-# import gzip
-# import json
-# import os
 import alert_manager
 from utility import Utility
 
@@ -14,8 +10,6 @@ class KalScanEnricher(object):
 
     def enrich_kal_scan(self, scan_document):
         results_set = [("scan", scan_document)]
-        kal_threshold = float(self.kal_threshold)
-        # platform_name = scan_document["scanner_name"]
         if scan_document["scan_results"] == []:
             print("EnrichKal: No results found in scan document...")
             return results_set
@@ -44,18 +38,6 @@ class KalScanEnricher(object):
                     results_set.append(chan_enriched)
                 except Exception as e:
                     print("EnrichKal: Failed to enrich Kalibrate message.")
-                    print(e)
-                    print(msg)
-                    # Now we look at alerting...
-                try:
-                    power = float(msg["power"])
-                    if power > kal_threshold:
-                        message = "ARFCN %s over threshold at %s" % (
-                                  msg["channel"], msg["site_name"])
-                        alert = self.alerts.build_alert(200, message)
-                        results_set.append(alert)
-                except Exception as e:
-                    print("EnrichKal: Failed to fire alert!")
                     print(e)
                     print(msg)
         return results_set

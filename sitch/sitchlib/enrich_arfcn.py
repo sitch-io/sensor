@@ -6,7 +6,15 @@ from utility import Utility
 
 
 class EnrichArfcn(object):
-    def __init__(self, geo_state, states, feed_dir):
+    """ARFCN Enricher:
+
+    Confirms license for ARFCN
+
+    Checks ARFCN power measurement (if available) against threshold
+
+    """
+    def __init__(self, geo_state, states, feed_dir, whitelist,
+                 power_threshold):
         """ geo_state looks like this:
         {"gps": {},
          "geoip": {},
@@ -15,13 +23,21 @@ class EnrichArfcn(object):
         self.alerts = alert_manager.AlertManager()
         self.geo_state = geo_state
         self.feed_dir = feed_dir
+        self.states = states
+        self.power_threshold = float(power_threshold)
         self.fcc_feed = FccFeed(states, feed_dir)
         self.observed_arfcn = []
         return
 
     def compare_arfcn_to_feed(self, scan_document):
-        """ Returns a tuple of bool and string.
-        Bool represents if the commparison was good, false if it failed."""
+        """Returns a list of tuples.
+
+        If the comparison was OK, you'll only get a single tuple of
+        ("scan", SCAN_DOCUMENT) where tuple[0] represents the item type, and
+        SCAN_DOCUMENT is the original scan document passed into the method.
+
+        """
+
         arfcn = scan_document["scan_results"][0]["arfcn"]
         results_set = [("scan", scan_document)]
         if str(arfcn) == "0":
@@ -33,18 +49,36 @@ class EnrichArfcn(object):
             print(msg)
         msg = "EnrichARFCN: Cache miss.  Attempt to get %s from feed files..." % str(arfcn)
         print(msg)
-        for item in self.fcc_feed:
-            if str(item["ARFCN"]) != str(arfcn):
-                continue
+        for item in EnrichArfcn.yield_arfcn_from_feed(arfcn, self.states,
+                                                      self.feed_dir):
             item_gps = self.assemble_gps(item)
             if self.is_in_range(item_gps, self.geo_state["gps"]):
+                self.observed_arfcn.append(arfcn)
                 return results_set
         results_set[0][1]["scan_finish"] = Utility.get_now_string()
         msg = "Unable to locate a license for ARFCN %s" % str(arfcn)
         alert = self.alerts.build_alert(400, msg)
         results_set.append(alert)
         self.observed_arfcn.append(arfcn)
+        if results_set[0][1]["type"] == "kal_channel":
+            if float(results_set[0][1]["power"]) > self.power_threshold:
+                message = "ARFCN %s over threshold at %s.  Observed at %s" % (
+                          results_set[0][1]["channel"],
+                          results_set[0][1]["site_name"],
+                          results_set[0][1]["power"])
+                alert = self.alerts.build_alert(200, message)
+                results_set.append(alert)
         return results_set
+
+    @classmethod
+    def yield_arfcn_from_feed(cls, arfcn, states, feed_dir):
+        fcc_feed = FccFeed(states, feed_dir)
+        for item in fcc_feed:
+            if str(item["ARFCN"]) != str(arfcn):
+                continue
+            else:
+                yield item
+        return
 
     @classmethod
     def is_in_range(cls, item_gps, state_gps):
