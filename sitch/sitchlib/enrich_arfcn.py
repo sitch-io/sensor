@@ -62,7 +62,7 @@ class EnrichArfcn(object):
         self.observed_arfcn.append(arfcn)
         if results_set[0][1]["type"] == "kal_channel":
             if float(results_set[0][1]["power"]) > self.power_threshold:
-                message = "ARFCN %s over threshold at %s.  Observed at %s" % (
+                message = "ARFCN %s over threshold at %s.  Observed: %s" % (
                           results_set[0][1]["channel"],
                           results_set[0][1]["site_name"],
                           results_set[0][1]["power"])

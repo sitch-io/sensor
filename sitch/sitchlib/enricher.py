@@ -95,6 +95,7 @@ class Enricher:
                     "scan_start": Utility.get_now_string(),
                     "scan_finish": Utility.get_now_string(),
                     "scan_program": "arfcn_enricher",
+                    "scan_type": "arfcn_extracted",
                     "scan_location": {"name": self.device_id},
                     "scanner_public_ip": self.public_ip}
         retval = self.arfcn_enricher.compare_arfcn_to_feed(scan_job)
