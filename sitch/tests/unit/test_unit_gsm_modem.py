@@ -26,7 +26,7 @@ class TestGsmModem:
         result = sitchlib.GsmModem.process_line(sample_sim900)
         for k, v in result.items():
             print result
-            assert v is not None
+            assert v is None
 
     def test_process_line_7(self):
         result = sitchlib.GsmModem.process_line(sample_7)

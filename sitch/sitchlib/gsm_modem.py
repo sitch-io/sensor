@@ -157,8 +157,8 @@ class GsmModem(object):
     @classmethod
     def process_line(cls, line):
         processed = None
-        if line.startswith('+CENG: '):
-            dataz = line.split(' ')[1].replace('"', '').replace('\r\n', '')
+        if line.startswith('+CENG:'):
+            dataz = line.replace('+CENG:', ' ').replace('"', '').replace('\r\n', '')
             line_parts = dataz.split(',')
             if len(line_parts) == 12:
                 processed = GsmModem.process_12(line_parts)
