@@ -78,7 +78,7 @@ class DeviceDetector(object):
     def is_a_gsm_modem(cls, port):
         time.sleep(2)
         test_command = "ATI \r\n"
-        positive_match = ["SIM808"]
+        positive_match = ["SIM808", "SIM900"]
         result = DeviceDetector.interrogator(positive_match, port, test_command)
         return result
 
