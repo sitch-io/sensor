@@ -19,19 +19,17 @@ class TestGsmModem:
 
     def test_process_line_12(self):
         result = sitchlib.GsmModem.process_line(sample_12)
-        for k, v in result.items():
-            assert v is not None
+        assert result["arfcn"] == "0154"
+        assert result["ta"] == "255"
 
     def test_process_sim900(self):
         result = sitchlib.GsmModem.process_line(sample_sim900)
-        for k, v in result.items():
-            print result
-            assert v is None
+        assert result["arfcn"] == "0672"
+        assert result["ta"] == "2"
 
     def test_process_line_7(self):
         result = sitchlib.GsmModem.process_line(sample_7)
-        for k, v in result.items():
-            assert v is not None
+        assert result["arfcn"] == "0128"
 
     def test_process_fixturelines(self):
         fixture = self.get_sample_lines()
