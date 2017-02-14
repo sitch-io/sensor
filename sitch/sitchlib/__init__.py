@@ -18,5 +18,8 @@ from gps_decomposer import GpsDecomposer  # NOQA
 from gsm_decomposer import GsmDecomposer  # NOQA
 from kal_decomposer import KalDecomposer  # NOQA
 
+from correlate_arfcn import ArfcnCorrelator  # NOQA
+from correlate_cgi import CgiCorrelator  # NOQA
+
 __author__ = "Ash Wilson"
 __version__ = "3.5.0"
