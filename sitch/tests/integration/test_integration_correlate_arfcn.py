@@ -69,9 +69,9 @@ gsm_modem_channel = {"cgi_str": "310:266:253:21553",
                      "input_type": "log"}
 
 
-class TestIntegrationECorrelateArfcn:
+class TestIntegrationCorrelateArfcn:
     def instantiate_arfcn(self):
-        arfcn_correlator = sitchlib.CorrelateArfcn(geo_state, states, feedpath,
+        arfcn_correlator = sitchlib.ArfcnCorrelator(geo_state, states, feedpath,
                                                    [], 100000)
         return arfcn_correlator
 
