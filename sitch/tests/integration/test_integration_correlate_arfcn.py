@@ -1,4 +1,4 @@
-# from datetime import datetime
+from datetime import datetime
 import imp
 import os
 import mock
@@ -39,6 +39,7 @@ kal_channel = {"site_name": "sitch_testing",
                "offset": 22042,
                "type": "kal_channel",
                "input_type": "log"}
+
 gsm_modem_channel = {"cgi_str": "310:266:253:21553",
                      "site_name": "sitch_testing",
                      "mcc": "310",
@@ -80,31 +81,37 @@ class TestIntegrationCorrelateArfcn:
                                               [], 100000)
         return arfcn_enricher
 
+    def build_scan_doc(self, arfcn):
+        scan_ref = {"kal": kal_channel,
+                    "gsm": gsm_modem_channel}
+        scan_ref["arfcn_int"] = arfcn
+        return scan_ref
+
     def test_instantiate_arfcn(self):
         arfcn = self.instantiate_arfcn()
         assert arfcn
 
     def test_arfcn_override_gps(self):
         arfcn = self.instantiate_arfcn()
-        test_arfcn = self.build_scan_doc("239")
+        test_arfcn = self.build_scan_doc("kal", 239)
         result = arfcn.compare_arfcn_to_feed(test_arfcn)
         assert len(result) == 1
 
     def test_arfcn_good(self):
         arfcn = self.instantiate_arfcn()
-        test_arfcn = self.build_scan_doc("239")
+        test_arfcn = self.build_scan_doc("kal", 239)
         result = arfcn.compare_arfcn_to_feed(test_arfcn)
         assert len(result) == 0
 
     def test_arfcn_bad(self):
         arfcn = self.instantiate_arfcn()
-        test_arfcn = self.build_scan_doc("99")
+        test_arfcn = self.build_scan_doc("kal", 99)
         result = arfcn.compare_arfcn_to_feed(test_arfcn)
         assert len(result) == 1
 
     def test_arfcn_gps_bad(self):
         arfcn = self.instantiate_arfcn_bad_geo_state()
-        test_arfcn = self.build_scan_doc("99")
+        test_arfcn = self.build_scan_doc("kal", 99)
         result = arfcn.compare_arfcn_to_feed(test_arfcn)
         print result
         assert len(result) == 1
