@@ -26,16 +26,15 @@ class ArfcnCorrelator(object):
         self.fcc_feed = FccFeed(states, feed_dir)
         # Whitelist goes into observed_arfcn, and bypasses feed comparison (still threshold alert though)
         self.observed_arfcn = whitelist
-        self.arfcn_over_threshold = []
-        self.arfcn_not_in_feed = []
-        self.arfcn_out_of_range = []
+        self.arfcn_threshold = []
+        self.arfcn_range = []
         return
 
     def correlate(self, scan_document):
         """Entrypoint, so to speak"""
         retval = []
-        scan_type = scan_document[0]
-        scan = scan_document[1]
+        scan_type = scan_document["type"]
+        scan = scan_document
         arfcn = ArfcnCorrelator.arfcn_from_scan(scan_type, scan)
         if scan_type == "kal_channel":
             if self.arfcn_over_threshold(arfcn):
@@ -55,20 +54,19 @@ class ArfcnCorrelator(object):
         return retval
 
     def manage_arfcn_lists(self, direction, arfcn, aspect):
-        reference = {"threshold": self.arfcn_over_threshold,
-                     "not_in_feed": self.arfcn_not_in_feed,
-                     "not_in_range": self.arfcn_out_of_range}
+        reference = {"threshold": self.arfcn_threshold,
+                     "not_in_range": self.arfcn_range}
         if direction == "in":
-            if reference["aspect"].count(arfcn) > 0:
+            if reference[aspect].count(arfcn) > 0:
                 pass
             else:
-                reference["aspect"].append(arfcn)
+                reference[aspect].append(arfcn)
         elif direction == "out":
-            if reference["aspect"].count(arfcn) == 0:
+            if reference[aspect].count(arfcn) == 0:
                 pass
             else:
-                while arfcn in reference["aspect"]  :
-                    reference["aspect"].remove(arfcn)
+                while arfcn in reference[aspect]  :
+                    reference[aspect].remove(arfcn)
         return
 
     def arfcn_over_threshold(self, arfcn):
@@ -80,41 +78,41 @@ class ArfcnCorrelator(object):
 
 
     def compare_arfcn_to_feed(self, arfcn):
-        """Returns a list of tuples, and only alarms.
-
-        """
+        """Returns a list of tuples, and only alarms."""
         results = []
         # If we can't compare geo, have ARFCN 0 or already been found in feed:
         if (str(arfcn) == "0" or
             arfcn in self.observed_arfcn or
-            self.geo_state["gps"] == {}):
+            self.geo_state == {} or
+            self.geo_state == {"lat": 0, "lon": 0}):
             return results
         else:
             msg = "ArfcnCorrelator: Cache miss on ARFCN %s" % str(arfcn)
             print(msg)
-        feed_alerts = self.compare_arfcn_to_feed(arfcn)
-        if feed_alerts:
-            for feed_alert in feed_alerts:
-                results.append(feed_alert)
+        results.extend(self.feed_alert_generator(arfcn))
         return results
 
 
     def feed_alert_generator(self, arfcn):
+        """Compare ARFCN to feed, return alerts"""
         results = []
         for item in ArfcnCorrelator.yield_arfcn_from_feed(arfcn, self.states,
                                                           self.feed_dir):
             item_gps = self.assemble_gps(item)
-            if self.is_in_range(item_gps, self.geo_state["gps"]):
+            if self.is_in_range(item_gps, self.geo_state):
+                self.manage_arfcn_lists("out", arfcn, "not_in_range")
                 return results
         msg = "Unable to locate a license for ARFCN %s" % str(arfcn)
+        self.manage_arfcn_lists("in", arfcn, "not_in_range")
         alert = self.alerts.build_alert(400, msg)
         results.append(alert)
+        return results
 
     @classmethod
     def arfcn_from_scan(cls, scan_type, scan_doc):
         if scan_type == "kal_channel":
             return scan_doc["arfcn_int"]
-        elif scan_type == "cell":
+        elif scan_type == "gsm_modem_channel":
             return scan_doc["arfcn_int"]
         else:
             print("ArfcnCorrelator: Unrecognized scan type: %s" % str(scan_type))
@@ -133,8 +131,8 @@ class ArfcnCorrelator(object):
     @classmethod
     def is_in_range(cls, item_gps, state_gps):
         max_range = 40000  # 40km
-        state_lon = state_gps["lon"][0]
-        state_lat = state_gps["lat"][1]
+        state_lon = state_gps["lon"]
+        state_lat = state_gps["lat"]
         item_lon = item_gps["lon"]
         item_lat = item_gps["lat"]
         distance = Utility.calculate_distance(state_lon, state_lat,

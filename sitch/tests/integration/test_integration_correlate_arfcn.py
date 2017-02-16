@@ -13,14 +13,18 @@ feedpath = os.path.join(os.path.dirname(os.path.abspath(__file__)),
 file, pathname, description = imp.find_module(modulename, [modulepath])
 sitchlib = imp.load_module(modulename, file, pathname, description)
 
-geo_state = {"gps":
-             {"geometry":
-              {"coordinates":
-                  [-122.431297, 37.773972]}}}
-bad_geo_state = {"gps":
-                 {"geometry":
-                  {"coordinates":
-                      [0, 0]}}}
+# geo_state = {"gps":
+#             {"geometry":
+#              {"coordinates":
+#                  [-122.431297, 37.773972]}}}
+
+geo_state = {"lat": 37.773972, "lon": -122.431297}
+bad_geo_state = {"lat": 0, "lon": 0}
+
+# bad_geo_state = {"gps":
+#                 {"geometry":
+#                  {"coordinates":
+#                      [0, 0]}}}
 
 states = ["CA"]
 
@@ -77,36 +81,37 @@ class TestIntegrationCorrelateArfcn:
         return arfcn_correlator
 
     def instantiate_arfcn_bad_geo_state(self):
-        arfcn_enricher = sitchlib.EnrichArfcn(bad_geo_state, states, feedpath,
-                                              [], 100000)
+        arfcn_enricher = sitchlib.ArfcnCorrelator(bad_geo_state, states, feedpath,
+                                                  [], 100000)
         return arfcn_enricher
 
-    def build_scan_doc(self, arfcn):
+    def build_scan_doc(self, scan_type, arfcn):
         scan_ref = {"kal": kal_channel,
                     "gsm": gsm_modem_channel}
-        scan_ref["arfcn_int"] = arfcn
-        return scan_ref
+        retval = scan_ref[scan_type]
+        retval["arfcn_int"] = arfcn
+        return retval
 
     def test_instantiate_arfcn(self):
         arfcn = self.instantiate_arfcn()
         assert arfcn
 
-    def test_arfcn_override_gps(self):
+    def test_compare_arfcn_to_feed(self):
         arfcn = self.instantiate_arfcn()
-        test_arfcn = self.build_scan_doc("kal", 239)
-        result = arfcn.compare_arfcn_to_feed(test_arfcn)
-        assert len(result) == 1
+        test_scan = self.build_scan_doc("kal", 239)
+        result = arfcn.compare_arfcn_to_feed(test_scan["arfcn_int"])
+        assert len(result) == 0
 
     def test_arfcn_good(self):
         arfcn = self.instantiate_arfcn()
-        test_arfcn = self.build_scan_doc("kal", 239)
-        result = arfcn.compare_arfcn_to_feed(test_arfcn)
+        test_scan = self.build_scan_doc("kal", 239)
+        result = arfcn.correlate(test_scan)
         assert len(result) == 0
 
     def test_arfcn_bad(self):
         arfcn = self.instantiate_arfcn()
-        test_arfcn = self.build_scan_doc("kal", 99)
-        result = arfcn.compare_arfcn_to_feed(test_arfcn)
+        test_scan = self.build_scan_doc("kal", 99)
+        result = arfcn.correlate(test_scan)
         assert len(result) == 1
 
     def test_arfcn_gps_bad(self):
@@ -114,7 +119,7 @@ class TestIntegrationCorrelateArfcn:
         test_arfcn = self.build_scan_doc("kal", 99)
         result = arfcn.compare_arfcn_to_feed(test_arfcn)
         print result
-        assert len(result) == 1
+        assert len(result) == 0
 
     def test_kal_channel_over_threshold(self):
         arfcn = self.instantiate_arfcn()
@@ -126,4 +131,4 @@ class TestIntegrationCorrelateArfcn:
         arfcn = self.instantiate_arfcn()
         results = arfcn.compare_arfcn_to_feed(gsm_modem_channel)
         print results
-        assert len(results) == 0
+        assert len(results) == 1
