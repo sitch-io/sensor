@@ -2,8 +2,23 @@ from utility import Utility
 
 
 class GsmDecomposer(object):
-    def __init__(self):
-        return
+    @classmethod
+    def decompose(cls, scan_document):
+        results_set = [("cell", scan_document)]
+        scan_items = scan_document["scan_results"]
+        for channel in scan_items:
+            channel = GsmDecomposer.enrich_channel_with_scan(channel,
+                                                             scan_document)
+            channel["arfcn_int"] = GsmDecomposer.arfcn_int(channel["arfcn"])
+            # Now we bring the hex values to decimal...
+            channel = GsmDecomposer.convert_hex_targets(channel)
+            channel = GsmDecomposer.convert_float_targets(channel)
+            # Setting CGI identifiers
+            channel["cgi_str"] = GsmDecomposer.make_bts_friendly(channel)
+            channel["cgi_int"] = GsmDecomposer.get_cgi_int(channel)
+            chan_enriched = ('gsm_modem_channel', channel)
+            results_set.append(chan_enriched)
+        return results_set
 
     @classmethod
     def enrich_channel_with_scan(cls, channel, scan_document):
@@ -46,23 +61,6 @@ class GsmDecomposer(object):
                "lac": channel["lac"],
                "cellid": channel["cellid"]}
         return bts
-
-    def decompose(self, scan_document):
-        results_set = [("cell", scan_document)]
-        scan_items = scan_document["scan_results"]
-        for channel in scan_items:
-            channel = GsmDecomposer.enrich_channel_with_scan(channel,
-                                                             scan_document)
-            channel["arfcn_int"] = GsmDecomposer.arfcn_int(channel["arfcn"])
-            # Now we bring the hex values to decimal...
-            channel = GsmDecomposer.convert_hex_targets(channel)
-            channel = GsmDecomposer.convert_float_targets(channel)
-            # Setting CGI identifiers
-            channel["cgi_str"] = GsmDecomposer.make_bts_friendly(channel)
-            channel["cgi_int"] = GsmDecomposer.get_cgi_int(channel)
-            chan_enriched = ('gsm_modem_channel', channel)
-            results_set.append(chan_enriched)
-        return results_set
 
     @classmethod
     def make_bts_friendly(cls, bts_struct):
