@@ -1,4 +1,3 @@
-from datetime import datetime
 import imp
 import os
 import mock

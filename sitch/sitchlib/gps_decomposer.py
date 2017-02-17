@@ -1,8 +1,17 @@
 class GpsDecomposer(object):
-    def __init__(self):
-        return
-
-
-    def decompose(self, scan_document):
+    @classmethod
+    def decompose(cls, scan_document):
         results_set = [("gps", scan_document)]
-        return results_set
+        if not GpsDecomposer.scan_document_is_valid(scan_document):
+            return []
+        else:
+            return results_set
+
+    @classmethod
+    def scan_document_is_valid(cls, scan_document):
+        is_valid = False
+        if "geometry" in scan_document:
+            if "coordinates" in scan_document["geometry"]:
+                if scan_document["geometry"]["coordinates"] != [0, 0]:
+                    is_valid = True
+        return is_valid

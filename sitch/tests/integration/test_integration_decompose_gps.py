@@ -17,29 +17,20 @@ def build_gps_scan(lon, lat):
                 "type": "Feature",
                 "geometry":
                   {"type": "Point",
-                           "coordinates": [ lon,
-                                            lat]}}
+                   "coordinates": [lon,
+                                   lat]}}
     return gps_scan
 
 class TestIntegrationDecomposeGps:
-    def instantiate_gsm_decomposer(self):
-        gps_decomposer = sitchlib.GpsDecomposer()
-        return gps_decomposer
-
-    def test_instantiate_gps_decomposer(self):
-        gps = self.instantiate_gps_decomposer()
-        assert gps
-
     def test_gps_empty(self):
         # If it's 0,0 we don't let it past the decomposer
-        gps = self.instantiate_gps_decomposer()
-        result = gps.decompose(build_gps_scan(0,0))
+        result = sitchlib.GpsDecomposer.decompose(build_gps_scan(0,0))
         assert len(result) == 0
 
     def test_gsm_structure(self):
-        gps = self.instantiate_gps_decomposer()
-        results = gps.decompose(build_gps_scan(1,1))
+        results = sitchlib.GpsDecomposer.decompose(build_gps_scan(1,1))
+        assert len(results) == 1
         for result in results:
-            assert len(result) == 1
+            assert len(result) == 2
             assert type(result[0]) is str
             assert type(result[1]) is dict
