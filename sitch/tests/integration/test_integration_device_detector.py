@@ -1,10 +1,8 @@
 import imp
 import os
-import random
 import pytest
 from contextlib import contextmanager
-from tests.utils.udev import DeviceDatabase
-from pyudev import Monitor, Devices
+from pyudev import Monitor
 
 modulename = 'sitchlib'
 modulepath = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../../")
@@ -18,12 +16,6 @@ class TestDeviceDetector:
     @pytest.fixture
     def monitor(request):
         return Monitor.from_netlink(request.getfuncargvalue('context'))
-
-    @pytest.fixture
-    def fake_monitor_device(request):
-        context = request.getfuncargvalue('context')
-        device = random.choice(list(DeviceDatabase.db()))
-        return Devices.from_path(context, device.device_path)
 
     @contextmanager
     def patch_filter_by(type):
