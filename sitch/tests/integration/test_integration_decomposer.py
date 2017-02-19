@@ -14,16 +14,8 @@ sitchlib = imp.load_module(modulename, file, pathname, description)
 
 
 class TestIntegrationDecomposeGps:
-    def instantiate_decomposer(self):
-        decomposer = sitchlib.GpsDecomposer()
-        return decomposer
-
-    def test_instantiate_gps_decomposer(self):
-        decomp = self.instantiate_decomposer()
-        assert decomp
-
     def test_decomposer_unrecognized_scan(self):
-        decomposer = self.instantiate_decomposer()
+        decomposer = sitchlib.Decomposer
         scan = {"scan_program": "Something you'll never see"}
         result = decomposer.decompose(scan)
         assert len(result) == 0
