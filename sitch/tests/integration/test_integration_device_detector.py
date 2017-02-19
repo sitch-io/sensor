@@ -7,5 +7,5 @@ sitchlib = imp.load_module(modulename, file, pathname, description)
 
 
 class TestDeviceDetector:
-    def test_interrogator_instantiation(self, context):
+    def test_interrogator_instantiation(self):
         assert sitchlib.DeviceDetector()
