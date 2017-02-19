@@ -14,10 +14,6 @@ sitchlib = imp.load_module(modulename, file, pathname, description)
 
 
 class TestIntegrationKalDecomposer:
-    def instantiate_kal_decomposer(self):
-        kal_decomposer = sitchlib.KalDecomposer()
-        return kal_decomposer
-
     def build_scan_doc(self):
         samp_kal = {'platform': u'AMLOGIC',
                     'scan_finish': '2016-05-07 04:14:30',
@@ -57,20 +53,15 @@ class TestIntegrationKalDecomposer:
                     'scanner_name': 'test_site'}
         return samp_kal
 
-    def test_instantiate_kal_decomposer(self):
-        arfcn = self.instantiate_kal_decomposer()
-        assert arfcn
 
     def test_kal_good(self):
-        kal_decomposer = self.instantiate_kal_decomposer()
         kal_scan = self.build_scan_doc()
-        result = kal_decomposer.decompose(kal_scan)
+        result = sitchlib.Decomposer.decompose(kal_scan)
         assert len(result) == 5
 
     def test_kal_response_structure(self):
-        kal_decomposer = self.instantiate_kal_decomposer()
         kal_scan = self.build_scan_doc()
-        results = kal_decomposer.decompose(kal_scan)
+        results = sitchlib.Decomposer.decompose(kal_scan)
         assert len(results) == 5
         for result in results:
             assert len(result) == 2

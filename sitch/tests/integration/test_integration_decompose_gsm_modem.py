@@ -42,11 +42,11 @@ samp_sim = {'platform': u'AMLOGIC',
 
 class TestIntegrationEnrichGsmModem:
     def test_gsm(self):
-        results = sitchlib.GsmDecomposer.decompose(samp_sim)
+        results = sitchlib.Decomposer.decompose(samp_sim)
         assert len(results) == 8
 
     def test_gsm_structure(self):
-        results = sitchlib.GsmDecomposer.decompose(samp_sim)
+        results = sitchlib.Decomposer.decompose(samp_sim)
         for result in results:
             assert len(result) == 2
             assert type(result[0]) is str

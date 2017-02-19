@@ -24,7 +24,7 @@ def build_gps_scan(lon, lat):
 class TestIntegrationDecomposeGps:
     def test_gps_empty(self):
         # If it's 0,0 we don't let it past the decomposer
-        result = sitchlib.GpsDecomposer.decompose(build_gps_scan(0,0))
+        result = sitchlib.Decomposer.decompose(build_gps_scan(0,0))
         assert len(result) == 0
 
     def test_gsm_structure(self):

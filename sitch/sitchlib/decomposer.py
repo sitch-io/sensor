@@ -8,9 +8,6 @@ class Decomposer(object):
                   "GSM_MODEM": GsmDecomposer(),
                   "gpsd": GpsDecomposer()}
 
-    def __init__(self):
-        return
-
     @classmethod
     def decompose(cls, scan):
         result = []
