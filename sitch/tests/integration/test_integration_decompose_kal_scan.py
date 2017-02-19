@@ -13,9 +13,9 @@ file, pathname, description = imp.find_module(modulename, [modulepath])
 sitchlib = imp.load_module(modulename, file, pathname, description)
 
 
-class TestIntegrationEnrichKalScan:
+class TestIntegrationKalDecomposer:
     def instantiate_kal_decomposer(self):
-        kal_decomposer = sitchlib.KalScanDecomposer()
+        kal_decomposer = sitchlib.KalDecomposer()
         return kal_decomposer
 
     def build_scan_doc(self):
@@ -64,13 +64,13 @@ class TestIntegrationEnrichKalScan:
     def test_kal_good(self):
         kal_decomposer = self.instantiate_kal_decomposer()
         kal_scan = self.build_scan_doc()
-        result = kal_decomposer.decompose_kal_scan(kal_scan)
+        result = kal_decomposer.decompose(kal_scan)
         assert len(result) == 5
 
     def test_kal_response_structure(self):
         kal_decomposer = self.instantiate_kal_decomposer()
         kal_scan = self.build_scan_doc()
-        results = kal_decomposer.decompose_kal_scan(kal_scan)
+        results = kal_decomposer.decompose(kal_scan)
         assert len(results) == 5
         for result in results:
             assert len(result) == 2

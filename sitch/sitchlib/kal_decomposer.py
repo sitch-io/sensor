@@ -2,9 +2,6 @@ from utility import Utility
 
 
 class KalDecomposer(object):
-    def __init__(self):
-        return
-
     @classmethod
     def decompose(cls, scan_document):
         results_set = [("scan", scan_document)]
