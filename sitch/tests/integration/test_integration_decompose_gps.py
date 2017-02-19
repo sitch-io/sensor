@@ -28,7 +28,7 @@ class TestIntegrationDecomposeGps:
         assert len(result) == 0
 
     def test_gsm_structure(self):
-        results = sitchlib.GpsDecomposer.decompose(build_gps_scan(1,1))
+        results = sitchlib.Decomposer.decompose(build_gps_scan(1,1))
         assert len(results) == 1
         for result in results:
             assert len(result) == 2
