@@ -1,5 +1,7 @@
 import imp
 import os
+import pytest
+
 modulename = 'sitchlib'
 modulepath = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../../")
 file, pathname, description = imp.find_module(modulename, [modulepath])
@@ -7,5 +9,6 @@ sitchlib = imp.load_module(modulename, file, pathname, description)
 
 
 class TestDeviceDetector:
+    @pytest.mark.not_on_travis
     def test_interrogator_instantiation(self):
         assert sitchlib.DeviceDetector()
