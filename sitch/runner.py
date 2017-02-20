@@ -3,7 +3,7 @@ threads.
 """
 
 import sitchlib
-import datetime
+# import datetime
 import kalibrate
 import threading
 import time
@@ -14,10 +14,16 @@ from socket import error as SocketError
 def main():
     global scan_results_queue
     global message_write_queue
+    global arfcn_correlator_queue
+    global cgi_correlator_queue
+    global geo_correlator_queue
     global gps_location
     gps_location = {}
     scan_results_queue = deque([])
     message_write_queue = deque([])
+    arfcn_correlator_queue = deque([])
+    cgi_correlator_queue = deque([])
+    geo_correlator_queue = deque([])
     sensor_version = sitchlib.__version__
     startup_string = "Starting SITCH Sensor v%s" % sensor_version
     print(startup_string)
@@ -57,6 +63,10 @@ def main():
     # Start cron
     sitchlib.Utility.start_component("/etc/init.d/cron start")
 
+    print("Instantiating feed manager...")
+    feed_mgr = sitchlib.FeedManager(config)
+    feed_mgr.update_feed_files()
+
     # Configure threads
     kalibrate_consumer_thread = threading.Thread(target=kalibrate_consumer,
                                                  name="kalibrate_consumer",
@@ -70,9 +80,21 @@ def main():
     gps_consumer_thread = threading.Thread(target=gps_consumer,
                                            name="gps_consumer",
                                            args=[config])
-    enricher_thread = threading.Thread(target=enricher,
-                                       name="enricher",
-                                       args=[config])
+    # enricher_thread = threading.Thread(target=enricher,
+    #                                   name="enricher",
+    #                                   args=[config])
+    decomposer_thread = threading.Thread(target=decomposer,
+                                         name="decomposer",
+                                         args=[config])
+    arfcn_correlator_thread = threading.Thread(target=arfcn_correlator,
+                                               name="arfcn_correlator",
+                                               args=[config])
+    cgi_correlator_thread = threading.Thread(target=cgi_correlator,
+                                             name="cgi_correlator",
+                                             args=[config])
+    geo_correlator_thread = threading.Thread(target=geo_correlator,
+                                             name="geo_correlator",
+                                             args=[config])
     writer_thread = threading.Thread(target=output,
                                      name="writer",
                                      args=[config])
@@ -80,7 +102,11 @@ def main():
     gsm_modem_consumer_thread.daemon = True
     geoip_consumer_thread.daemon = True
     gps_consumer_thread.daemon = True
-    enricher_thread.daemon = True
+    # enricher_thread.daemon = True
+    decomposer_thread.daemon = True
+    arfcn_correlator_thread.daemon = True
+    cgi_correlator_thread.daemon = True
+    geo_correlator_thread.daemon = True
     writer_thread.daemon = True
     # Kick off threads
     print("Runner: Starting Kalibrate consumer thread...")
@@ -92,7 +118,15 @@ def main():
     print("Runner: Starting GeoIP consumer thread...")
     geoip_consumer_thread.start()
     print("Runner: Starting enricher thread...")
-    enricher_thread.start()
+    # enricher_thread.start()
+    print("Runner: Starting decomposer thread...")
+    decomposer_thread.start()
+    print("Runner: Starting ARFCN correlator thread...")
+    arfcn_correlator_thread.start()
+    print("Runner: Starting CGI correlator thread...")
+    cgi_correlator_thread.start()
+    print("Runner: Starting geo correlator thread...")
+    geo_correlator_thread.start()
     print("Runner: Starting writer thread...")
     writer_thread.start()
     while True:
@@ -245,90 +279,168 @@ def kalibrate_consumer(config):
         scan_results_queue.append(scan_document.copy())
     return
 
+def arfcn_correlator(config):
+    """This correlates any single row with an ARFCN"""
+    correlator = sitchlib.ArfcnCorrelator({},
+                                         config.state_list,
+                                         config.feed_dir,
+                                         config.arfcn_whitelist,
+                                         config.kal_threshold)
+    while True:
+        try:
+            item = arfcn_correlator_queue.popleft()
+            alarms = correlator.correlate(item)
+            if len(alarms) > 0:
+                message_write_queue.extend(alarms)
+        except IndexError:
+            # Queue must be empty...
+            time.sleep(1)
 
-def enricher(config):
-    """ Enricher breaks apart kalibrate doc into multiple log entries, and
-    assembles lines from gsm_modem into a main doc as well as writing multiple
-    lines to the output queue for metadata """
-    state = {"gps": {},
-             "geoip": {},
-             "geo_anchor": {},
-             "geo_distance_meters": 0}
-    override_suppression = [110]
-    print("Runner: Now starting enricher")
-    enr = sitchlib.Enricher(config, state)
-    enr.update_feeds()
+def cgi_correlator(config):
+    """This correlates any single row with a CGI"""
+    correlator = sitchlib.CgiCorrelator(config.feed_dir,
+                                        config.cgi_whitelist)
+    while True:
+        try:
+            item = cgi_correlator_queue.popleft()
+            alarms = correlator.correlate(item)
+            if len(alarms) > 0:
+                message_write_queue.extend(alarms)
+        except IndexError:
+            # Queue must be empty...
+            time.sleep(1)
+
+def geo_correlator(config):
+    """This correlates geo state changes"""
+    correlator = sitchlib.GeoCorrelator()
+    while True:
+        try:
+            item = geo_correlator_queue.popleft()
+            alarms = correlator.correlate(item)
+            if len(alarms) > 0:
+                message_write_queue.extend(alarms)
+        except IndexError:
+            # Queue must be empty...
+            time.sleep(1)
+
+def decomposer(config):
+    """This decomposes all scans we get from devices.  Expected types:
+    "scan" (Kalibrate), "kal_channel" (channel extracted from Kalibrate scan),
+    "cell" (full scan from cellular radio), "gsm_modem_channel" (channel
+    extracted from GSM modem output), and "gps" (output from gpsd)
+    """
+
+    d_composer = sitchlib.Decomposer
     while True:
         try:
             scandoc = scan_results_queue.popleft()
-            doctype = enr.determine_scan_type(scandoc)
-            outlist = []
-            if doctype == 'Kalibrate':
-                outlist = enr.enrich_kal_scan(scandoc)
-            elif doctype == 'HEARTBEAT':
-                outlist.append(("heartbeat", scandoc))
-            elif doctype == 'HEALTHCHECK':
-                outlist.append(("health_check", scandoc))
-            elif doctype == 'GSM_MODEM':
-                outlist = enr.enrich_gsm_modem_scan(scandoc, state)
-            elif doctype == 'GPS':
-                """ Every time we get a GPS reading, we check to make sure
-                that it is close to the same distance from GeoIP as it was
-                when it was last measured.  Alerts are generated if the drift
-                is beyond threshold."""
-                if state["geo_anchor"] == {}:
-                    state["geo_anchor"] = scandoc["scan_results"].copy()
-                    msg = "Runner: Geo anchor: %s" % sitchlib.Utility.pretty_string(state["geo_anchor"])
-                    print(msg)
-                outlist = enr.enrich_gps_scan(scandoc.copy())
-                geo_problem = enr.geo_drift_check(state["geo_distance_meters"],
-                                                  state["geo_anchor"],
-                                                  scandoc["scan_results"],
-                                                  config.gps_drift_threshold)
-                if geo_problem:
-                    outlist.append(geo_problem)
-                state["gps"] = scandoc["scan_results"]
-                lat_1 = state["geo_anchor"]["geometry"]["coordinates"][0]
-                lon_1 = state["geo_anchor"]["geometry"]["coordinates"][1]
-                lat_2 = state["gps"]["geometry"]["coordinates"][0]
-                lon_2 = state["gps"]["geometry"]["coordinates"][1]
-                new_distance = (sitchlib.Utility.calculate_distance(lon_1,
-                                                                    lat_1,
-                                                                    lon_2,
-                                                                    lat_2))
-                state["geo_distance_meters"] = int(new_distance)
-            elif doctype == 'GEOIP':
-                outlist = enr.enrich_geoip_scan(scandoc.copy())
-                state["geoip"] = scandoc["scan_results"]
+            decomposed = d_composer.decompose(scandoc)
+            if decomposed == []:
+                continue
             else:
-                print("Runner: Can't determine scan type for: ")
-                print(scandoc)
-            # Clean the suppression list, everything over 12 hours
-            for suppressed, tstamp in enr.suppressed_alerts.items():
-                if abs((datetime.datetime.now() -
-                        tstamp).total_seconds()) > 43200:
-                    del enr.suppressed_alerts[suppressed]
-            # Send all the things to the outbound queue
-            for log_bolus in outlist:
-                if log_bolus[0] == 'sitch_alert':
-                    if log_bolus[1]["id"] in override_suppression:
-                        message_write_queue.append(log_bolus)
-                        continue
+                for result in decomposed:
+                    s_type = result[0]
+                    if s_type == "scan":
+                        message_write_queue.append(result)
+                    elif s_type == "kal_channel":
+                        arfcn_correlator_queue.append(result)
+                    elif s_type == "cell":
+                        message_write_queue.append(result)
+                    elif s_type == "gsm_modem_channel":
+                        cgi_correlator_queue.append(result)
+                        arfcn_correlator_queue.append(result)
+                    elif s_type == "gps":
+                        arfcn_correlator_queue.append(result)
+                        cgi_correlator_queue.append(result)
                     else:
-                        if log_bolus[1]["details"] in enr.suppressed_alerts:
-                            continue
-                        else:
-                            enr.suppressed_alerts[log_bolus[1]["details"]] = datetime.datetime.now()  # NOQA
-                message_write_queue.append(log_bolus)
-            for log_bolus in outlist:
-                channel_events = ["gsm_modem_channel", "kal_channel"]
-                if log_bolus[0] in channel_events:
-                    target_arfcn = log_bolus[1]["arfcn_int"]
-                    enriched_arfcn = enr.check_arfcn_in_range(target_arfcn)
-                    for item in enriched_arfcn:
-                        message_write_queue.append(item)
+                        print("Decomposer: Unrecognized scan type %s" % s_type)
         except IndexError:
+            # Queue is empty...
             time.sleep(1)
+
+# def enricher(config):
+#    """ Enricher breaks apart kalibrate doc into multiple log entries, and
+#    assembles lines from gsm_modem into a main doc as well as writing multiple
+#    lines to the output queue for metadata """
+#    state = {"gps": {},
+#             "geoip": {},
+#             "geo_anchor": {},
+#             "geo_distance_meters": 0}
+#    override_suppression = [110]
+#    print("Runner: Now starting enricher")
+#    enr = sitchlib.Enricher(config, state)
+#    enr.update_feeds()
+#    while True:
+#        try:
+#            scandoc = scan_results_queue.popleft()
+#            doctype = enr.determine_scan_type(scandoc)
+#            outlist = []
+#            if doctype == 'Kalibrate':
+#                outlist = enr.enrich_kal_scan(scandoc)
+#            elif doctype == 'HEARTBEAT':
+#                outlist.append(("heartbeat", scandoc))
+#            elif doctype == 'HEALTHCHECK':
+#                outlist.append(("health_check", scandoc))
+#            elif doctype == 'GSM_MODEM':
+#                outlist = enr.enrich_gsm_modem_scan(scandoc, state)
+#            elif doctype == 'GPS':
+#                """ Every time we get a GPS reading, we check to make sure
+#                that it is close to the same distance from GeoIP as it was
+#                when it was last measured.  Alerts are generated if the drift
+#                is beyond threshold."""
+#                if state["geo_anchor"] == {}:
+#                    state["geo_anchor"] = scandoc["scan_results"].copy()
+#                    msg = "Runner: Geo anchor: %s" % sitchlib.Utility.pretty_string(state["geo_anchor"])
+#                    print(msg)
+#                outlist = enr.enrich_gps_scan(scandoc.copy())
+#                geo_problem = enr.geo_drift_check(state["geo_distance_meters"],
+#                                                  state["geo_anchor"],
+#                                                  scandoc["scan_results"],
+#                                                  config.gps_drift_threshold)
+#                if geo_problem:
+#                    outlist.append(geo_problem)
+#                state["gps"] = scandoc["scan_results"]
+#                lat_1 = state["geo_anchor"]["geometry"]["coordinates"][0]
+#                lon_1 = state["geo_anchor"]["geometry"]["coordinates"][1]
+#                lat_2 = state["gps"]["geometry"]["coordinates"][0]
+#                lon_2 = state["gps"]["geometry"]["coordinates"][1]
+#                new_distance = (sitchlib.Utility.calculate_distance(lon_1,
+#                                                                    lat_1,
+#                                                                    lon_2,
+#                                                                    lat_2))
+#                state["geo_distance_meters"] = int(new_distance)
+#            elif doctype == 'GEOIP':
+#                outlist = enr.enrich_geoip_scan(scandoc.copy())
+#                state["geoip"] = scandoc["scan_results"]
+#            else:
+#                print("Runner: Can't determine scan type for: ")
+#                print(scandoc)
+            # Clean the suppression list, everything over 12 hours
+#            for suppressed, tstamp in enr.suppressed_alerts.items():
+#                if abs((datetime.datetime.now() -
+#                        tstamp).total_seconds()) > 43200:
+#                    del enr.suppressed_alerts[suppressed]
+            # Send all the things to the outbound queue
+#            for log_bolus in outlist:
+#                if log_bolus[0] == 'sitch_alert':
+#                    if log_bolus[1]["id"] in override_suppression:
+#                        message_write_queue.append(log_bolus)
+#                        continue
+#                    else:
+#                        if log_bolus[1]["details"] in enr.suppressed_alerts:
+#                            continue
+#                        else:
+#                            enr.suppressed_alerts[log_bolus[1]["details"]] = datetime.datetime.now()  # NOQA
+#                message_write_queue.append(log_bolus)
+#            for log_bolus in outlist:
+#                channel_events = ["gsm_modem_channel", "kal_channel"]
+#                if log_bolus[0] in channel_events:
+#                    target_arfcn = log_bolus[1]["arfcn_int"]
+#                    enriched_arfcn = enr.check_arfcn_in_range(target_arfcn)
+#                    for item in enriched_arfcn:
+#                        message_write_queue.append(item)
+#        except IndexError:
+#            time.sleep(1)
 
 def output(config):
     time.sleep(5)

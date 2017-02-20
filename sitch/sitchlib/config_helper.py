@@ -40,6 +40,8 @@ class ConfigHelper:
         self.gps_drift_threshold = 1000
         self.filebeat_template = self.get_filebeat_template()
         self.filebeat_config_file_path = "/etc/filebeat.yml"
+        self.arfcn_whitelist = ConfigHelper.get_list_from_env("ARFCN_WHITELIST",  # NOQA
+                                                              optional=True)
         self.cgi_whitelist = ConfigHelper.get_list_from_env("CGI_WHITELIST",
                                                             optional=True)
         return

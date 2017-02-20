@@ -15,14 +15,34 @@ class CgiCorrelator(object):
         self.alerts = alert_manager.AlertManager()
         self.prior_bts = {}
         self.feed_cache = []
-        self.good_arfcns = []
-        self.bad_arfcns = []
+        self.good_cgis = []
+        self.bad_cgis = []
         self.cgi_whitelist = cgi_whitelist
         print(CgiCorrelator.cgi_whitelist_message(self.cgi_whitelist))
         return
 
-    def correlate(self, scan):
-        return
+    def correlate(self, scan_bolus):
+        retval = []
+        if scan_bolus[0] != "gsm_modem_channel":
+            print("CgiCorrelator: Unsupported scan type: %s" % scan_bolus[0])
+            pass
+        else:
+            channel = scan_bolus[1]
+            channel["arfcn_int"] = CgiCorrelator.arfcn_int(channel["arfcn"])
+            # In the event we have incomplete information, bypass comparison.
+            skip_feed_comparison = CgiCorrelator.should_skip_feed(channel)
+            # Now we bring the hex values to decimal...
+            channel = self.convert_hex_targets(channel)
+            channel = self.convert_float_targets(channel)
+            # Setting CGI identifiers
+            channel["cgi_str"] = CgiCorrelator.make_bts_friendly(channel)
+            channel["cgi_int"] = CgiCorrelator.get_cgi_int(channel)
+            """ Here's the feed comparison part """
+            if skip_feed_comparison is False:
+                feed_comparison_results = self.feed_comparison(channel)
+                for feed_alert in feed_comparison_results:
+                    retval.append(feed_alert)
+        return retval
 
     @classmethod
     def cgi_whitelist_message(cls, cgi_wl):
@@ -128,52 +148,18 @@ class CgiCorrelator(object):
         return result
 
 
-    def enrich_gsm_modem_scan(self, scan_document):
-        chan = {}
-        here = {}
-        state = self.state
-        results_set = [("cell", scan_document)]
-        scan_items = scan_document["scan_results"]
-        for channel in scan_items:
-            channel = CgiCorrelator.enrich_channel_with_scan(channel,
-                                                             scan_document)
-            channel["arfcn_int"] = CgiCorrelator.arfcn_int(channel["arfcn"])
-            # In the event we have incomplete information, bypass comparison.
-            skip_feed_comparison = CgiCorrelator.should_skip_feed(channel)
-            # Now we bring the hex values to decimal...
-            channel = self.convert_hex_targets(channel)
-            channel = self.convert_float_targets(channel)
-            # Setting CGI identifiers
-            channel["cgi_str"] = CgiCorrelator.make_bts_friendly(channel)
-            channel["cgi_int"] = CgiCorrelator.get_cgi_int(channel)
-            """ Here's the feed comparison part """
-            if skip_feed_comparison is False:
-                channel["feed_info"] = self.get_feed_info(channel["mcc"],
-                                                          channel["mnc"],
-                                                          channel["lac"],
-                                                          channel["cellid"])
-                chan, here = CgiCorrelator.build_chan_here(channel, state)
-                channel["distance"] = Utility.calculate_distance(chan["lon"],
-                                                                 chan["lat"],
-                                                                 here["lon"],
-                                                                 here["lat"])
-            chan_enriched = ('gsm_modem_channel', channel)
-            results_set.append(chan_enriched)
-            # Stop here if we don't process against the feed...
-            if skip_feed_comparison is True:
-                continue
-            feed_comparison_results = self.feed_comparison(channel)
-            for feed_alert in feed_comparison_results:
-                results_set.append(feed_alert)
-        return results_set
-
     def feed_comparison(self, channel):
         comparison_results = []
         retval = []
         # Alert if tower is not in feed DB
-        comparison_results.append(self.check_channel_against_feed(channel))
+        if (comparison_results == [()] and
+            channel["cgi_str"] not in self.bad_cgis and
+            channel["cgi_str"] not in self.cgi_whitelist):
+            comparison_results.append(self.check_channel_against_feed(channel))
         # Else, be willing to alert if channel is not in range
-        if comparison_results == [()]:
+        if (comparison_results == [()] and
+            channel["cgi_str"] not in self.bad_arfcns and
+            channel["cgi_str"] not in self.cgi_whitelist):
             comparison_results.append(self.check_channel_range(channel))
         # Test for primary BTS change
         if channel["cell"] == '0':
@@ -191,6 +177,8 @@ class CgiCorrelator(object):
                                               channel["cgi_str"])
             message = "BTS not in feed database! Info: %s Site: %s" % (
                 bts_info, str(channel["site_name"]))
+            if channel["cgo_str"] not in self.bad_cgis:
+                self.bad_cgis.append(channel["cgi_str"])
             alert = self.alerts.build_alert(120, message)
         return alert
 
@@ -203,6 +191,8 @@ class CgiCorrelator(object):
                        str(channel["distance"]),
                        channel["cgi_str"],
                        channel["site_name"])
+            if channel["cgi_str"] not in self.bad_cgis:
+                self.bad_cgis.append(channel["cgi_str"])
             alert = self.alerts.build_alert(100, message)
         return alert
 
