@@ -240,6 +240,8 @@ def geoip_consumer(config):
 def scan_compile_and_queue(scan_template, result):
     scan_template["scan_results"] = result
     scan_results_queue.append(scan_template.copy())
+    geo_correlator_queue.append(("gps", {"lat": result["geometry"]["coordinates"][1],
+                                         "lon": result["geometry"]["coordinates"][0]}).copy())
 
 def disable_scanner(event_struct):
     stdout_msg = "Runner: %s" % event_struct["evt_data"]
@@ -340,17 +342,17 @@ def decomposer(config):
                 for result in decomposed:
                     s_type = result[0]
                     if s_type == "scan":
-                        message_write_queue.append(result)
+                        message_write_queue.append(result.copy())
                     elif s_type == "kal_channel":
-                        arfcn_correlator_queue.append(result)
+                        arfcn_correlator_queue.append(result.copy())
                     elif s_type == "cell":
-                        message_write_queue.append(result)
+                        message_write_queue.append(result.copy())
                     elif s_type == "gsm_modem_channel":
-                        cgi_correlator_queue.append(result)
-                        arfcn_correlator_queue.append(result)
+                        cgi_correlator_queue.append(result.copy())
+                        arfcn_correlator_queue.append(result.copy())
                     elif s_type == "gps":
-                        arfcn_correlator_queue.append(result)
-                        cgi_correlator_queue.append(result)
+                        arfcn_correlator_queue.append(result.copy())
+                        cgi_correlator_queue.append(result.copy())
                     else:
                         print("Decomposer: Unrecognized scan type %s" % s_type)
         except IndexError:
