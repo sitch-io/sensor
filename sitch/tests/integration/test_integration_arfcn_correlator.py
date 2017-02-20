@@ -104,13 +104,13 @@ class TestIntegrationCorrelateArfcn:
     def test_arfcn_good(self):
         arfcn = self.instantiate_arfcn()
         test_scan = self.build_scan_doc("kal", 239)
-        result = arfcn.correlate(test_scan)
+        result = arfcn.correlate(("kal_channel", test_scan))
         assert len(result) == 0
 
     def test_arfcn_bad(self):
         arfcn = self.instantiate_arfcn()
         test_scan = self.build_scan_doc("kal", 99)
-        result = arfcn.correlate(test_scan)
+        result = arfcn.correlate(("kal_channel", test_scan))
         assert len(result) == 1
 
     def test_arfcn_gps_bad(self):
