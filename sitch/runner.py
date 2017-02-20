@@ -3,7 +3,6 @@ threads.
 """
 
 import sitchlib
-# import datetime
 import kalibrate
 import threading
 import time
@@ -358,89 +357,6 @@ def decomposer(config):
             # Queue is empty...
             time.sleep(1)
 
-# def enricher(config):
-#    """ Enricher breaks apart kalibrate doc into multiple log entries, and
-#    assembles lines from gsm_modem into a main doc as well as writing multiple
-#    lines to the output queue for metadata """
-#    state = {"gps": {},
-#             "geoip": {},
-#             "geo_anchor": {},
-#             "geo_distance_meters": 0}
-#    override_suppression = [110]
-#    print("Runner: Now starting enricher")
-#    enr = sitchlib.Enricher(config, state)
-#    enr.update_feeds()
-#    while True:
-#        try:
-#            scandoc = scan_results_queue.popleft()
-#            doctype = enr.determine_scan_type(scandoc)
-#            outlist = []
-#            if doctype == 'Kalibrate':
-#                outlist = enr.enrich_kal_scan(scandoc)
-#            elif doctype == 'HEARTBEAT':
-#                outlist.append(("heartbeat", scandoc))
-#            elif doctype == 'HEALTHCHECK':
-#                outlist.append(("health_check", scandoc))
-#            elif doctype == 'GSM_MODEM':
-#                outlist = enr.enrich_gsm_modem_scan(scandoc, state)
-#            elif doctype == 'GPS':
-#                """ Every time we get a GPS reading, we check to make sure
-#                that it is close to the same distance from GeoIP as it was
-#                when it was last measured.  Alerts are generated if the drift
-#                is beyond threshold."""
-#                if state["geo_anchor"] == {}:
-#                    state["geo_anchor"] = scandoc["scan_results"].copy()
-#                    msg = "Runner: Geo anchor: %s" % sitchlib.Utility.pretty_string(state["geo_anchor"])
-#                    print(msg)
-#                outlist = enr.enrich_gps_scan(scandoc.copy())
-#                geo_problem = enr.geo_drift_check(state["geo_distance_meters"],
-#                                                  state["geo_anchor"],
-#                                                  scandoc["scan_results"],
-#                                                  config.gps_drift_threshold)
-#                if geo_problem:
-#                    outlist.append(geo_problem)
-#                state["gps"] = scandoc["scan_results"]
-#                lat_1 = state["geo_anchor"]["geometry"]["coordinates"][0]
-#                lon_1 = state["geo_anchor"]["geometry"]["coordinates"][1]
-#                lat_2 = state["gps"]["geometry"]["coordinates"][0]
-#                lon_2 = state["gps"]["geometry"]["coordinates"][1]
-#                new_distance = (sitchlib.Utility.calculate_distance(lon_1,
-#                                                                    lat_1,
-#                                                                    lon_2,
-#                                                                    lat_2))
-#                state["geo_distance_meters"] = int(new_distance)
-#            elif doctype == 'GEOIP':
-#                outlist = enr.enrich_geoip_scan(scandoc.copy())
-#                state["geoip"] = scandoc["scan_results"]
-#            else:
-#                print("Runner: Can't determine scan type for: ")
-#                print(scandoc)
-            # Clean the suppression list, everything over 12 hours
-#            for suppressed, tstamp in enr.suppressed_alerts.items():
-#                if abs((datetime.datetime.now() -
-#                        tstamp).total_seconds()) > 43200:
-#                    del enr.suppressed_alerts[suppressed]
-            # Send all the things to the outbound queue
-#            for log_bolus in outlist:
-#                if log_bolus[0] == 'sitch_alert':
-#                    if log_bolus[1]["id"] in override_suppression:
-#                        message_write_queue.append(log_bolus)
-#                        continue
-#                    else:
-#                        if log_bolus[1]["details"] in enr.suppressed_alerts:
-#                            continue
-#                        else:
-#                            enr.suppressed_alerts[log_bolus[1]["details"]] = datetime.datetime.now()  # NOQA
-#                message_write_queue.append(log_bolus)
-#            for log_bolus in outlist:
-#                channel_events = ["gsm_modem_channel", "kal_channel"]
-#                if log_bolus[0] in channel_events:
-#                    target_arfcn = log_bolus[1]["arfcn_int"]
-#                    enriched_arfcn = enr.check_arfcn_in_range(target_arfcn)
-#                    for item in enriched_arfcn:
-#                        message_write_queue.append(item)
-#        except IndexError:
-#            time.sleep(1)
 
 def output(config):
     time.sleep(5)
