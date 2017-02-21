@@ -62,11 +62,22 @@ class TestIntegrationCgiCorrelator:
         correlator = self.instantiate_cgi()
         scan_1 = ("gsm_modem_channel", gsm_modem_channel.copy())
         scan_body_2 = gsm_modem_channel.copy()
+        scan_body_3 = gsm_modem_channel.copy()
+        scan_body_4 = gsm_modem_channel.copy()
         scan_body_2["mcc"] = "999"
+        scan_body_2["cell"] = 0
+        scan_body_3["mcc"] = "998"
+        scan_body_3["cell"] = 0
+        zero_one = ("gsm_modem_channel", scan_body_3)
+        zero_two = ("gsm_modem_channel", scan_body_4)
         scan_2 = ("gsm_modem_channel", scan_body_2)
         result_0 = correlator.correlate(("gps", geo_state))
         result_1 = correlator.correlate(scan_1)
         result_2 = correlator.correlate(scan_2)
+        result_3 = correlator.correlate(zero_one)
+        result_4 = correlator.correlate(zero_two)
         assert len(result_0) == 0
         assert result_1[1]["id"] == 120
         assert result_2[1]["id"] == 120
+        assert result_3[1]["id"] == 999
+        assert result_4[1]["id"] == 999
