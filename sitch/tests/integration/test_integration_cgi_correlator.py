@@ -68,10 +68,10 @@ class TestIntegrationCgiCorrelator:
         scan_body_2["cell"] = 0
         scan_body_3["mcc"] = "998"
         scan_body_3["cell"] = 0
-        zero_one = ("gsm_modem_channel", scan_body_3).copy()
-        zero_two = ("gsm_modem_channel", scan_body_4).copy()
-        scan_2 = ("gsm_modem_channel", scan_body_2).copy()
-        result_0 = correlator.correlate(("gps", geo_state)).copy()
+        zero_one = ("gsm_modem_channel", scan_body_3.copy())
+        zero_two = ("gsm_modem_channel", scan_body_4.copy())
+        scan_2 = ("gsm_modem_channel", scan_body_2.copy())
+        result_0 = correlator.correlate(("gps", geo_state))
         result_1 = correlator.correlate(scan_1)
         result_2 = correlator.correlate(scan_2)
         result_3 = correlator.correlate(zero_one)
