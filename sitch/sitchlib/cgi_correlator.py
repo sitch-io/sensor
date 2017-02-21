@@ -21,7 +21,7 @@ class CgiCorrelator(object):
         retval = []
         if scan_bolus[0] == "gps":
             self.state = scan_bolus[1]
-        if scan_bolus[0] != "gsm_modem_channel":
+        elif scan_bolus[0] != "gsm_modem_channel":
             print("CgiCorrelator: Unsupported scan type: %s" % scan_bolus[0])
             pass
         else:

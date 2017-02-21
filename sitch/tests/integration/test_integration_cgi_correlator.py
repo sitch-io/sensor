@@ -60,8 +60,13 @@ class TestIntegrationCgiCorrelator:
 
     def test_correlate_cgi_1(self):
         correlator = self.instantiate_cgi()
-        scan_1 = ("gsm_modem_channel", gsm_modem_channel)
+        scan_1 = ("gsm_modem_channel", gsm_modem_channel.copy())
+        scan_body_2 = gsm_modem_channel.copy()
+        scan_body_2["mcc"] = "999"
+        scan_2 = ("gsm_modem_channel", scan_body_2)
         result_0 = correlator.correlate(("gps", geo_state))
         result_1 = correlator.correlate(scan_1)
+        result_1 = correlator.correlate(scan_2)
         assert len(result_0) == 0
+        assert len(result_1) == 0
         assert len(result_1) == 1
