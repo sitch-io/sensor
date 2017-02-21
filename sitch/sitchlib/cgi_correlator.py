@@ -178,7 +178,7 @@ class CgiCorrelator(object):
                                               channel["cgi_str"])
             message = "BTS not in feed database! Info: %s Site: %s" % (
                 bts_info, str(channel["site_name"]))
-            if channel["cgo_str"] not in self.bad_cgis:
+            if channel["cgi_str"] not in self.bad_cgis:
                 self.bad_cgis.append(channel["cgi_str"])
             alert = self.alerts.build_alert(120, message)
         return alert
