@@ -42,7 +42,6 @@ class CgiCorrelator(object):
                                                              here["lon"],
                                                              here["lat"])
             if skip_feed_comparison is False:
-                print("Feed comparison: %" % str(channel))
                 feed_comparison_results = self.feed_comparison(channel)
                 for feed_alert in feed_comparison_results:
                     retval.append(feed_alert)
