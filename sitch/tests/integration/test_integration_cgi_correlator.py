@@ -81,8 +81,8 @@ class TestIntegrationCgiCorrelator:
         print result_1
         assert result_1[0][1]["id"] == 120
         print result_2
-        assert result_2[1]["id"] == 120
+        assert result_2[0][1]["id"] == 120
         print result_3
-        assert result_3[1]["id"] == 999
+        assert result_3[0][1]["id"] == 999
         print result_4
-        assert result_4[1]["id"] == 999
+        assert result_4[0][1]["id"] == 999
