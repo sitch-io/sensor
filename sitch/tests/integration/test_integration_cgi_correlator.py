@@ -68,5 +68,5 @@ class TestIntegrationCgiCorrelator:
         result_1 = correlator.correlate(scan_1)
         result_2 = correlator.correlate(scan_2)
         assert len(result_0) == 0
-        assert len(result_1) == 1
-        assert len(result_2) == 1
+        assert result_1[1]["id"] == 120
+        assert result_2[1]["id"] == 120
