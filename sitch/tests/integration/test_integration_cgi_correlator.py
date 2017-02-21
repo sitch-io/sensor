@@ -66,7 +66,7 @@ class TestIntegrationCgiCorrelator:
         scan_2 = ("gsm_modem_channel", scan_body_2)
         result_0 = correlator.correlate(("gps", geo_state))
         result_1 = correlator.correlate(scan_1)
-        result_1 = correlator.correlate(scan_2)
+        result_2 = correlator.correlate(scan_2)
         assert len(result_0) == 0
-        assert len(result_1) == 0
         assert len(result_1) == 1
+        assert len(result_2) == 1
