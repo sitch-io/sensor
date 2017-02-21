@@ -55,7 +55,7 @@ gsm_modem_channel = {"cgi_str": "310:266:253:21553",
 
 class TestIntegrationCgiCorrelator:
     def instantiate_cgi(self):
-        cgi_correlator = sitchlib.CgiCorrelator(feedpath, [], 100000)
+        cgi_correlator = sitchlib.CgiCorrelator(feedpath, [])
         return cgi_correlator
 
     def test_correlate_cgi_1(self):
