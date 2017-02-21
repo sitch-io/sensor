@@ -1,10 +1,9 @@
-# from datetime import datetime
 import imp
 import os
-import mock
-import sys
+# import mock
+# import sys
 
-sys.modules['pyudev'] = mock.Mock()
+# sys.modules['pyudev'] = mock.Mock()
 modulename = 'sitchlib'
 modulepath = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                           "../../")
@@ -58,3 +57,11 @@ class TestIntegrationCorrelateCgi:
     def instantiate_cgi(self):
         cgi_correlator = sitchlib.CorrelateCgi(feedpath, [], 100000)
         return cgi_correlator
+
+    def test_correlate_cgi_1(self):
+        correlator = self.instantiate_cgi()
+        scan_1 = ("gsm_modem_channel", gsm_modem_channel)
+        result_0 = correlator.correlate(("gps", geo_state))
+        result_1 = correlator.correlate(scan_1)
+        assert len(result_0) == 0
+        assert len(result_1) == 1

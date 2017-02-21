@@ -6,14 +6,10 @@ from utility import Utility
 
 class CgiCorrelator(object):
     def __init__(self, feed_dir, cgi_whitelist):
-        """ State looks like this:
-        {"gps": {},
-         "geoip": {},
-         "geo_distance_meters": 0}
-        """
         self.feed_dir = feed_dir
         self.alerts = alert_manager.AlertManager()
         self.prior_bts = {}
+        self.state = {"gps": {"geometry": {"coordinates": [0, 0]}}}
         self.feed_cache = []
         self.good_cgis = []
         self.bad_cgis = []
@@ -23,6 +19,8 @@ class CgiCorrelator(object):
 
     def correlate(self, scan_bolus):
         retval = []
+        if scan_bolus[0] == "gps":
+            self.state = scan_bolus[1]
         if scan_bolus[0] != "gsm_modem_channel":
             print("CgiCorrelator: Unsupported scan type: %s" % scan_bolus[0])
             pass
@@ -38,6 +36,11 @@ class CgiCorrelator(object):
             channel["cgi_str"] = CgiCorrelator.make_bts_friendly(channel)
             channel["cgi_int"] = CgiCorrelator.get_cgi_int(channel)
             """ Here's the feed comparison part """
+            chan, here = CgiCorrelator.build_chan_here(channel, self.state)
+            channel["distance"] = Utility.calculate_distance(chan["lon"],
+                                                             chan["lat"],
+                                                             here["lon"],
+                                                             here["lat"])
             if skip_feed_comparison is False:
                 feed_comparison_results = self.feed_comparison(channel)
                 for feed_alert in feed_comparison_results:
