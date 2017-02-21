@@ -76,8 +76,13 @@ class TestIntegrationCgiCorrelator:
         result_2 = correlator.correlate(scan_2)
         result_3 = correlator.correlate(zero_one)
         result_4 = correlator.correlate(zero_two)
+        print result_0
         assert len(result_0) == 0
+        print result_1
         assert result_1[1]["id"] == 120
+        print result_2
         assert result_2[1]["id"] == 120
+        print result_3
         assert result_3[1]["id"] == 999
+        print result_4
         assert result_4[1]["id"] == 999
