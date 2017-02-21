@@ -42,6 +42,7 @@ class CgiCorrelator(object):
                                                              here["lon"],
                                                              here["lat"])
             if skip_feed_comparison is False:
+                print("Feed comparison: %" % str(channel))
                 feed_comparison_results = self.feed_comparison(channel)
                 for feed_alert in feed_comparison_results:
                     retval.append(feed_alert)
@@ -155,13 +156,11 @@ class CgiCorrelator(object):
         comparison_results = []
         retval = []
         # Alert if tower is not in feed DB
-        if (comparison_results == [()] and
-            channel["cgi_str"] not in self.bad_cgis and
+        if (channel["cgi_str"] not in self.bad_cgis and
             channel["cgi_str"] not in self.cgi_whitelist):
             comparison_results.append(self.check_channel_against_feed(channel))
         # Else, be willing to alert if channel is not in range
-        if (comparison_results == [()] and
-            channel["cgi_str"] not in self.bad_arfcns and
+        if (channel["cgi_str"] not in self.bad_arfcns and
             channel["cgi_str"] not in self.cgi_whitelist):
             comparison_results.append(self.check_channel_range(channel))
         # Test for primary BTS change
