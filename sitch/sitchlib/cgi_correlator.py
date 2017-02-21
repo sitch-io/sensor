@@ -159,7 +159,7 @@ class CgiCorrelator(object):
             channel["cgi_str"] not in self.cgi_whitelist):
             comparison_results.append(self.check_channel_against_feed(channel))
         # Else, be willing to alert if channel is not in range
-        if (channel["cgi_str"] not in self.bad_arfcns and
+        if (channel["cgi_str"] not in self.bad_cgis and
             channel["cgi_str"] not in self.cgi_whitelist):
             comparison_results.append(self.check_channel_range(channel))
         # Test for primary BTS change
