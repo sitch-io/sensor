@@ -263,8 +263,8 @@ class CgiCorrelator(object):
                                                      lac, cellid):
                         return normalized
         except IOError as e:
-            msg = "CgiCorrelator: Unable to open feed for %s!\n\t%s" (str(mcc),
-                                                                      str(e))
+            msg = "CgiCorrelator: Unable to open feed for %s!\n\t%s" % (str(mcc),  # NOQA
+                                                                        str(e))
             print(msg)
         """If unable to locate cell in file, we populate the
         cache with obviously fake values """
