@@ -27,8 +27,6 @@ class CgiCorrelator(object):
         else:
             channel = scan_bolus[1]
             channel["arfcn_int"] = CgiCorrelator.arfcn_int(channel["arfcn"])
-            # In the event we have incomplete information, bypass comparison.
-            skip_feed_comparison = CgiCorrelator.should_skip_feed(channel)
             # Now we bring the hex values to decimal...
             channel = self.convert_hex_targets(channel)
             channel = self.convert_float_targets(channel)
@@ -36,11 +34,17 @@ class CgiCorrelator(object):
             channel["cgi_str"] = CgiCorrelator.make_bts_friendly(channel)
             channel["cgi_int"] = CgiCorrelator.get_cgi_int(channel)
             """ Here's the feed comparison part """
+            channel["feed_info"] = self.get_feed_info(channel["mcc"],
+                                                      channel["mnc"],
+                                                      channel["lac"],
+                                                      channel["cellid"])
             chan, here = CgiCorrelator.build_chan_here(channel, self.state)
             channel["distance"] = Utility.calculate_distance(chan["lon"],
                                                              chan["lat"],
                                                              here["lon"],
                                                              here["lat"])
+            # In the event we have incomplete information, bypass comparison.
+            skip_feed_comparison = CgiCorrelator.should_skip_feed(channel)
             if skip_feed_comparison is False:
                 feed_comparison_results = self.feed_comparison(channel)
                 for feed_alert in feed_comparison_results:
@@ -53,14 +57,14 @@ class CgiCorrelator(object):
         message = "CgiCorrelator: Initializing with CGI whitelist: %s" % wl_string
         return message
 
-    @classmethod
-    def enrich_channel_with_scan(cls, channel, scan_document):
-        """ Enriches channel with scan document metadata """
-        channel["band"] = scan_document["band"]
-        channel["scan_finish"] = scan_document["scan_finish"]
-        channel["site_name"] = scan_document["scan_location"]["name"]
-        channel["scanner_public_ip"] = scan_document["scanner_public_ip"]
-        return channel
+    # @classmethod
+    # def enrich_channel_with_scan(cls, channel, scan_document):
+    #    """ Enriches channel with scan document metadata """
+    #    channel["band"] = scan_document["band"]
+    #    channel["scan_finish"] = scan_document["scan_finish"]
+    #    channel["site_name"] = scan_document["scan_location"]["name"]
+    #    channel["scanner_public_ip"] = scan_document["scanner_public_ip"]
+    #    return channel
 
     @classmethod
     def arfcn_int(cls, arfcn):
