@@ -17,13 +17,10 @@ class ArfcnCorrelator(object):
     Checks ARFCN power measurement (if available) against threshold
 
     """
-    def __init__(self, geo_state, states, feed_dir, whitelist,
+    def __init__(self, states, feed_dir, whitelist,
                  power_threshold):
-        """ geo_state looks like this:
-        {"lat": 123, "lon": 124}
-        """
         self.alerts = alert_manager.AlertManager()
-        self.geo_state = geo_state
+        self.geo_state = {"gps": {"geometry": {"coordinates": [0, 0]}}}
         self.feed_dir = feed_dir
         self.states = states
         self.power_threshold = float(power_threshold)
@@ -89,8 +86,7 @@ class ArfcnCorrelator(object):
         # If we can't compare geo, have ARFCN 0 or already been found in feed:
         if (str(arfcn) == "0" or
             arfcn in self.observed_arfcn or
-            self.geo_state == {} or
-            self.geo_state == {"lat": 0, "lon": 0}):
+            self.geo_state == {"gps": {"geometry": {"coordinates": [0, 0]}}}):
             return results
         else:
             msg = "ArfcnCorrelator: Cache miss on ARFCN %s" % str(arfcn)
@@ -136,9 +132,12 @@ class ArfcnCorrelator(object):
 
     @classmethod
     def is_in_range(cls, item_gps, state_gps):
+        state_gps_lat = state_gps["gps"]["geometry"]["coordinates"][1]
+        state_gps_lon = state_gps["gps"]["geometry"]["coordinates"][0]
+        {"gps": {"geometry": {"coordinates": [0, 0]}}}
         max_range = 40000  # 40km
-        state_lon = state_gps["lon"]
-        state_lat = state_gps["lat"]
+        state_lon = state_gps_lon
+        state_lat = state_gps_lat
         item_lon = item_gps["lon"]
         item_lat = item_gps["lat"]
         distance = Utility.calculate_distance(state_lon, state_lat,
