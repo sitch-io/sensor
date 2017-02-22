@@ -254,13 +254,18 @@ class CgiCorrelator(object):
         """ Field names get changed when loaded into the cache, to
         match field IDs used elsewhere. """
         feed_file = Utility.construct_feed_file_name(self.feed_dir, mcc)
-        with gzip.open(feed_file, 'r') as feed_data:
-            consumer = csv.DictReader(feed_data)
-            for cell in consumer:
-                normalized = self.normalize_feed_info_for_cache(cell)
-                if CgiCorrelator.cell_matches(normalized, mcc, mnc,
-                                                 lac, cellid):
-                    return normalized
+        try:
+            with gzip.open(feed_file, 'r') as feed_data:
+                consumer = csv.DictReader(feed_data)
+                for cell in consumer:
+                    normalized = self.normalize_feed_info_for_cache(cell)
+                    if CgiCorrelator.cell_matches(normalized, mcc, mnc,
+                                                     lac, cellid):
+                        return normalized
+        except AttributeError as e:
+            msg = "CgiCorrelator: Unable to open feed for %s!\n\t%s" (str(mcc),
+                                                                      str(e))
+            print(msg)
         """If unable to locate cell in file, we populate the
         cache with obviously fake values """
         cell = {"mcc": mcc, "net": mnc, "area": lac, "cell": cellid,
