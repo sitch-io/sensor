@@ -63,8 +63,8 @@ class TestIntegrationCgiCorrelator:
         scan_body_3["cellid"] = "7E7D"
         scan_body_3["cgi_str"] = "310:410:17304:32381"
         scan_body_3["cgi_int"] = 3104101730432381
-        scan_body_3["cell"] = 0
-        scan_body_4["cell"] = 0
+        scan_body_3["cell"] = "0"
+        scan_body_4["cell"] = "0"
         zero_one = ("gsm_modem_channel", scan_body_3)
         zero_two = ("gsm_modem_channel", scan_body_4)
         scan_2 = ("gsm_modem_channel", scan_body_2)
