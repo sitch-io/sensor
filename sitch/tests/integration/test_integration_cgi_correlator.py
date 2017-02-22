@@ -57,7 +57,8 @@ class TestIntegrationCgiCorrelator:
         scan_body_4 = gsm_modem_channel.copy()
         scan_body_2["mcc"] = "999"
         scan_body_2["cell"] = 0
-        scan_body_3["mcc"] = "410"
+        scan_body_3["mcc"] = "310"
+        scan_body_3["mnc"] = "410"
         scan_body_3["lac"] = "17304"
         scan_body_3["cellid"] = "32381"
         scan_body_3["cgi_str"] = "310:410:17304:32381"
@@ -69,7 +70,7 @@ class TestIntegrationCgiCorrelator:
         result_0 = correlator.correlate(("gps", geo_state))
         result_1 = correlator.correlate(scan_1)
         result_2 = correlator.correlate(scan_2)
-        result_3 = correlator.correlate(zero_one)
+        result_3 = correlator.correlate(zero_one)  # BTS is in feed DB, just out of range.
         result_4 = correlator.correlate(zero_two)
         print result_0
         assert len(result_0) == 0
@@ -78,6 +79,6 @@ class TestIntegrationCgiCorrelator:
         print result_2
         assert result_2[0][1]["id"] == 120
         print result_3
-        assert result_3[0][1]["id"] == 120
+        assert result_3[0][1]["id"] == 100
         print result_4
-        assert result_4[0][1]["id"] == 999
+        assert result_4[0][1]["id"] == 110
