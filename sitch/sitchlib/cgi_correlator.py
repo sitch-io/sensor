@@ -206,8 +206,6 @@ class CgiCorrelator(object):
         be populated with any alerts we decide to fire """
         alert = ()
         current_bts = CgiCorrelator.bts_from_channel(channel)
-        print("Current BTS: %s" % str(current_bts))
-        print("Channel: %s" % str(channel))
         if CgiCorrelator.primary_bts_changed(self.prior_bts, channel,
                                                 self.cgi_whitelist):
             msg = ("Primary BTS was %s " +
