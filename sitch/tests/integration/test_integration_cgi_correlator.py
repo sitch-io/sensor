@@ -64,9 +64,9 @@ class TestIntegrationCgiCorrelator:
         scan_body_3["cgi_str"] = "310:410:17304:32381"
         scan_body_3["cgi_int"] = 3104101730432381
         scan_body_3["cell"] = 0
-        zero_one = ("gsm_modem_channel", scan_body_3.copy())
-        zero_two = ("gsm_modem_channel", scan_body_4.copy())
-        scan_2 = ("gsm_modem_channel", scan_body_2.copy())
+        zero_one = ("gsm_modem_channel", scan_body_3)
+        zero_two = ("gsm_modem_channel", scan_body_4)
+        scan_2 = ("gsm_modem_channel", scan_body_2)
         result_0 = correlator.correlate(("gps", geo_state))
         result_1 = correlator.correlate(scan_1)
         result_2 = correlator.correlate(scan_2)
