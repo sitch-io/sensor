@@ -28,17 +28,8 @@ gsm_modem_channel = {"cgi_str": "310:266:253:21553",
                      "mcc": "310",
                      "lac": "253",
                      "band": "ALL_BAND",
-                     "feed_info": {
-                          "mcc": "310",
-                          "lon": 0,
-                          "lac": "253",
-                          "range": 0,
-                          "lat": 0,
-                          "mnc": "266",
-                          "cellid": "21553"},
                      "mnc": "266",
                      "bsic": "00",
-                     "distance": 12798576.615081305,
                      "scan_finish": "2017-01-30 01:33:48",
                      "rxl": 7,
                      "arfcn_int": 1692,
@@ -66,7 +57,11 @@ class TestIntegrationCgiCorrelator:
         scan_body_4 = gsm_modem_channel.copy()
         scan_body_2["mcc"] = "999"
         scan_body_2["cell"] = 0
-        scan_body_3["mcc"] = "998"
+        scan_body_3["mcc"] = "410"
+        scan_body_3["lac"] = "17304"
+        scan_body_3["cellid"] = "32381"
+        scan_body_3["cgi_str"] = "310:410:17304:32381"
+        scan_body_3["cgi_int"] = 3104101730432381
         scan_body_3["cell"] = 0
         zero_one = ("gsm_modem_channel", scan_body_3.copy())
         zero_two = ("gsm_modem_channel", scan_body_4.copy())
