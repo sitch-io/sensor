@@ -262,7 +262,7 @@ class CgiCorrelator(object):
                     if CgiCorrelator.cell_matches(normalized, mcc, mnc,
                                                      lac, cellid):
                         return normalized
-        except AttributeError as e:
+        except IOError as e:
             msg = "CgiCorrelator: Unable to open feed for %s!\n\t%s" (str(mcc),
                                                                       str(e))
             print(msg)
