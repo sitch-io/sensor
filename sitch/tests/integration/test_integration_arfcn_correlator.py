@@ -82,13 +82,13 @@ gsm_modem_channel = {"cgi_str": "310:266:253:21553",
 class TestIntegrationCorrelateArfcn:
     def instantiate_arfcn(self):
         arfcn_correlator = sitchlib.ArfcnCorrelator(states, feedpath,
-                                                   [], 100000)
+                                                   [], 1000000)
         arfcn_correlator.correlate(("gps", geo_state))
         return arfcn_correlator
 
     def instantiate_arfcn_bad_geo_state(self):
         arfcn_correlator = sitchlib.ArfcnCorrelator(states, feedpath,
-                                                  [], 100000)
+                                                  [], 1000000)
         arfcn_correlator.correlate(("gps", bad_geo_state))
         return arfcn_correlator
 
@@ -134,15 +134,16 @@ class TestIntegrationCorrelateArfcn:
     def test_kal_channel_over_threshold(self):
         arfcn = self.instantiate_arfcn()
         test_scan = kal_channel.copy()
-        test_scan["power"] = 100001
+        test_scan["power"] = 1000001
         results = arfcn.correlate(("kal_channel", test_scan))
         print results
-        assert len(results) == 1
-        assert True is False
+        assert len(results) == 2
+        assert results[0][1]["id"] == 200
+        assert results[1][1]["id"] == 400
 
     def test_gsm_modem_channel_parse(self):
         arfcn = self.instantiate_arfcn()
         results = arfcn.correlate(("gsm_modem_channel", gsm_modem_channel))
         print results
         assert len(results) == 1
-        assert True is False
+        assert results[0][1]["id"] == 400

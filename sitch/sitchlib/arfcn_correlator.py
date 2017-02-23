@@ -5,10 +5,6 @@ from string import Template
 from utility import Utility
 
 
-
-# !!TODO: Need to manage Geo-Override from messages in queue, feed update on thread start.
-
-
 class ArfcnCorrelator(object):
     """ARFCN Enricher:
 
@@ -37,8 +33,10 @@ class ArfcnCorrelator(object):
         scan_type = scan_bolus[0]
         scan = scan_bolus[1]
         arfcn = ArfcnCorrelator.arfcn_from_scan(scan_type, scan)
+        print("Scan type: %s" % scan_type)
         if scan_type == "kal_channel":
-            if self.arfcn_over_threshold(arfcn):
+            print("Processing KAL channel, ARFCN %s" % arfcn)
+            if self.arfcn_over_threshold(scan["power"]):
                 message = "ARFCN %s over threshold at %s.  Observed: %s" % (
                           scan["channel"],
                           scan["site_name"],
@@ -116,6 +114,8 @@ class ArfcnCorrelator(object):
             return scan_doc["arfcn_int"]
         elif scan_type == "gsm_modem_channel":
             return scan_doc["arfcn_int"]
+        elif scan_type == "gps":
+            return None
         else:
             print("ArfcnCorrelator: Unrecognized scan type: %s" % str(scan_type))
             return None
