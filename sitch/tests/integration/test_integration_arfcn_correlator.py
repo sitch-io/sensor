@@ -119,9 +119,12 @@ class TestIntegrationCorrelateArfcn:
         arfcn = self.instantiate_arfcn()
         test_scan = self.build_scan_doc("kal", 99)
         result = arfcn.correlate(("kal_channel", test_scan))
+        print result
         assert len(result) == 1
+        assert True is False
 
     def test_arfcn_gps_bad(self):
+        """ If there is no usable GPS metric, we don't alarm"""
         arfcn = self.instantiate_arfcn_bad_geo_state()
         test_arfcn = self.build_scan_doc("kal", 99)
         result = arfcn.compare_arfcn_to_feed(test_arfcn)
@@ -133,9 +136,11 @@ class TestIntegrationCorrelateArfcn:
         results = arfcn.compare_arfcn_to_feed(kal_channel)
         print results
         assert len(results) == 1
+        assert True is False
 
     def test_gsm_modem_channel_parse(self):
         arfcn = self.instantiate_arfcn()
         results = arfcn.compare_arfcn_to_feed(gsm_modem_channel)
         print results
         assert len(results) == 1
+        assert True is False
