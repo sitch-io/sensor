@@ -33,9 +33,7 @@ class ArfcnCorrelator(object):
         scan_type = scan_bolus[0]
         scan = scan_bolus[1]
         arfcn = ArfcnCorrelator.arfcn_from_scan(scan_type, scan)
-        print("Scan type: %s" % scan_type)
         if scan_type == "kal_channel":
-            print("Processing KAL channel, ARFCN %s" % arfcn)
             if self.arfcn_over_threshold(scan["power"]):
                 message = "ARFCN %s over threshold at %s.  Observed: %s" % (
                           scan["channel"],
