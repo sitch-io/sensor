@@ -135,14 +135,14 @@ class TestIntegrationCorrelateArfcn:
         arfcn = self.instantiate_arfcn()
         test_scan = kal_channel.copy()
         test_scan["power"] = 100001
-        results = arfcn.correlate("kal_channel", test_scan)
+        results = arfcn.correlate(("kal_channel", test_scan))
         print results
         assert len(results) == 1
         assert True is False
 
     def test_gsm_modem_channel_parse(self):
         arfcn = self.instantiate_arfcn()
-        results = arfcn.correlate("gsm_modem_channel", gsm_modem_channel)
+        results = arfcn.correlate(("gsm_modem_channel", gsm_modem_channel))
         print results
         assert len(results) == 1
         assert True is False
