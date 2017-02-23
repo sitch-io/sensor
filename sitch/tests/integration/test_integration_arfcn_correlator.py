@@ -16,9 +16,15 @@ sitchlib = imp.load_module(modulename, file, pathname, description)
 #             {"geometry":
 #              {"coordinates":
 #                  [-122.431297, 37.773972]}}}
+geo_state = {"gps":
+             {"geometry":
+              {"coordinates":
+                  [-122.431297, 37.773972]}}}
 
-geo_state = {"lat": 37.773972, "lon": -122.431297}
-bad_geo_state = {"lat": 0, "lon": 0}
+bad_geo_state = {"gps":
+                 {"geometry":
+                  {"coordinates":
+                      [0, 0]}}}
 
 # bad_geo_state = {"gps":
 #                 {"geometry":
@@ -75,14 +81,16 @@ gsm_modem_channel = {"cgi_str": "310:266:253:21553",
 
 class TestIntegrationCorrelateArfcn:
     def instantiate_arfcn(self):
-        arfcn_correlator = sitchlib.ArfcnCorrelator(geo_state, states, feedpath,
+        arfcn_correlator = sitchlib.ArfcnCorrelator(states, feedpath,
                                                    [], 100000)
+        arfcn_correlator.correlate(("gps", geo_state))
         return arfcn_correlator
 
     def instantiate_arfcn_bad_geo_state(self):
-        arfcn_enricher = sitchlib.ArfcnCorrelator(bad_geo_state, states, feedpath,
+        arfcn_correlator = sitchlib.ArfcnCorrelator(states, feedpath,
                                                   [], 100000)
-        return arfcn_enricher
+        arfcn_correlator.correlate(("gps", bad_geo_state))
+        return arfcn_correlator
 
     def build_scan_doc(self, scan_type, arfcn):
         scan_ref = {"kal": kal_channel,
