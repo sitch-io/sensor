@@ -121,7 +121,7 @@ class TestIntegrationCorrelateArfcn:
         result = arfcn.correlate(("kal_channel", test_scan))
         print result
         assert len(result) == 1
-        assert True is False
+        assert result[0][1]["id"] == 400
 
     def test_arfcn_gps_bad(self):
         """ If there is no usable GPS metric, we don't alarm"""
@@ -133,14 +133,16 @@ class TestIntegrationCorrelateArfcn:
 
     def test_kal_channel_over_threshold(self):
         arfcn = self.instantiate_arfcn()
-        results = arfcn.compare_arfcn_to_feed(kal_channel)
+        test_scan = kal_channel.copy()
+        test_scan["power"] = 100001
+        results = arfcn.correlate(test_scan)
         print results
         assert len(results) == 1
         assert True is False
 
     def test_gsm_modem_channel_parse(self):
         arfcn = self.instantiate_arfcn()
-        results = arfcn.compare_arfcn_to_feed(gsm_modem_channel)
+        results = arfcn.correlate(gsm_modem_channel)
         print results
         assert len(results) == 1
         assert True is False
