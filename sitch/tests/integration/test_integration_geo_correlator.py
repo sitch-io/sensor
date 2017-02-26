@@ -11,8 +11,16 @@ file, pathname, description = imp.find_module(modulename, [modulepath])
 sitchlib = imp.load_module(modulename, file, pathname, description)
 
 
-geo_state = {"lat": 37.773972, "lon": -122.431297}
-geo_other_state = {"lat": 32.773972, "lon": -100.431297}
+geo_state = {"scan_program": "gpsd",
+                    "type": "Feature",
+                    "geometry": {
+                    "type": "Point",
+                    "coordinates": [-122.431297, 37.773972]}}
+geo_other_state = {"scan_program": "gpsd",
+                    "type": "Feature",
+                    "geometry": {
+                    "type": "Point",
+                    "coordinates": [-100.431297, 32.773972]}}
 
 
 class TestIntegrationCorrelateGeo:

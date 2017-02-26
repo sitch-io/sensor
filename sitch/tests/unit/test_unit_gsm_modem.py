@@ -4,7 +4,7 @@ modulename = 'sitchlib'
 modulepath = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../../")
 file, pathname, description = imp.find_module(modulename, [modulepath])
 fixturepath = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                           "../fixture/ceng.txt")
+                           "../fixture/ceng-SIM900.txt")
 sitchlib = imp.load_module(modulename, file, pathname, description)
 sample_12 = '+CENG: 0,"0154,28,00,310,411,12,000f,00,05,178d,255"'
 sample_7 = '+CENG: 1,"0128,15,30,310,411,178d"'
