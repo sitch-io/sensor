@@ -12,10 +12,7 @@ feedpath = os.path.join(os.path.dirname(os.path.abspath(__file__)),
 file, pathname, description = imp.find_module(modulename, [modulepath])
 sitchlib = imp.load_module(modulename, file, pathname, description)
 
-# geo_state = {"gps":
-#             {"geometry":
-#              {"coordinates":
-#                  [-122.431297, 37.773972]}}}
+
 geo_state = {"gps":
              {"geometry":
               {"coordinates":
@@ -25,11 +22,6 @@ bad_geo_state = {"gps":
                  {"geometry":
                   {"coordinates":
                       [0, 0]}}}
-
-# bad_geo_state = {"gps":
-#                 {"geometry":
-#                  {"coordinates":
-#                      [0, 0]}}}
 
 states = ["CA"]
 

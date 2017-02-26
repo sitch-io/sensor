@@ -21,10 +21,10 @@ class GeoCorrelator(object):
 
     @classmethod
     def geo_drift_check(cls, geo_anchor, gps_scan, threshold):
-        lat_1 = geo_anchor["lat"]
-        lon_1 = geo_anchor["lon"]
-        lat_2 = gps_scan["lat"]
-        lon_2 = gps_scan["lon"]
+        lat_1 = geo_anchor["geometry"]["coordinates"][1]
+        lon_1 = geo_anchor["geometry"]["coordinates"][0]
+        lat_2 = gps_scan["geometry"]["coordinates"][1]
+        lon_2 = gps_scan["geometry"]["coordinates"][0]
         current_distance = Utility.calculate_distance(lon_1, lat_1,
                                                       lon_2, lat_2)
         if current_distance < threshold:

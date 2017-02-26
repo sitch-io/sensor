@@ -30,7 +30,8 @@ class GeoIp(object):
         match = geolite2.lookup(self.ip)
         try:
             lat_lon = match.location
-            self.geo = {"type": "Feature",
+            self.geo = {"scan_program": "gpsd",
+                        "type": "Feature",
                         "geometry": {
                            "type": "Point",
                            "coordinates": [

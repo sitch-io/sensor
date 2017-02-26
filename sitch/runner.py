@@ -198,7 +198,7 @@ def gsm_modem_consumer(config):
             retval = dict(scan_job_template)
             retval["scan_results"] = report
             retval["scan_finish"] = sitchlib.Utility.get_now_string()
-            retval["scan_location"]["name"] = str(config.device_id)
+            retval["scan_location"] = str(config.device_id)
             retval["scan_program"] = "GSM_MODEM"
             retval["band"] = config.gsm_modem_band
             retval["scanner_public_ip"] = config.public_ip
@@ -275,7 +275,7 @@ def kalibrate_consumer(config):
         scan_document["scan_results"] = kal_results
         scan_document["scan_program"] = "Kalibrate"
         scan_document["scanner_name"] = config.device_id
-        scan_document["scan_location"]["name"] = str(config.device_id)
+        scan_document["scan_location"] = str(config.device_id)
         scan_document["scanner_public_ip"] = config.public_ip
         scan_results_queue.append(scan_document.copy())
     return

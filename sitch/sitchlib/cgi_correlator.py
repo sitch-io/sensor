@@ -26,6 +26,8 @@ class CgiCorrelator(object):
             pass
         else:
             channel = scan_bolus[1]
+            if channel["mcc"] in ["", None]:
+                return retval  # We don't correlate incomplete CGIs...
             channel["arfcn_int"] = CgiCorrelator.arfcn_int(channel["arfcn"])
             # Now we bring the hex values to decimal...
             channel = self.convert_hex_targets(channel)
@@ -57,15 +59,6 @@ class CgiCorrelator(object):
         message = "CgiCorrelator: Initializing with CGI whitelist: %s" % wl_string
         return message
 
-    # @classmethod
-    # def enrich_channel_with_scan(cls, channel, scan_document):
-    #    """ Enriches channel with scan document metadata """
-    #    channel["band"] = scan_document["band"]
-    #    channel["scan_finish"] = scan_document["scan_finish"]
-    #    channel["site_name"] = scan_document["scan_location"]["name"]
-    #    channel["scanner_public_ip"] = scan_document["scanner_public_ip"]
-    #    return channel
-
     @classmethod
     def arfcn_int(cls, arfcn):
         """ Attempts to derive an integer representation of ARFCN, or return
@@ -83,7 +76,7 @@ class CgiCorrelator(object):
     @classmethod
     def should_skip_feed(cls, channel):
         skip_feed_comparison = False
-        skip_feed_trigger_values = ['', '0000', '00', '0']
+        skip_feed_trigger_values = ['', '0000', '00', '0', None]
         for x in ["mcc", "mnc", "lac", "cellid"]:
             if channel[x] in skip_feed_trigger_values:
                 skip_feed_comparison = True

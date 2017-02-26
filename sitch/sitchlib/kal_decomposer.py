@@ -21,7 +21,7 @@ class KalDecomposer(object):
                     msg["final_freq"] = result["final_freq"]
                     msg["channel"] = result["channel"]
                     msg["gain"] = result["gain"]
-                    msg["site_name"] = scan_document["scan_location"]["name"]
+                    msg["site_name"] = scan_document["scan_location"]
                     msg["scan_start"] = scan_document["scan_start"]
                     msg["scan_finish"] = scan_document["scan_finish"]
                     msg["scan_program"] = scan_document["scan_program"]

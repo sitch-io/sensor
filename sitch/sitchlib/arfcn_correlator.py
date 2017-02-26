@@ -16,7 +16,7 @@ class ArfcnCorrelator(object):
     def __init__(self, states, feed_dir, whitelist,
                  power_threshold):
         self.alerts = alert_manager.AlertManager()
-        self.geo_state = {"gps": {"geometry": {"coordinates": [0, 0]}}}
+        self.geo_state = {"geometry": {"coordinates": [0, 0]}}
         self.feed_dir = feed_dir
         self.states = states
         self.power_threshold = float(power_threshold)
@@ -32,6 +32,8 @@ class ArfcnCorrelator(object):
         retval = []
         scan_type = scan_bolus[0]
         scan = scan_bolus[1]
+        if scan_type == "gps":
+            self.geo_state = scan
         arfcn = ArfcnCorrelator.arfcn_from_scan(scan_type, scan)
         if scan_type == "kal_channel":
             if self.arfcn_over_threshold(scan["power"]):
@@ -48,8 +50,6 @@ class ArfcnCorrelator(object):
         for feed_alert in feed_alerts:
             retval.append(feed_alert)
         self.observed_arfcn.append(arfcn)
-        if scan_type == "gps":
-            self.geo_state = scan
         return retval
 
     def manage_arfcn_lists(self, direction, arfcn, aspect):
@@ -80,9 +80,9 @@ class ArfcnCorrelator(object):
         """Returns a list of tuples, and only alarms."""
         results = []
         # If we can't compare geo, have ARFCN 0 or already been found in feed:
-        if (str(arfcn) == "0" or
+        if (str(arfcn) in ["0", None] or
             arfcn in self.observed_arfcn or
-            self.geo_state == {"gps": {"geometry": {"coordinates": [0, 0]}}}):
+            self.geo_state == {"geometry": {"coordinates": [0, 0]}}):
             return results
         else:
             msg = "ArfcnCorrelator: Cache miss on ARFCN %s" % str(arfcn)
@@ -130,9 +130,8 @@ class ArfcnCorrelator(object):
 
     @classmethod
     def is_in_range(cls, item_gps, state_gps):
-        state_gps_lat = state_gps["gps"]["geometry"]["coordinates"][1]
-        state_gps_lon = state_gps["gps"]["geometry"]["coordinates"][0]
-        {"gps": {"geometry": {"coordinates": [0, 0]}}}
+        state_gps_lat = state_gps["geometry"]["coordinates"][1]
+        state_gps_lon = state_gps["geometry"]["coordinates"][0]
         max_range = 40000  # 40km
         state_lon = state_gps_lon
         state_lat = state_gps_lat
@@ -161,5 +160,5 @@ class ArfcnCorrelator(object):
             latlon["lon"] = ll.to_string('D%')[1]
         except:
             print("ArfcnCorrelator: Unable to compose lat/lon from:")
-            print(item)
+            print(str(item))
         return latlon

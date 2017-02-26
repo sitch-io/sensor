@@ -7,17 +7,21 @@ class GsmDecomposer(object):
         results_set = [("cell", scan_document)]
         scan_items = scan_document["scan_results"]
         for channel in scan_items:
-            channel = GsmDecomposer.enrich_channel_with_scan(channel,
-                                                             scan_document)
-            channel["arfcn_int"] = GsmDecomposer.arfcn_int(channel["arfcn"])
-            # Now we bring the hex values to decimal...
-            channel = GsmDecomposer.convert_hex_targets(channel)
-            channel = GsmDecomposer.convert_float_targets(channel)
-            # Setting CGI identifiers
-            channel["cgi_str"] = GsmDecomposer.make_bts_friendly(channel)
-            channel["cgi_int"] = GsmDecomposer.get_cgi_int(channel)
-            chan_enriched = ('gsm_modem_channel', channel)
-            results_set.append(chan_enriched)
+            try:
+                channel = GsmDecomposer.enrich_channel_with_scan(channel,
+                                                                 scan_document)
+                channel["arfcn_int"] = GsmDecomposer.arfcn_int(channel["arfcn"])
+                # Now we bring the hex values to decimal...
+                channel = GsmDecomposer.convert_hex_targets(channel)
+                channel = GsmDecomposer.convert_float_targets(channel)
+                # Setting CGI identifiers
+                channel["cgi_str"] = GsmDecomposer.make_bts_friendly(channel)
+                channel["cgi_int"] = GsmDecomposer.get_cgi_int(channel)
+                chan_enriched = ('gsm_modem_channel', channel)
+                results_set.append(chan_enriched)
+            except Exception as e:
+                print("Exception caught in GsmDecomposer: %s for message %s" % (e, str(channel)))
+
         return results_set
 
     @classmethod
@@ -25,7 +29,7 @@ class GsmDecomposer(object):
         """ Enriches channel with scan document metadata """
         channel["band"] = scan_document["band"]
         channel["scan_finish"] = scan_document["scan_finish"]
-        channel["site_name"] = scan_document["scan_location"]["name"]
+        channel["site_name"] = scan_document["scan_location"]
         channel["scanner_public_ip"] = scan_document["scanner_public_ip"]
         return channel
 
