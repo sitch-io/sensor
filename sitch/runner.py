@@ -133,8 +133,8 @@ def main():
         active_threads = threading.enumerate()
         #  Heartbeat messages
         for item in active_threads:
-            scan_results_queue.append(sitchlib.Utility.heartbeat(item.name))
-        scan_results_queue.append(sitchlib.Utility.get_performance_metrics())
+            message_write_queue.append(sitchlib.Utility.heartbeat(item.name))
+        message_write_queue.append(sitchlib.Utility.get_performance_metrics())
     return
 
 def init_event_injector(init_event):
@@ -222,7 +222,7 @@ def gps_consumer(config):
             gps_listener = sitchlib.GpsListener(delay=120)
             for fix in gps_listener:
                 # scan_compile_and_queue(gps_event, fix)
-                scan_results_queue.append(("gps", fix))
+                scan_results_queue.append(fix)
         except IndexError:
             time.sleep(3)
         except SocketError as e:
