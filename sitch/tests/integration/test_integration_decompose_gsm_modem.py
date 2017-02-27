@@ -12,17 +12,6 @@ feedpath = os.path.join(os.path.dirname(os.path.abspath(__file__)),
 file, pathname, description = imp.find_module(modulename, [modulepath])
 sitchlib = imp.load_module(modulename, file, pathname, description)
 
-geo_state = {"gps":
-             {"geometry":
-              {"coordinates":
-                  [-122.431297, 37.773972]}}}
-bad_geo_state = {"gps":
-                 {"geometry":
-                  {"coordinates":
-                      [0, 0]}}}
-
-states = ["CA"]
-
 samp_sim = {'platform': u'AMLOGIC',
             'band': 'GSM850_MODE',
             'scan_finish': '2016-05-07 02:36:50',
@@ -52,22 +41,12 @@ samp_sim = {'platform': u'AMLOGIC',
 
 
 class TestIntegrationEnrichGsmModem:
-    def instantiate_gsm_enricher(self, state):
-        gsm_enricher = sitchlib.GsmModemEnricher(state, feedpath, [])
-        return gsm_enricher
-
-    def test_instantiate_gsm_enricher(self):
-        gsm = self.instantiate_gsm_enricher(geo_state)
-        assert gsm
-
     def test_gsm(self):
-        gsm = self.instantiate_gsm_enricher(geo_state)
-        result = gsm.enrich_gsm_modem_scan(samp_sim)
-        assert len(result) == 12
+        results = sitchlib.Decomposer.decompose(samp_sim)
+        assert len(results) == 8
 
     def test_gsm_structure(self):
-        gsm = self.instantiate_gsm_enricher(geo_state)
-        results = gsm.enrich_gsm_modem_scan(samp_sim)
+        results = sitchlib.Decomposer.decompose(samp_sim)
         for result in results:
             assert len(result) == 2
             assert type(result[0]) is str

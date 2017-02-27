@@ -4,38 +4,60 @@ import alert_manager
 from utility import Utility
 
 
-class GsmModemEnricher(object):
-    def __init__(self, state, feed_dir, cgi_whitelist):
-        """ State looks like this:
-        {"gps": {},
-         "geoip": {},
-         "geo_distance_meters": 0}
-        """
-        self.state = state
+class CgiCorrelator(object):
+    def __init__(self, feed_dir, cgi_whitelist):
         self.feed_dir = feed_dir
         self.alerts = alert_manager.AlertManager()
         self.prior_bts = {}
+        self.state = {"gps": {"geometry": {"coordinates": [0, 0]}}}
         self.feed_cache = []
-        self.good_arfcns = []
-        self.bad_arfcns = []
+        self.good_cgis = []
+        self.bad_cgis = []
         self.cgi_whitelist = cgi_whitelist
-        print(GsmModemEnricher.cgi_whitelist_message(self.cgi_whitelist))
+        print(CgiCorrelator.cgi_whitelist_message(self.cgi_whitelist))
         return
+
+    def correlate(self, scan_bolus):
+        retval = []
+        if scan_bolus[0] == "gps":
+            self.state = scan_bolus[1]
+        elif scan_bolus[0] != "gsm_modem_channel":
+            print("CgiCorrelator: Unsupported scan type: %s" % scan_bolus[0])
+            pass
+        else:
+            channel = scan_bolus[1]
+            if channel["mcc"] in ["", None]:
+                return retval  # We don't correlate incomplete CGIs...
+            channel["arfcn_int"] = CgiCorrelator.arfcn_int(channel["arfcn"])
+            # Now we bring the hex values to decimal...
+            channel = self.convert_hex_targets(channel)
+            channel = self.convert_float_targets(channel)
+            # Setting CGI identifiers
+            channel["cgi_str"] = CgiCorrelator.make_bts_friendly(channel)
+            channel["cgi_int"] = CgiCorrelator.get_cgi_int(channel)
+            """ Here's the feed comparison part """
+            channel["feed_info"] = self.get_feed_info(channel["mcc"],
+                                                      channel["mnc"],
+                                                      channel["lac"],
+                                                      channel["cellid"])
+            chan, here = CgiCorrelator.build_chan_here(channel, self.state)
+            channel["distance"] = Utility.calculate_distance(chan["lon"],
+                                                             chan["lat"],
+                                                             here["lon"],
+                                                             here["lat"])
+            # In the event we have incomplete information, bypass comparison.
+            skip_feed_comparison = CgiCorrelator.should_skip_feed(channel)
+            if skip_feed_comparison is False:
+                feed_comparison_results = self.feed_comparison(channel)
+                for feed_alert in feed_comparison_results:
+                    retval.append(feed_alert)
+        return retval
 
     @classmethod
     def cgi_whitelist_message(cls, cgi_wl):
         wl_string = ",".join(cgi_wl)
-        message = "EnrichGSM: Initializing with CGI whitelist: %s" % wl_string
+        message = "CgiCorrelator: Initializing with CGI whitelist: %s" % wl_string
         return message
-
-    @classmethod
-    def enrich_channel_with_scan(cls, channel, scan_document):
-        """ Enriches channel with scan document metadata """
-        channel["band"] = scan_document["band"]
-        channel["scan_finish"] = scan_document["scan_finish"]
-        channel["site_name"] = scan_document["scan_location"]["name"]
-        channel["scanner_public_ip"] = scan_document["scanner_public_ip"]
-        return channel
 
     @classmethod
     def arfcn_int(cls, arfcn):
@@ -45,7 +67,7 @@ class GsmModemEnricher(object):
         try:
             arfcn_int = int(arfcn)
         except:
-            msg = "EnrichGSM: Unable to convert ARFCN to int"
+            msg = "CgiCorrelator: Unable to convert ARFCN to int"
             print(msg)
             print(arfcn)
             arfcn_int = 0
@@ -54,7 +76,7 @@ class GsmModemEnricher(object):
     @classmethod
     def should_skip_feed(cls, channel):
         skip_feed_comparison = False
-        skip_feed_trigger_values = ['', '0000', '00', '0']
+        skip_feed_trigger_values = ['', '0000', '00', '0', None]
         for x in ["mcc", "mnc", "lac", "cellid"]:
             if channel[x] in skip_feed_trigger_values:
                 skip_feed_comparison = True
@@ -66,7 +88,7 @@ class GsmModemEnricher(object):
         try:
             cgi_int = int(channel["cgi_str"].replace(':', ''))
         except:
-            print("EnrichGSM: Unable to convert CGI to int")
+            print("CgiCorrelator: Unable to convert CGI to int")
             print(channel["cgi_str"])
             cgi_int = 0
         return cgi_int
@@ -81,7 +103,7 @@ class GsmModemEnricher(object):
             here["lat"] = state["gps"]["geometry"]["coordinates"][0]
             here["lon"] = state["gps"]["geometry"]["coordinates"][1]
         except (TypeError, ValueError, KeyError):
-            print("EnrichGSM: Incomplete geo info...")
+            print("CgiCorrelator: Incomplete geo info...")
             chan["lat"] = None
             chan["lon"] = None
             here["lat"] = None
@@ -115,7 +137,7 @@ class GsmModemEnricher(object):
     @classmethod
     def primary_bts_changed(cls, prior_bts, channel, cgi_whitelist):
         result = False
-        current_bts = GsmModemEnricher.bts_from_channel(channel)
+        current_bts = CgiCorrelator.bts_from_channel(channel)
         cgi_string = channel["cgi_str"]
         if prior_bts == {}:
             pass
@@ -126,52 +148,16 @@ class GsmModemEnricher(object):
         return result
 
 
-    def enrich_gsm_modem_scan(self, scan_document):
-        chan = {}
-        here = {}
-        state = self.state
-        results_set = [("cell", scan_document)]
-        scan_items = scan_document["scan_results"]
-        for channel in scan_items:
-            channel = GsmModemEnricher.enrich_channel_with_scan(channel,
-                                                                scan_document)
-            channel["arfcn_int"] = GsmModemEnricher.arfcn_int(channel["arfcn"])
-            # In the event we have incomplete information, bypass comparison.
-            skip_feed_comparison = GsmModemEnricher.should_skip_feed(channel)
-            # Now we bring the hex values to decimal...
-            channel = self.convert_hex_targets(channel)
-            channel = self.convert_float_targets(channel)
-            # Setting CGI identifiers
-            channel["cgi_str"] = GsmModemEnricher.make_bts_friendly(channel)
-            channel["cgi_int"] = GsmModemEnricher.get_cgi_int(channel)
-            """ Here's the feed comparison part """
-            if skip_feed_comparison is False:
-                channel["feed_info"] = self.get_feed_info(channel["mcc"],
-                                                          channel["mnc"],
-                                                          channel["lac"],
-                                                          channel["cellid"])
-                chan, here = GsmModemEnricher.build_chan_here(channel, state)
-                channel["distance"] = Utility.calculate_distance(chan["lon"],
-                                                                 chan["lat"],
-                                                                 here["lon"],
-                                                                 here["lat"])
-            chan_enriched = ('gsm_modem_channel', channel)
-            results_set.append(chan_enriched)
-            # Stop here if we don't process against the feed...
-            if skip_feed_comparison is True:
-                continue
-            feed_comparison_results = self.feed_comparison(channel)
-            for feed_alert in feed_comparison_results:
-                results_set.append(feed_alert)
-        return results_set
-
     def feed_comparison(self, channel):
         comparison_results = []
         retval = []
         # Alert if tower is not in feed DB
-        comparison_results.append(self.check_channel_against_feed(channel))
+        if (channel["cgi_str"] not in self.bad_cgis and
+            channel["cgi_str"] not in self.cgi_whitelist):
+            comparison_results.append(self.check_channel_against_feed(channel))
         # Else, be willing to alert if channel is not in range
-        if comparison_results == [()]:
+        if (channel["cgi_str"] not in self.bad_cgis and
+            channel["cgi_str"] not in self.cgi_whitelist):
             comparison_results.append(self.check_channel_range(channel))
         # Test for primary BTS change
         if channel["cell"] == '0':
@@ -184,23 +170,27 @@ class GsmModemEnricher(object):
 
     def check_channel_against_feed(self, channel):
         alert = ()
-        if GsmModemEnricher.channel_in_feed_db(channel) is False:
+        if CgiCorrelator.channel_in_feed_db(channel) is False:
             bts_info = "ARFCN: %s CGI: %s" % (channel["arfcn"],
                                               channel["cgi_str"])
             message = "BTS not in feed database! Info: %s Site: %s" % (
                 bts_info, str(channel["site_name"]))
+            if channel["cgi_str"] not in self.bad_cgis:
+                self.bad_cgis.append(channel["cgi_str"])
             alert = self.alerts.build_alert(120, message)
         return alert
 
     def check_channel_range(self, channel):
         alert = ()
-        if GsmModemEnricher.channel_out_of_range(channel):
+        if CgiCorrelator.channel_out_of_range(channel):
             message = ("ARFCN: %s Expected range: %s Actual distance:" +
                        " %s CGI: %s Site: %s") % ( channel["arfcn"],
                        str(channel["feed_info"]["range"]),
                        str(channel["distance"]),
                        channel["cgi_str"],
                        channel["site_name"])
+            if channel["cgi_str"] not in self.bad_cgis:
+                self.bad_cgis.append(channel["cgi_str"])
             alert = self.alerts.build_alert(100, message)
         return alert
 
@@ -208,13 +198,13 @@ class GsmModemEnricher(object):
         """ Accepts channel (zero) as arg, returns a list which will
         be populated with any alerts we decide to fire """
         alert = ()
-        current_bts = GsmModemEnricher.bts_from_channel(channel)
-        if GsmModemEnricher.primary_bts_changed(self.prior_bts, channel,
+        current_bts = CgiCorrelator.bts_from_channel(channel)
+        if CgiCorrelator.primary_bts_changed(self.prior_bts, channel,
                                                 self.cgi_whitelist):
             msg = ("Primary BTS was %s " +
                    "now %s. Site: %s") % (
-                    GsmModemEnricher.make_bts_friendly(self.prior_bts),
-                    GsmModemEnricher.make_bts_friendly(current_bts),
+                    CgiCorrelator.make_bts_friendly(self.prior_bts),
+                    CgiCorrelator.make_bts_friendly(current_bts),
                     channel["site_name"])
             alert = self.alerts.build_alert(110, msg)
         self.prior_bts = dict(current_bts)
@@ -233,11 +223,11 @@ class GsmModemEnricher(object):
     def get_feed_info(self, mcc, mnc, lac, cellid):
         if self.feed_cache != []:
             for x in self.feed_cache:
-                if GsmModemEnricher.cell_matches(x, mcc, mnc,
+                if CgiCorrelator.cell_matches(x, mcc, mnc,
                                                  lac, cellid):
                     return x
             feed_string = "%s:%s:%s:%s" % (mcc, mnc, lac, cellid)
-            msg = "EnrichGSM: Cache miss: %s" % feed_string
+            msg = "CgiCorrelator: Cache miss: %s" % feed_string
             print(msg)
         normalized = self.get_feed_info_from_files(mcc, mnc, lac, cellid)
         self.feed_cache.append(normalized)
@@ -257,13 +247,18 @@ class GsmModemEnricher(object):
         """ Field names get changed when loaded into the cache, to
         match field IDs used elsewhere. """
         feed_file = Utility.construct_feed_file_name(self.feed_dir, mcc)
-        with gzip.open(feed_file, 'r') as feed_data:
-            consumer = csv.DictReader(feed_data)
-            for cell in consumer:
-                normalized = self.normalize_feed_info_for_cache(cell)
-                if GsmModemEnricher.cell_matches(normalized, mcc, mnc,
-                                                 lac, cellid):
-                    return normalized
+        try:
+            with gzip.open(feed_file, 'r') as feed_data:
+                consumer = csv.DictReader(feed_data)
+                for cell in consumer:
+                    normalized = self.normalize_feed_info_for_cache(cell)
+                    if CgiCorrelator.cell_matches(normalized, mcc, mnc,
+                                                     lac, cellid):
+                        return normalized
+        except IOError as e:
+            msg = "CgiCorrelator: Unable to open feed for %s!\n\t%s" % (str(mcc),  # NOQA
+                                                                        str(e))
+            print(msg)
         """If unable to locate cell in file, we populate the
         cache with obviously fake values """
         cell = {"mcc": mcc, "net": mnc, "area": lac, "cell": cellid,

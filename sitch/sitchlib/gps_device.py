@@ -18,7 +18,8 @@ class GpsListener(object):
                 self.data_stream.unpack(new_data)
                 if "lon" in self.data_stream.TPV:
                     if self.data_stream.TPV['lon'] != 'n/a':
-                        geojson = {"type": "Feature",
+                        geojson = {"scan_program": "gpsd",
+                                   "type": "Feature",
                                    "geometry": {
                                        "type": "Point",
                                        "coordinates": [

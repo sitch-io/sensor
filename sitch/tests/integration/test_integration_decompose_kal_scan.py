@@ -13,11 +13,7 @@ file, pathname, description = imp.find_module(modulename, [modulepath])
 sitchlib = imp.load_module(modulename, file, pathname, description)
 
 
-class TestIntegrationEnrichKalScan:
-    def instantiate_kal_enricher(self, threshold):
-        kal_enricher = sitchlib.KalScanEnricher(threshold)
-        return kal_enricher
-
+class TestIntegrationKalDecomposer:
     def build_scan_doc(self):
         samp_kal = {'platform': u'AMLOGIC',
                     'scan_finish': '2016-05-07 04:14:30',
@@ -57,27 +53,16 @@ class TestIntegrationEnrichKalScan:
                     'scanner_name': 'test_site'}
         return samp_kal
 
-    def test_instantiate_kal_enricher(self):
-        arfcn = self.instantiate_kal_enricher(100000)
-        assert arfcn
 
     def test_kal_good(self):
-        kal_enricher = self.instantiate_kal_enricher(10000000000)
         kal_scan = self.build_scan_doc()
-        result = kal_enricher.enrich_kal_scan(kal_scan)
+        result = sitchlib.Decomposer.decompose(kal_scan)
         assert len(result) == 5
 
-    def test_kal_bad(self):
-        kal_enricher = self.instantiate_kal_enricher(10000)
-        kal_scan = self.build_scan_doc()
-        result = kal_enricher.enrich_kal_scan(kal_scan)
-        assert len(result) == 9
-
     def test_kal_response_structure(self):
-        kal_enricher = self.instantiate_kal_enricher(10000)
         kal_scan = self.build_scan_doc()
-        results = kal_enricher.enrich_kal_scan(kal_scan)
-        assert len(results) == 9
+        results = sitchlib.Decomposer.decompose(kal_scan)
+        assert len(results) == 5
         for result in results:
             assert len(result) == 2
             assert type(result[0]) is str

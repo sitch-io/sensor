@@ -158,7 +158,7 @@ class GsmModem(object):
     def process_line(cls, line):
         processed = None
         if line.startswith('+CENG:'):
-            dataz = line.replace('+CENG:', ' ').replace('"', '').replace('\r\n', '')
+            dataz = line.split(':')[1].lstrip().replace('"', '').replace('\r\n', '')
             line_parts = dataz.split(',')
             if len(line_parts) == 12:
                 processed = GsmModem.process_12(line_parts)
@@ -176,7 +176,7 @@ class GsmModem(object):
         elif re.match('^OK\s*$', line):
             processed = {}
         else:
-            print("GSM: Unprocessable line from SIM808!")
+            print("GSM: Unprocessable line from modem!")
             print(line)
             processed = {}
         return processed
