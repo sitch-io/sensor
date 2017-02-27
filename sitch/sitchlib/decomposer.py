@@ -1,12 +1,14 @@
 from gps_decomposer import GpsDecomposer
 from gsm_decomposer import GsmDecomposer
 from kal_decomposer import KalDecomposer
+from geoip_decomposer import GeoipDecomposer
 
 
 class Decomposer(object):
     decomp_ref = {"Kalibrate": KalDecomposer(),
                   "GSM_MODEM": GsmDecomposer(),
-                  "gpsd": GpsDecomposer()}
+                  "gpsd": GpsDecomposer(),
+                  "geo_ip": GeoipDecomposer()}
 
     @classmethod
     def decompose(cls, scan):
