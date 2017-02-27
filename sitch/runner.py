@@ -236,7 +236,7 @@ def geoip_consumer(config):
     while True:
         geoip_listener = sitchlib.GeoIp(delay=600)
         for result in geoip_listener:
-            scan_results_queue.append(("geo_ip", result))
+            scan_results_queue.append(result)
             # scan_compile_and_queue("geoip", result)
 
 # def scan_compile_and_queue(scan_template, result):
