@@ -13,8 +13,7 @@ class ArfcnCorrelator(object):
     Checks ARFCN power measurement (if available) against threshold
 
     """
-    def __init__(self, states, feed_dir, whitelist,
-                 power_threshold):
+    def __init__(self, states, feed_dir, whitelist, power_threshold):
         self.alerts = alert_manager.AlertManager()
         self.geo_state = {"geometry": {"coordinates": [0, 0]}}
         self.feed_dir = feed_dir

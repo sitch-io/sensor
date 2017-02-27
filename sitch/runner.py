@@ -222,7 +222,7 @@ def gps_consumer(config):
             gps_listener = sitchlib.GpsListener(delay=120)
             for fix in gps_listener:
                 # scan_compile_and_queue(gps_event, fix)
-                scan_results_queue.append("gps", fix)
+                scan_results_queue.append(("gps", fix))
         except IndexError:
             time.sleep(3)
         except SocketError as e:
@@ -236,7 +236,7 @@ def geoip_consumer(config):
     while True:
         geoip_listener = sitchlib.GeoIp(delay=600)
         for result in geoip_listener:
-            scan_results_queue.append("geo_ip", result)
+            scan_results_queue.append(("geo_ip", result))
             # scan_compile_and_queue("geoip", result)
 
 # def scan_compile_and_queue(scan_template, result):
@@ -284,11 +284,10 @@ def kalibrate_consumer(config):
 
 def arfcn_correlator(config):
     """This correlates any single row with an ARFCN"""
-    correlator = sitchlib.ArfcnCorrelator({},
-                                         config.state_list,
-                                         config.feed_dir,
-                                         config.arfcn_whitelist,
-                                         config.kal_threshold)
+    correlator = sitchlib.ArfcnCorrelator(config.state_list,
+                                          config.feed_dir,
+                                          config.arfcn_whitelist,
+                                          config.kal_threshold)
     while True:
         try:
             item = arfcn_correlator_queue.popleft()
@@ -344,17 +343,17 @@ def decomposer(config):
                 for result in decomposed:
                     s_type = result[0]
                     if s_type == "scan":
-                        message_write_queue.append(result.copy())
+                        message_write_queue.append(result)
                     elif s_type == "kal_channel":
-                        arfcn_correlator_queue.append(result.copy())
+                        arfcn_correlator_queue.append(result)
                     elif s_type == "cell":
-                        message_write_queue.append(result.copy())
+                        message_write_queue.append(result)
                     elif s_type == "gsm_modem_channel":
-                        cgi_correlator_queue.append(result.copy())
-                        arfcn_correlator_queue.append(result.copy())
+                        cgi_correlator_queue.append(result)
+                        arfcn_correlator_queue.append(result)
                     elif s_type == "gps":
-                        arfcn_correlator_queue.append(result.copy())
-                        cgi_correlator_queue.append(result.copy())
+                        arfcn_correlator_queue.append(result)
+                        cgi_correlator_queue.append(result)
                     else:
                         print("Decomposer: Unrecognized scan type %s" % s_type)
         except IndexError:
