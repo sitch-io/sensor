@@ -133,8 +133,8 @@ def main():
         active_threads = threading.enumerate()
         #  Heartbeat messages
         for item in active_threads:
-            message_write_queue.append(sitchlib.Utility.heartbeat(item.name))
-        message_write_queue.append(sitchlib.Utility.get_performance_metrics())
+            message_write_queue.append(("heartbeat", sitchlib.Utility.heartbeat(item.name)))
+        message_write_queue.append(("health_check", sitchlib.Utility.get_performance_metrics()))
     return
 
 def init_event_injector(init_event):
