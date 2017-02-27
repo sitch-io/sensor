@@ -15,7 +15,7 @@ class Decomposer(object):
             decomposer = Decomposer.decomp_ref[scan["scan_program"]]
             result = decomposer.decompose(scan)
         except Exception as e:
-            print("Decomposition error for scan type: %s scan body: %s" % (scan["scan_program"],
-                                                                           str(scan)))
+            print("Decomposition error for scan: %s" % (str(scan)))
             print(e)
+
         return result
