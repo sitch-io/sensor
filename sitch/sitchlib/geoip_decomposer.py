@@ -1,7 +1,7 @@
 class GeoipDecomposer(object):
     @classmethod
     def decompose(cls, scan_document):
-        results_set = [("geoip", scan_document)]
+        results_set = [("geo_ip", scan_document)]
         if not GeoipDecomposer.scan_document_is_valid(scan_document):
             return []
         else:

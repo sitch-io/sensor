@@ -79,9 +79,6 @@ def main():
     gps_consumer_thread = threading.Thread(target=gps_consumer,
                                            name="gps_consumer",
                                            args=[config])
-    # enricher_thread = threading.Thread(target=enricher,
-    #                                   name="enricher",
-    #                                   args=[config])
     decomposer_thread = threading.Thread(target=decomposer,
                                          name="decomposer",
                                          args=[config])
@@ -116,8 +113,6 @@ def main():
     gps_consumer_thread.start()
     print("Runner: Starting GeoIP consumer thread...")
     geoip_consumer_thread.start()
-    print("Runner: Starting enricher thread...")
-    # enricher_thread.start()
     print("Runner: Starting decomposer thread...")
     decomposer_thread.start()
     print("Runner: Starting ARFCN correlator thread...")
@@ -135,6 +130,10 @@ def main():
         for item in active_threads:
             message_write_queue.append(("heartbeat", sitchlib.Utility.heartbeat(item.name)))
         message_write_queue.append(("health_check", sitchlib.Utility.get_performance_metrics()))
+        print("Queue: Scan results queue depth: %s" % len(scan_results_queue))
+        print("Queue: ARFCN Correlator queue depth: %s" % len(arfcn_correlator_queue))
+        print("Queue: CGI Correlator queue depth: %s" % len(cgi_correlator_queue))
+        print("Queue: GEO Correlator queue depth: %s" % len(geo_correlator_queue))
     return
 
 def init_event_injector(init_event):
@@ -215,13 +214,10 @@ def gps_consumer(config):
     print("Runner: Starting gpsd with:")
     print(gpsd_command)
     time.sleep(10)
-    # gps_event = {"scan_program": "gps",
-    #             "scan_results": {}}
     while True:
         try:
             gps_listener = sitchlib.GpsListener(delay=120)
             for fix in gps_listener:
-                # scan_compile_and_queue(gps_event, fix)
                 scan_results_queue.append(fix)
         except IndexError:
             time.sleep(3)
@@ -231,19 +227,10 @@ def gps_consumer(config):
 
 def geoip_consumer(config):
     print("Runner: Starting GeoIP Consumer")
-    # geoip_event = {"scan_program": "geo_ip",
-    #               "scan_results": {}}
     while True:
         geoip_listener = sitchlib.GeoIp(delay=600)
         for result in geoip_listener:
             scan_results_queue.append(result)
-            # scan_compile_and_queue("geoip", result)
-
-# def scan_compile_and_queue(scan_template, result):
-#    scan_template["scan_results"] = result
-#    scan_results_queue.append(scan_template.copy())
-#    geo_correlator_queue.append(("gps", {"lat": result["geometry"]["coordinates"][1],
-#                                         "lon": result["geometry"]["coordinates"][0]}).copy())
 
 def disable_scanner(event_struct):
     stdout_msg = "Runner: %s" % event_struct["evt_data"]
