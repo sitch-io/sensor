@@ -34,7 +34,7 @@ class LogHandler:
                         "kal_channel": "kal_channel.log",  # cells from Kal
                         "gsm_modem_channel": "gsm_modem_channel.log",  # sim808 cells
                         "arfcn_enricher": "arfcn_enricher.log",
-                        "geoip": "geoip.log",
+                        "geo_ip": "geoip.log",
                         "gps": "gps.log",
                         "heartbeat": "heartbeat.log",
                         "health_check": "health_check.log",

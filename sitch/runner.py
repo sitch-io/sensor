@@ -333,14 +333,17 @@ def decomposer(config):
                         message_write_queue.append(result)
                     elif s_type == "kal_channel":
                         arfcn_correlator_queue.append(result)
+                        message_write_queue.append(result)
                     elif s_type == "cell":
                         message_write_queue.append(result)
                     elif s_type == "gsm_modem_channel":
                         cgi_correlator_queue.append(result)
                         arfcn_correlator_queue.append(result)
+                        message_write_queue.append(result)
                     elif s_type == "gps":
                         arfcn_correlator_queue.append(result)
                         cgi_correlator_queue.append(result)
+                        message_write_queue.append(result)
                     else:
                         print("Decomposer: Unrecognized scan type %s" % s_type)
         except IndexError:
