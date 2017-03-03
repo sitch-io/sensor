@@ -154,11 +154,13 @@ class CgiCorrelator(object):
         retval = []
         # Alert if tower is not in feed DB
         if (channel["cgi_str"] not in self.bad_cgis and
-            channel["cgi_str"] not in self.cgi_whitelist):
+            channel["cgi_str"] not in self.cgi_whitelist and
+            channel["cgi_str"] not in self.good_cgis):
             comparison_results.append(self.check_channel_against_feed(channel))
         # Else, be willing to alert if channel is not in range
         if (channel["cgi_str"] not in self.bad_cgis and
-            channel["cgi_str"] not in self.cgi_whitelist):
+            channel["cgi_str"] not in self.cgi_whitelist and
+            channel["cgi_str"] not in self.good_cgis):
             comparison_results.append(self.check_channel_range(channel))
         # Test for primary BTS change
         if channel["cell"] == '0':
@@ -166,6 +168,13 @@ class CgiCorrelator(object):
         for result in comparison_results:
             if result != ():
                 retval.append(result)
+        if len(retval) == 0:
+            print("Clean CGI: %s" % channel["cgi_str"])
+            if channel["cgi_str"] not in self.good_cgis:
+                self.good_cgis.append(channel["cgi_str"])
+        else:
+            print("Dirty CGI: %s" % channel["cgi_str"])
+            print(str(retval))
         return retval
 
 
