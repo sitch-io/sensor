@@ -9,7 +9,7 @@ class CgiCorrelator(object):
         self.feed_dir = feed_dir
         self.alerts = alert_manager.AlertManager()
         self.prior_bts = {}
-        self.state = {"gps": {"geometry": {"coordinates": [0, 0]}}}
+        self.state = {"geometry": {"coordinates": [0, 0]}}
         self.feed_cache = []
         self.good_cgis = []
         self.bad_cgis = []
@@ -100,8 +100,8 @@ class CgiCorrelator(object):
         try:
             chan["lat"] = channel["feed_info"]["lat"]
             chan["lon"] = channel["feed_info"]["lon"]
-            here["lat"] = state["gps"]["geometry"]["coordinates"][0]
-            here["lon"] = state["gps"]["geometry"]["coordinates"][1]
+            here["lat"] = state["geometry"]["coordinates"][0]
+            here["lon"] = state["geometry"]["coordinates"][1]
         except (TypeError, ValueError, KeyError) as e:
             print("CgiCorrelator: Incomplete geo info...")
             print("CgiCorrelator: Error: %s" % str(e))
