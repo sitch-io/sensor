@@ -77,15 +77,15 @@ class FeedManager(object):
         with gzip.open(feed_file, 'r') as feed_file:
             feed_file = csv.DictReader(feed_file)
             proc_chunk = []
-            for row in feed_file:
+            while True:
                 try:
                     if len(proc_chunk) < 1000:
-                        proc_chunk.append(cls.tup_from_row(schema, row))
+                        proc_chunk.append(cls.tup_from_row(schema,
+                                          feed_file.next()))
                     else:
                         cls.cgi_mass_insert(schema, proc_chunk, db_file)
                 except StopIteration:
                     cls.cgi_mass_insert(schema, proc_chunk, db_file)
-                    raise StopIteration
         return
 
     @classmethod
