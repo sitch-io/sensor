@@ -1,9 +1,7 @@
 import imp
 import os
-# import mock
-# import sys
 
-# sys.modules['pyudev'] = mock.Mock()
+
 modulename = 'sitchlib'
 modulepath = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                           "../../")

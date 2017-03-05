@@ -56,7 +56,7 @@ class CgiCorrelator(object):
     @classmethod
     def cgi_whitelist_message(cls, cgi_wl):
         wl_string = ",".join(cgi_wl)
-        message = "CgiCorrelator: Initializing with CGI whitelist: %s" % wl_string
+        message = "CgiCorrelator: Initializing with CGI whitelist: %s" % wl_string  # NOQA
         return message
 
     @classmethod
@@ -117,7 +117,7 @@ class CgiCorrelator(object):
         if (channel["feed_info"]["range"] == 0 and
             channel["feed_info"]["lon"] == 0 and
             channel["feed_info"]["lat"] == 0):
-           result = False
+                result = False
         return result
 
     @classmethod
@@ -148,7 +148,6 @@ class CgiCorrelator(object):
             result = True
         return result
 
-
     def feed_comparison(self, channel):
         comparison_results = []
         retval = []
@@ -156,12 +155,12 @@ class CgiCorrelator(object):
         if (channel["cgi_str"] not in self.bad_cgis and
             channel["cgi_str"] not in self.cgi_whitelist and
             channel["cgi_str"] not in self.good_cgis):
-            comparison_results.append(self.check_channel_against_feed(channel))
+                comparison_results.append(self.check_channel_against_feed(channel))  # NOQA
         # Else, be willing to alert if channel is not in range
         if (channel["cgi_str"] not in self.bad_cgis and
             channel["cgi_str"] not in self.cgi_whitelist and
             channel["cgi_str"] not in self.good_cgis):
-            comparison_results.append(self.check_channel_range(channel))
+                comparison_results.append(self.check_channel_range(channel))  # NOQA
         # Test for primary BTS change
         if channel["cell"] == '0':
             comparison_results.append(self.process_cell_zero(channel))
@@ -169,14 +168,13 @@ class CgiCorrelator(object):
             if result != ():
                 retval.append(result)
         if len(retval) == 0:
-            print("Clean CGI: %s" % channel["cgi_str"])
+            # print("Clean CGI: %s" % channel["cgi_str"])
             if channel["cgi_str"] not in self.good_cgis:
                 self.good_cgis.append(channel["cgi_str"])
         else:
-            print("Dirty CGI: %s" % channel["cgi_str"])
+            # print("Dirty CGI: %s" % channel["cgi_str"])
             print(str(retval))
         return retval
-
 
     def check_channel_against_feed(self, channel):
         alert = ()
@@ -194,11 +192,11 @@ class CgiCorrelator(object):
         alert = ()
         if CgiCorrelator.channel_out_of_range(channel):
             message = ("ARFCN: %s Expected range: %s Actual distance:" +
-                       " %s CGI: %s Site: %s") % ( channel["arfcn"],
-                       str(channel["feed_info"]["range"]),
-                       str(channel["distance"]),
-                       channel["cgi_str"],
-                       channel["site_name"])
+                       " %s CGI: %s Site: %s") % (channel["arfcn"],
+                                                  str(channel["feed_info"]["range"]),  # NOQA
+                                                  str(channel["distance"]),
+                                                  channel["cgi_str"],
+                                                  channel["site_name"])
             if channel["cgi_str"] not in self.bad_cgis:
                 self.bad_cgis.append(channel["cgi_str"])
             alert = self.alerts.build_alert(100, message)
@@ -210,7 +208,7 @@ class CgiCorrelator(object):
         alert = ()
         current_bts = CgiCorrelator.bts_from_channel(channel)
         if CgiCorrelator.primary_bts_changed(self.prior_bts, channel,
-                                                self.cgi_whitelist):
+                                             self.cgi_whitelist):
             msg = ("Primary BTS was %s " +
                    "now %s. Site: %s") % (
                     CgiCorrelator.make_bts_friendly(self.prior_bts),
@@ -219,7 +217,6 @@ class CgiCorrelator(object):
             alert = self.alerts.build_alert(110, msg)
         self.prior_bts = dict(current_bts)
         return alert
-
 
     @classmethod
     def make_bts_friendly(cls, bts_struct):
@@ -234,7 +231,7 @@ class CgiCorrelator(object):
         if self.feed_cache != []:
             for x in self.feed_cache:
                 if CgiCorrelator.cell_matches(x, mcc, mnc,
-                                                 lac, cellid):
+                                              lac, cellid):
                     return x
             feed_string = "%s:%s:%s:%s" % (mcc, mnc, lac, cellid)
             msg = "CgiCorrelator: Cache miss: %s" % feed_string
@@ -250,7 +247,7 @@ class CgiCorrelator(object):
             cell["mnc"] == mnc and
             cell["lac"] == lac and
             cell["cellid"] == cellid):
-            result = True
+                result = True
         return result
 
     def get_feed_info_from_files(self, mcc, mnc, lac, cellid):
@@ -263,7 +260,7 @@ class CgiCorrelator(object):
                 for cell in consumer:
                     normalized = self.normalize_feed_info_for_cache(cell)
                     if CgiCorrelator.cell_matches(normalized, mcc, mnc,
-                                                     lac, cellid):
+                                                  lac, cellid):
                         return normalized
         except IOError as e:
             msg = "CgiCorrelator: Unable to open feed for %s!\n\t%s" % (str(mcc),  # NOQA
