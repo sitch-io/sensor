@@ -62,7 +62,6 @@ class FeedManager(object):
 
     @classmethod
     def create_and_populate_cgi_db(cls, schema, feed_files, db_file):
-        # Create the DB
         cls.create_cgi_db(db_file, schema)
         for feed_file in feed_files:
             feed_file_exists = os.path.isfile(feed_file)
@@ -86,6 +85,7 @@ class FeedManager(object):
                         cls.cgi_mass_insert(schema, proc_chunk, db_file)
                 except StopIteration:
                     cls.cgi_mass_insert(schema, proc_chunk, db_file)
+                    break
         return
 
     @classmethod
@@ -105,6 +105,7 @@ class FeedManager(object):
     @classmethod
     def create_cgi_db(cls, cgi_db, schema):
         conn = sqlite3.connect(cgi_db)
+        print("FeedManager: Creating CGI DB at %s" % cgi_db)
         create_table_str = ("create table cgi (radio varchar, mcc varchar, " +
                             "net varchar, area varchar, cell varchar, " +
                             "unit varchar, lon varchar, lat varchar, " +

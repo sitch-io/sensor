@@ -17,6 +17,7 @@ tempdir = tempfile.mkdtemp()
 
 class TestIntegrationFeedManager:
     def test_reconcile_cgi_db_create(self):
+        print("Using temp directory %s" % tempdir)
         assert sitchlib.FeedManager.reconcile_cgi_db(cgi_feed_files,
                                                      os.path.join(tempdir,
                                                                   "cgi.db"))
