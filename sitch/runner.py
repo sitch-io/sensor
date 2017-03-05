@@ -62,9 +62,11 @@ def main():
     # Start cron
     sitchlib.Utility.start_component("/etc/init.d/cron start")
 
-    print("Instantiating feed manager...")
+    print("Runner: Instantiating feed manager...")
     feed_mgr = sitchlib.FeedManager(config)
     feed_mgr.update_feed_files()
+    print("Runner: Creating feed DB...")
+    feed_mgr.update_feed_db()
 
     # Configure threads
     kalibrate_consumer_thread = threading.Thread(target=kalibrate_consumer,
@@ -128,18 +130,20 @@ def main():
         active_threads = threading.enumerate()
         #  Heartbeat messages
         for item in active_threads:
-            message_write_queue.append(("heartbeat", sitchlib.Utility.heartbeat(item.name)))
-        message_write_queue.append(("health_check", sitchlib.Utility.get_performance_metrics()))
+            message_write_queue.append(("heartbeat", sitchlib.Utility.heartbeat(item.name)))  # NOQA
+        message_write_queue.append(("health_check", sitchlib.Utility.get_performance_metrics()))  # NOQA
         print("Queue: Scan results queue depth: %s" % len(scan_results_queue))
-        print("Queue: ARFCN Correlator queue depth: %s" % len(arfcn_correlator_queue))
-        print("Queue: CGI Correlator queue depth: %s" % len(cgi_correlator_queue))
-        print("Queue: GEO Correlator queue depth: %s" % len(geo_correlator_queue))
+        print("Queue: ARFCN Correlator queue depth: %s" % len(arfcn_correlator_queue))  # NOQA
+        print("Queue: CGI Correlator queue depth: %s" % len(cgi_correlator_queue))  # NOQA
+        print("Queue: GEO Correlator queue depth: %s" % len(geo_correlator_queue))  # NOQA
     return
+
 
 def init_event_injector(init_event):
     "Pass a dict into this fn."
     evt = [("sitch_init"), init_event]
     message_write_queue.append(evt)
+
 
 def gsm_modem_circuit_breaker(band, tty_port):
     if band == "nope":
@@ -151,6 +155,7 @@ def gsm_modem_circuit_breaker(band, tty_port):
         disable_scanner({"evt_cls": "gsm_consumer",
                          "evt_type": "config_state",
                          "evt_data": "GSM scanning not configured"})
+
 
 def gsm_modem_consumer(config):
     while True:
@@ -232,6 +237,7 @@ def geoip_consumer(config):
         for result in geoip_listener:
             scan_results_queue.append(result)
 
+
 def disable_scanner(event_struct):
     stdout_msg = "Runner: %s" % event_struct["evt_data"]
     print(stdout_msg)
@@ -239,6 +245,7 @@ def disable_scanner(event_struct):
     while True:
         time.sleep(120)
     return
+
 
 def kalibrate_consumer(config):
     while True:
@@ -269,6 +276,7 @@ def kalibrate_consumer(config):
         scan_results_queue.append(scan_document.copy())
     return
 
+
 def arfcn_correlator(config):
     """This correlates any single row with an ARFCN"""
     correlator = sitchlib.ArfcnCorrelator(config.state_list,
@@ -285,6 +293,7 @@ def arfcn_correlator(config):
             # Queue must be empty...
             time.sleep(1)
 
+
 def cgi_correlator(config):
     """This correlates any single row with a CGI"""
     correlator = sitchlib.CgiCorrelator(config.feed_dir,
@@ -299,6 +308,7 @@ def cgi_correlator(config):
             # Queue must be empty...
             time.sleep(1)
 
+
 def geo_correlator(config):
     """This correlates geo state changes"""
     correlator = sitchlib.GeoCorrelator()
@@ -311,6 +321,7 @@ def geo_correlator(config):
         except IndexError:
             # Queue must be empty...
             time.sleep(1)
+
 
 def decomposer(config):
     """This decomposes all scans we get from devices.  Expected types:
@@ -359,7 +370,7 @@ def output(config):
     print("Runner: Output module instantiated.")
     print("Runner: Starting Filebeat...")
     time.sleep(5)
-    sitchlib.Utility.start_component("/usr/local/bin/filebeat-linux-arm -c /etc/filebeat.yml")
+    sitchlib.Utility.start_component("/usr/local/bin/filebeat-linux-arm -c /etc/filebeat.yml")  # NOQA
     while True:
         try:
             msg_bolus = message_write_queue.popleft()
@@ -368,7 +379,7 @@ def output(config):
         except IndexError:
             time.sleep(3)
         except Exception as e:
-            print("Runner: Exception caught while processing message for output:")
+            print("Runner: Exception caught while processing message for output:")  # NOQA
             print(e)
             print(msg_bolus)
 
