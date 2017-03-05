@@ -116,8 +116,8 @@ class CgiCorrelator(object):
         result = True
         if (channel["feed_info"]["range"] == 0 and
             channel["feed_info"]["lon"] == 0 and
-            channel["feed_info"]["lat"] == 0):
-                result = False
+            channel["feed_info"]["lat"] == 0):  # NOQA
+            result = False
         return result
 
     @classmethod
@@ -154,13 +154,13 @@ class CgiCorrelator(object):
         # Alert if tower is not in feed DB
         if (channel["cgi_str"] not in self.bad_cgis and
             channel["cgi_str"] not in self.cgi_whitelist and
-            channel["cgi_str"] not in self.good_cgis):
-                comparison_results.append(self.check_channel_against_feed(channel))  # NOQA
+            channel["cgi_str"] not in self.good_cgis):  # NOQA
+            comparison_results.append(self.check_channel_against_feed(channel))
         # Else, be willing to alert if channel is not in range
         if (channel["cgi_str"] not in self.bad_cgis and
             channel["cgi_str"] not in self.cgi_whitelist and
-            channel["cgi_str"] not in self.good_cgis):
-                comparison_results.append(self.check_channel_range(channel))  # NOQA
+            channel["cgi_str"] not in self.good_cgis):  # NOQA
+            comparison_results.append(self.check_channel_range(channel))
         # Test for primary BTS change
         if channel["cell"] == '0':
             comparison_results.append(self.process_cell_zero(channel))
@@ -168,11 +168,9 @@ class CgiCorrelator(object):
             if result != ():
                 retval.append(result)
         if len(retval) == 0:
-            # print("Clean CGI: %s" % channel["cgi_str"])
             if channel["cgi_str"] not in self.good_cgis:
                 self.good_cgis.append(channel["cgi_str"])
         else:
-            # print("Dirty CGI: %s" % channel["cgi_str"])
             print(str(retval))
         return retval
 
@@ -246,8 +244,8 @@ class CgiCorrelator(object):
         if (cell["mcc"] == mcc and
             cell["mnc"] == mnc and
             cell["lac"] == lac and
-            cell["cellid"] == cellid):
-                result = True
+            cell["cellid"] == cellid):  # NOQA
+            result = True
         return result
 
     def get_feed_info_from_files(self, mcc, mnc, lac, cellid):
