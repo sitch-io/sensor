@@ -78,7 +78,7 @@ class FeedManager(object):
         with gzip.open(feed_file, 'r') as feed_file:
             feed_file = csv.DictReader(feed_file)
             for row in feed_file:
-                if len(proc_chunk) < 10000:
+                if len(proc_chunk) < 9999:
                     proc_chunk.append(cls.tup_from_row(schema, row))
                 else:
                     proc_chunk.append(cls.tup_from_row(schema, row))
