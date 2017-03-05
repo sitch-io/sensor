@@ -73,26 +73,31 @@ class FeedManager(object):
 
     @classmethod
     def cgi_csv_dump_to_db(cls, schema, feed_file, db_file):
+        proc_chunk = []
+        rows_written = 0
         with gzip.open(feed_file, 'r') as feed_file:
             feed_file = csv.DictReader(feed_file)
-            proc_chunk = []
-            while True:
-                try:
-                    if len(proc_chunk) < 1000:
-                        proc_chunk.append(cls.tup_from_row(schema,
-                                          feed_file.next()))
-                    else:
-                        cls.cgi_mass_insert(schema, proc_chunk, db_file)
-                except StopIteration:
+            for row in feed_file:
+                if len(proc_chunk) < 10000:
+                    proc_chunk.append(cls.tup_from_row(schema, row))
+                else:
+                    proc_chunk.append(cls.tup_from_row(schema, row))
                     cls.cgi_mass_insert(schema, proc_chunk, db_file)
-                    break
+                    rows_written += len(proc_chunk)
+                    msg = "FeedManager: %s rows written to %s" % (str(rows_written), db_file)  # NOQA
+                    print msg
+                    proc_chunk = []
+        cls.cgi_mass_insert(schema, proc_chunk, db_file)
+        rows_written += len(proc_chunk)
+        msg = "FeedManager: %s rows written to %s. Done." % (str(rows_written), db_file)  # NOQA
+        print msg
         return
 
     @classmethod
     def cgi_mass_insert(cls, schema, rows, db_file):
-        q = "INSERT INTO cgi VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
         conn = sqlite3.connect(db_file)
-        conn.executemany(q, rows)
+        conn.executemany("INSERT INTO cgi VALUES (?,?,?,?,?,?,?,?,?,?)", rows)
+        conn.commit()
         conn.close()
 
     @classmethod
@@ -110,7 +115,7 @@ class FeedManager(object):
                             "net varchar, area varchar, cell varchar, " +
                             "unit varchar, lon varchar, lat varchar, " +
                             "range varchar, carrier varchar, " +
-                            "UNIQUE (radio, mcc, net, area, cell) " +
+                            "UNIQUE (mcc, net, area, cell) " +
                             "ON CONFLICT REPLACE);")
         conn.execute(create_table_str)
         conn.close()
