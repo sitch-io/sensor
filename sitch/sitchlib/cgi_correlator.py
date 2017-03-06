@@ -1,5 +1,6 @@
 import csv
 import gzip
+import os
 import sqlite3
 import alert_manager
 from utility import Utility
@@ -15,6 +16,7 @@ class CgiCorrelator(object):
         self.good_cgis = []
         self.bad_cgis = []
         self.cgi_whitelist = cgi_whitelist
+        self.cgi_db = os.path.join(feed_dir, "cgi.db")
         print(CgiCorrelator.cgi_whitelist_message(self.cgi_whitelist))
         return
 
