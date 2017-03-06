@@ -67,7 +67,7 @@ class TestIntegrationCgiCorrelator:
         result_0 = correlator.correlate(("gps", geo_state))
         result_1 = correlator.correlate(scan_1)
         result_2 = correlator.correlate(scan_2)
-        result_3 = correlator.correlate(zero_one)  # BTS is in feed DB, just out of range.
+        result_3 = correlator.correlate(zero_one)  # BTS out of range
         result_4 = correlator.correlate(zero_two)
         print result_0
         assert len(result_0) == 0

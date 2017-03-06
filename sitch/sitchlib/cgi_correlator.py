@@ -246,7 +246,7 @@ class CgiCorrelator(object):
         try:
             conn = sqlite3.connect(self.cgi_db)
             c = conn.cursor()
-            c.execute("SELECT mcc, net, area, cell, lon, lat, range FROM cgi where mcc=?, net=?, area=?, cell=?",  # NOQA
+            c.execute("SELECT mcc, net, area, cell, lon, lat, range FROM cgi WHERE mcc=? AND net=? AND area=? AND cell=?",  # NOQA
                       (mcc, mnc, lac, cellid))
             result = c.fetchone()
             if result:
