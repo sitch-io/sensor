@@ -1,5 +1,6 @@
 import csv
 import gzip
+import sqlite3
 import alert_manager
 from utility import Utility
 
@@ -76,7 +77,7 @@ class CgiCorrelator(object):
     @classmethod
     def should_skip_feed(cls, channel):
         skip_feed_comparison = False
-        skip_feed_trigger_values = ['', '0000', '00', '0', None]
+        skip_feed_trigger_values = ['000', '0000', '00', '0', None]
         for x in ["mcc", "mnc", "lac", "cellid"]:
             if channel[x] in skip_feed_trigger_values:
                 skip_feed_comparison = True
@@ -234,8 +235,30 @@ class CgiCorrelator(object):
             feed_string = "%s:%s:%s:%s" % (mcc, mnc, lac, cellid)
             msg = "CgiCorrelator: Cache miss: %s" % feed_string
             print(msg)
-        normalized = self.get_feed_info_from_files(mcc, mnc, lac, cellid)
+        # normalized = self.get_feed_info_from_files(mcc, mnc, lac, cellid)
+        normalized = self.get_feed_info_from_db(mcc, mnc, lac, cellid)
         self.feed_cache.append(normalized)
+        return normalized
+
+    def get_feed_info_from_db(self, mcc, mnc, lac, cellid):
+        try:
+            conn = sqlite3.connect(self.cgi_db)
+            c = conn.cursor()
+            c.execute("SELECT mcc, net, area, cell, lon, lat, range FROM cgi where mcc=?, net=?, area=?, cell=?",  # NOQA
+                      (mcc, mnc, lac, cellid))
+            result = c.fetchone()
+            if result:
+                cell = {"mcc": result[0], "net": result[1], "area": result[2],
+                        "cell": result[3], "lon": result[4], "lat": result[5],
+                        "range": result[6]}
+            else:
+                cell = {"mcc": mcc, "net": mnc, "area": lac, "cell": cellid,
+                        "lon": 0, "lat": 0, "range": 0}
+        except sqlite3.OperationalError:
+            print("CgiCorrelator: Database locked, timeout exceeded!")
+            cell = {"mcc": mcc, "net": mnc, "area": lac, "cell": cellid,
+                    "lon": 0, "lat": 0, "range": 0}
+        normalized = self.normalize_feed_info_for_cache(cell)
         return normalized
 
     @classmethod
