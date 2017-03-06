@@ -256,8 +256,8 @@ class CgiCorrelator(object):
             else:
                 cell = {"mcc": mcc, "net": mnc, "area": lac, "cell": cellid,
                         "lon": 0, "lat": 0, "range": 0}
-        except sqlite3.OperationalError:
-            print("CgiCorrelator: Database locked, timeout exceeded!")
+        except sqlite3.OperationalError as e:
+            print("CgiCorrelator: Unable to access CGI database! %s" % e)
             cell = {"mcc": mcc, "net": mnc, "area": lac, "cell": cellid,
                     "lon": 0, "lat": 0, "range": 0}
         normalized = self.normalize_feed_info_for_cache(cell)
