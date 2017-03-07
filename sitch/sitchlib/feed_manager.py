@@ -48,6 +48,9 @@ class FeedManager(object):
     def get_newest_record_time(self):
         result = 0
         rx = r'^\d{10}$'
+        if not os.path.isfile(self.newest_record_file):
+            print("FeedManager: No record of last update found...")
+            return result
         with open(self.newest_record_file, 'r') as u_file:
             first_line = u_file.readline().replace('\n', '')
             if re.match(rx, first_line):
