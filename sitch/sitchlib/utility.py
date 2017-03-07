@@ -13,6 +13,11 @@ class Utility:
         return
 
     @classmethod
+    def epoch_to_iso8601(cls, unix_time):
+        cleaned = float(unix_time)
+        return datetime.datetime.utcfromtimestamp(cleaned).isoformat()
+
+    @classmethod
     def get_now_string(cls):
         now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         return now

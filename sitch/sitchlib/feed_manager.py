@@ -1,6 +1,7 @@
 import csv
 import gzip
 import os
+import re
 import requests
 import sqlite3
 import time
@@ -19,6 +20,7 @@ class FeedManager(object):
         self.arfcn_feed_files = []
         self.born_on_date = datetime.now()
         self.cgi_db = os.path.join(self.feed_dir, "cgi.db")
+        self.newest_record_file = os.path.join(self.feed_dir, "newest_record")
         self.arfcn_db = os.path.join(self.feed_dir, "arfcn.db")
 
     def update_feed_files(self):
@@ -37,10 +39,32 @@ class FeedManager(object):
         return
 
     def update_feed_db(self):
-        FeedManager.reconcile_cgi_db(self.cgi_feed_files, self.cgi_db)
+        last_timestamp = self.get_newest_record_time()
+        this_timestamp = FeedManager.reconcile_cgi_db(self.cgi_feed_files,
+                                                      self.cgi_db,
+                                                      last_timestamp)
+        self.set_newest_record_time(this_timestamp)
+
+    def get_newest_record_time(self):
+        result = 0
+        rx = r'^\d{10}$'
+        with open(self.newest_record_file, 'r') as u_file:
+            first_line = u_file.readline().replace('\n', '')
+            if re.match(rx, first_line):
+                result = first_line
+                print("FeedManager: Newest DB record timestamp is %s" % Utility.epoch_to_iso8601(result))  # NOQA
+            else:
+                print("FeedManager: Unable to parse newest DB record timestamp!")  # NOQA
+        return result
+
+    def set_newest_record_time(self, timestamp):
+        with open(self.newest_record_file, 'w') as u_file:
+            print("FeedManager: Setting newest DB record to %s" % Utility.epoch_to_iso8601(timestamp))  # NOQA
+            u_file.write(str(timestamp))
+        return
 
     @classmethod
-    def reconcile_cgi_db(cls, feed_files, db_file):
+    def reconcile_cgi_db(cls, feed_files, db_file, last_update):
         db_exists = os.path.isfile(db_file)
         schema = ["radio", "mcc", "net", "area", "cell",
                   "unit", "lon", "lat", "range", "carrier"]
@@ -48,36 +72,58 @@ class FeedManager(object):
         if not db_exists:
             cls.create_and_populate_cgi_db(schema, feed_files, db_file)
         else:
-            cls.merge_feed_files_into_db(schema, feed_files, db_file)
+            cls.merge_feed_files_into_db(schema, feed_files,
+                                         db_file, last_update)
 
     @classmethod
-    def merge_feed_files_into_db(cls, schema, feed_files, db_file):
+    def merge_feed_files_into_db(cls, schema, feed_files, db_file, last_upd):
         for feed_file in feed_files:
             feed_file_exists = os.path.isfile(feed_file)
             if not feed_file_exists:
                 print("FeedManager: Feed file does not exist: %s" % feed_file)
             else:
-                cls.cgi_csv_dump_to_db(schema, feed_file, db_file)
+                cls.cgi_csv_dump_to_db(schema, feed_file, db_file, last_upd)
         return
 
     @classmethod
     def create_and_populate_cgi_db(cls, schema, feed_files, db_file):
+        newest_ts_overall = float(0)  # Newest timestamp
         cls.create_cgi_db(db_file, schema)
         for feed_file in feed_files:
             feed_file_exists = os.path.isfile(feed_file)
             if not feed_file_exists:
                 print("FeedManager: Feed file does not exist: %s" % feed_file)
             else:
-                cls.cgi_csv_dump_to_db(schema, feed_file, db_file)
+                newest_ts = cls.cgi_csv_dump_to_db(schema, feed_file, db_file)
+                if newest_ts > newest_ts_overall:
+                    newest_ts_overall = float(newest_ts)
+        cls.set_last_update_time
         return
 
     @classmethod
-    def cgi_csv_dump_to_db(cls, schema, feed_file, db_file):
+    def should_update_record(cls, anchor_time, update_time):
+        """This function returns True if create_time or update_time are newer
+        than anchor_time
+        """
+        if update_time > anchor_time:
+            result = True
+        else:
+            result = False
+        return result
+
+    @classmethod
+    def cgi_csv_dump_to_db(cls, schema, feed_file, db_file, last_upd=0):
+        """Retuens the latest timestamp detected in the feed file"""
         proc_chunk = []
         rows_written = 0
+        latest_timestamp = float(0)
         with gzip.open(feed_file, 'r') as feed_file:
             feed_file = csv.DictReader(feed_file)
             for row in feed_file:
+                if not cls.should_update_record(last_upd, row["updated"]):
+                    continue
+                if latest_timestamp < float(row["updated"]):
+                    latest_timestamp = float(row["updated"])
                 if len(proc_chunk) < 9999:
                     proc_chunk.append(cls.tup_from_row(schema, row))
                 else:
@@ -91,7 +137,7 @@ class FeedManager(object):
         rows_written += len(proc_chunk)
         msg = "FeedManager: %s rows written to %s. Done." % (str(rows_written), db_file)  # NOQA
         print msg
-        return
+        return latest_timestamp
 
     @classmethod
     def cgi_mass_insert(cls, schema, rows, db_file):

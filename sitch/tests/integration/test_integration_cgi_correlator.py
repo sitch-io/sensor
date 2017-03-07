@@ -11,11 +11,12 @@ file, pathname, description = imp.find_module(modulename, [modulepath])
 sitchlib = imp.load_module(modulename, file, pathname, description)
 
 geo_state = {"geometry":
-              {"coordinates":
-                  [-122.431297, 37.773972]}}
+             {"coordinates":
+              [-122.431297, 37.773972]}}
+
 bad_geo_state = {"geometry":
-                  {"coordinates":
-                      [0, 0]}}
+                 {"coordinates":
+                  [0, 0]}}
 
 states = ["CA"]
 
