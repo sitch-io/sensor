@@ -70,20 +70,24 @@ class FeedManager(object):
                   "unit", "lon", "lat", "range", "carrier"]
         # If DB file does not exist, create it, then rip the DB from file
         if not db_exists:
-            cls.create_and_populate_cgi_db(schema, feed_files, db_file)
+            ts = cls.create_and_populate_cgi_db(schema, feed_files, db_file)
         else:
-            cls.merge_feed_files_into_db(schema, feed_files,
-                                         db_file, last_update)
+            ts = cls.merge_feed_files_into_db(schema, feed_files,
+                                              db_file, last_update)
+        return ts
 
     @classmethod
     def merge_feed_files_into_db(cls, schema, feed_files, db_file, last_upd):
+        newest_ts_overall = float(0)
         for feed_file in feed_files:
             feed_file_exists = os.path.isfile(feed_file)
             if not feed_file_exists:
                 print("FeedManager: Feed file does not exist: %s" % feed_file)
             else:
-                cls.cgi_csv_dump_to_db(schema, feed_file, db_file, last_upd)
-        return
+                newest_ts = cls.cgi_csv_dump_to_db(schema, feed_file, db_file, last_upd)  # NOQA
+                if newest_ts > newest_ts_overall:
+                    newest_ts_overall = float(newest_ts)
+        return newest_ts_overall
 
     @classmethod
     def create_and_populate_cgi_db(cls, schema, feed_files, db_file):
@@ -97,8 +101,7 @@ class FeedManager(object):
                 newest_ts = cls.cgi_csv_dump_to_db(schema, feed_file, db_file)
                 if newest_ts > newest_ts_overall:
                     newest_ts_overall = float(newest_ts)
-        cls.set_last_update_time
-        return
+        return newest_ts_overall
 
     @classmethod
     def should_update_record(cls, anchor_time, update_time):
