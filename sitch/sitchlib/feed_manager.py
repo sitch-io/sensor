@@ -130,10 +130,10 @@ class FeedManager(object):
             feed_file = csv.DictReader(feed_file)
             for row in feed_file:
                 rows_examined += 1
-                if not cls.should_update_record(last_upd, row["updated"]):
-                    continue
                 if latest_timestamp < float(row["updated"]):
                     latest_timestamp = float(row["updated"])
+                if not cls.should_update_record(last_upd, row["updated"]):
+                    continue
                 if not rows_examined % 100000:
                     print("FeedManager: %s rows examined in %s" % (str(rows_examined, feed_file)))  # NOQA
                 if len(proc_chunk) < 9999:
