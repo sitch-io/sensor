@@ -44,17 +44,19 @@ class DeviceSamples(object):
                     {'cell': '6', 'rxl': '23', 'lac': '0000', 'bsic': '00',
                      'mnc': '', 'mcc': '', 'cellid': 'ffff', 'arfcn': '0236'}
                           ],
-                    "scan_start": "",
-                    "scan_finish": "2016-05-07 02:36:50",
-                    "scan_program": "GSM_MODEM",
-                    "scan_location": "SITE-NAME",
-                    "scanner_public_ip": "66.18.61.61",
-                    "band": "GSM850_MODE",
-                    "scanner_name": "DEVICE-ID"}
+                   "scan_start": "",
+                   "scan_finish": "2016-05-07 02:36:50",
+                   "scan_program": "GSM_MODEM",
+                   "scan_location": "SCAN_LOCATION",
+                   "site_name": "SITE_NAME",
+                   "scanner_public_ip": "66.18.61.61",
+                   "band": "GSM850_MODE",
+                   "scanner_name": "DEVICE-ID"}
 
     kal_scan_1 = {'platform': 'PLATFORM-NAME',
                   'scan_finish': '2016-05-07 04:14:30',
-                  'scan_location': 'SITE-NAME',
+                  'scan_location': 'SCAN_LOCATION',
+                  "site_name": "SITE_NAME",
                   'scanner_public_ip': '0.0.0.0',
                   'scan_results': [
                     {'channel_detect_threshold': '279392.605625',
@@ -92,6 +94,6 @@ class DeviceSamples(object):
                         'base_freq': 892000000.0, 'device':
                         '0: Generic RTL2832U OEM', 'modifier': '-',
                         'channel': '242'}],
-                'scan_start': '2016-05-07 04:10:35',
-                'scan_program': 'Kalibrate',
-                'scanner_name': 'DEVICE-ID'}
+                  'scan_start': '2016-05-07 04:10:35',
+                  'scan_program': 'Kalibrate',
+                  'scanner_name': 'DEVICE-ID'}
