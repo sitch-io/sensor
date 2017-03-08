@@ -29,7 +29,8 @@ class GsmDecomposer(object):
         """ Enriches channel with scan document metadata """
         channel["band"] = scan_document["band"]
         channel["scan_finish"] = scan_document["scan_finish"]
-        channel["site_name"] = scan_document["scan_location"]
+        channel["site_name"] = scan_document["site_name"]
+        channel["scan_location"] = scan_document["scan_location"]
         channel["scanner_public_ip"] = scan_document["scanner_public_ip"]
         return channel
 

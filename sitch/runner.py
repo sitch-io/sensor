@@ -197,6 +197,7 @@ def gsm_modem_consumer(config):
                                  "scan_start": "",
                                  "scan_finish": "",
                                  "scan_program": "",
+                                 "site_name": config.site_name,
                                  "scan_location": {},
                                  "scanner_public_ip": config.public_ip}
             retval = dict(scan_job_template)
@@ -272,6 +273,7 @@ def kalibrate_consumer(config):
         scan_document["scan_program"] = "Kalibrate"
         scan_document["scanner_name"] = config.device_id
         scan_document["scan_location"] = str(config.device_id)
+        scan_document["site_name"] = config.site_name,
         scan_document["scanner_public_ip"] = config.public_ip
         scan_results_queue.append(scan_document.copy())
     return

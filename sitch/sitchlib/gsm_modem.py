@@ -29,7 +29,7 @@ class GsmModem(object):
             ser_open_iter = ser_open_iter + 1
             self.serconn.open()
             if ser_open_iter > 5:
-                print("GSM: Failed to init and open serial port %s!" % ser_port)
+                print("GSM: Failed to init and open serial port %s!" % ser_port)  # NOQA
                 sys.exit(2)
         return
 
@@ -158,7 +158,7 @@ class GsmModem(object):
     def process_line(cls, line):
         processed = None
         if line.startswith('+CENG:'):
-            dataz = line.split(':')[1].lstrip().replace('"', '').replace('\r\n', '')
+            dataz = line.split(':')[1].lstrip().replace('"', '').replace('\r\n', '')  # NOQA
             line_parts = dataz.split(',')
             if len(line_parts) == 12:
                 processed = GsmModem.process_12(line_parts)

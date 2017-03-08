@@ -13,6 +13,7 @@ class ConfigHelper:
         self.detector = dd()
         self.print_devices_as_detected()
         self.device_id = ConfigHelper.get_device_id()
+        self.site_name = os.getenv('LOCATION_NAME', 'SITCH_SITE')
         self.platform_name = utility.get_platform_name()
         self.log_prefix = "/var/log/sitch/"
         self.log_host = ConfigHelper.get_from_env("LOG_HOST")
@@ -88,11 +89,10 @@ class ConfigHelper:
         fb["output.logstash"]["hosts"] = [self.log_host]
         fb["output.logstash"]["ssl.key"] = self.ls_key_path
         fb["output.logstash"]["ssl.certificate"] = self.ls_cert_path
-        fb["output.logstash"]["ssl.certificate_authorities"] = [self.ls_ca_path]
+        fb["output.logstash"]["ssl.certificate_authorities"] = [self.ls_ca_path]  # NOQA
         with open(self.filebeat_config_file_path, 'w') as out_file:
             yaml.safe_dump(fb, out_file)
         return
-
 
     @classmethod
     def get_device_id(cls):
@@ -107,8 +107,8 @@ class ConfigHelper:
 
     def get_secret_from_vault(self):
         client = hvac.Client(url=self.vault_url, token=self.vault_token)
-        print("Configurator: Get secrets from %s, with path %s" % (self.vault_url,
-                                                                   self.vault_path))
+        print("Configurator: Get secrets from %s, with path %s" % (self.vault_url,  # NOQA
+                                                                   self.vault_path))  # NOQA
         try:
             response = client.read(self.vault_path)
             secrets = response["data"]
