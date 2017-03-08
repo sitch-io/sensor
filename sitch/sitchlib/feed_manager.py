@@ -64,7 +64,7 @@ class FeedManager(object):
     def set_newest_record_time(self, timestamp):
         with open(self.newest_record_file, 'w') as u_file:
             print("FeedManager: Setting newest DB record to %s" % Utility.epoch_to_iso8601(timestamp))  # NOQA
-            u_file.write(str(timestamp))
+            u_file.write(str(timestamp).replace('.0', ''))
         return
 
     @classmethod
