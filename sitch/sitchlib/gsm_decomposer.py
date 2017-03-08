@@ -10,7 +10,7 @@ class GsmDecomposer(object):
             try:
                 channel = GsmDecomposer.enrich_channel_with_scan(channel,
                                                                  scan_document)
-                channel["arfcn_int"] = GsmDecomposer.arfcn_int(channel["arfcn"])
+                channel["arfcn_int"] = GsmDecomposer.arfcn_int(channel["arfcn"])  # NOQA
                 # Now we bring the hex values to decimal...
                 channel = GsmDecomposer.convert_hex_targets(channel)
                 channel = GsmDecomposer.convert_float_targets(channel)
@@ -20,7 +20,7 @@ class GsmDecomposer(object):
                 chan_enriched = ('gsm_modem_channel', channel)
                 results_set.append(chan_enriched)
             except Exception as e:
-                print("Exception caught in GsmDecomposer: %s for message %s" % (e, str(channel)))
+                print("Exception caught in GsmDecomposer: %s for channel %s in %S" % (e, str(channel), str(scan_document)))  # NOQA
 
         return results_set
 
