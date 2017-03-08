@@ -52,7 +52,7 @@ class FeedManager(object):
             print("FeedManager: No record of last update found...")
             return result
         with open(self.newest_record_file, 'r') as u_file:
-            first_line = u_file.readline().replace('\n', '')
+            first_line = u_file.readline().replace('\n', '').replace('.0', '')
             if re.match(rx, first_line):
                 result = first_line
                 print("FeedManager: Newest DB record timestamp is %s" % Utility.epoch_to_iso8601(result))  # NOQA
