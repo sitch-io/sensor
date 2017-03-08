@@ -126,9 +126,9 @@ class FeedManager(object):
         rows_written = 0
         rows_examined = 0
         latest_timestamp = float(0)
-        with gzip.open(feed_file, 'r') as feed_file:
-            feed_file = csv.DictReader(feed_file)
-            for row in feed_file:
+        with gzip.open(feed_file, 'r') as f_file:
+            feed = csv.DictReader(f_file)
+            for row in feed:
                 rows_examined += 1
                 if latest_timestamp < float(row["updated"]):
                     latest_timestamp = float(row["updated"])
