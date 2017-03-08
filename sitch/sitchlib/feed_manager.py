@@ -35,11 +35,12 @@ class FeedManager(object):
                                                     self.url_base,
                                                     feed_id)
             self.arfcn_feed_files.append(feed_file)
-        print("Feed: Finished pulling all feed files")
+        print("FeedManager: Finished pulling all feed files")
         return
 
     def update_feed_db(self):
         last_timestamp = self.get_newest_record_time()
+        print("FeedManager: Reconciling feed database.  Please be patient...")
         this_timestamp = FeedManager.reconcile_cgi_db(self.cgi_feed_files,
                                                       self.cgi_db,
                                                       last_timestamp)
@@ -120,16 +121,21 @@ class FeedManager(object):
     @classmethod
     def cgi_csv_dump_to_db(cls, schema, feed_file, db_file, last_upd=0):
         """Retuens the latest timestamp detected in the feed file"""
+        print("FeedManager: Reconciling %s against feed DB..." % feed_file)
         proc_chunk = []
         rows_written = 0
+        rows_examined = 0
         latest_timestamp = float(0)
         with gzip.open(feed_file, 'r') as feed_file:
             feed_file = csv.DictReader(feed_file)
             for row in feed_file:
+                rows_examined += 1
                 if not cls.should_update_record(last_upd, row["updated"]):
                     continue
                 if latest_timestamp < float(row["updated"]):
                     latest_timestamp = float(row["updated"])
+                if not rows_examined % 100000:
+                    print("FeedManager: %s rows examined in %s" % (str(rows_examined, feed_file)))  # NOQA
                 if len(proc_chunk) < 9999:
                     proc_chunk.append(cls.tup_from_row(schema, row))
                 else:
@@ -141,7 +147,7 @@ class FeedManager(object):
                     proc_chunk = []
         cls.cgi_mass_insert(schema, proc_chunk, db_file)
         rows_written += len(proc_chunk)
-        msg = "FeedManager: %s rows written to %s. Done." % (str(rows_written), db_file)  # NOQA
+        msg = "FeedManager: %s rows examined in %s, %s written to %s. Done." % (str(rows_examined), feed_file, str(rows_written), db_file)  # NOQA
         print msg
         return latest_timestamp
 
