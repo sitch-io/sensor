@@ -135,7 +135,7 @@ class FeedManager(object):
                 if not cls.should_update_record(last_upd, row["updated"]):
                     continue
                 if not rows_examined % 100000:
-                    print("FeedManager: %s rows examined in %s" % (str(rows_examined, feed_file)))  # NOQA
+                    print("FeedManager: %s rows examined in %s" % (str(rows_examined), feed_file))  # NOQA
                 if len(proc_chunk) < 9999:
                     proc_chunk.append(cls.tup_from_row(schema, row))
                 else:
