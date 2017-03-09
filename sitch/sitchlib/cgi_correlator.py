@@ -173,8 +173,8 @@ class CgiCorrelator(object):
         if len(retval) == 0:
             if channel["cgi_str"] not in self.good_cgis:
                 self.good_cgis.append(channel["cgi_str"])
-        else:
-            print(str(retval))
+        # else:
+            # print(str(retval))  # Un-comment to print all CGI alerts
         return retval
 
     def check_channel_against_feed(self, channel):

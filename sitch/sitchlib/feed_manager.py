@@ -195,7 +195,7 @@ class FeedManager(object):
                                                             item_id)
         temp_file = "%s.TEMP" % destination_file
         origin_url = FeedManager.get_source_url(url_base, item_id)
-        msg = "Feed: Downloading %s to %s" % (origin_url, temp_file)
+        msg = "FeedManager: Downloading %s to %s" % (origin_url, temp_file)
         print(msg)
         response = requests.get(origin_url, stream=True)
         with open(temp_file, 'wb') as out_file:
@@ -203,7 +203,7 @@ class FeedManager(object):
                 if chunk:
                     out_file.write(chunk)
         time.sleep(1)
-        print("Feed: Moving %s to %s" % (temp_file, destination_file))
+        print("FeedManager: Moving %s to %s" % (temp_file, destination_file))
         os.rename(temp_file, destination_file)
         return destination_file
 

@@ -20,7 +20,7 @@ class ArfcnCorrelator(object):
         self.states = states
         self.power_threshold = float(power_threshold)
         self.fcc_feed = FccFeed(states, feed_dir)
-        # Whitelist goes into observed_arfcn, and bypasses feed comparison (still threshold alert though)
+        # Whitelist goes into observed_arfcn, to bypasses feed comparison
         self.observed_arfcn = whitelist
         self.arfcn_threshold = []
         self.arfcn_range = []
@@ -74,21 +74,19 @@ class ArfcnCorrelator(object):
         else:
             return False
 
-
     def compare_arfcn_to_feed(self, arfcn):
         """Returns a list of tuples, and only alarms."""
         results = []
         # If we can't compare geo, have ARFCN 0 or already been found in feed:
         if (str(arfcn) in ["0", None] or
-            arfcn in self.observed_arfcn or
-            self.geo_state == {"geometry": {"coordinates": [0, 0]}}):
+                arfcn in self.observed_arfcn or
+                self.geo_state == {"geometry": {"coordinates": [0, 0]}}):
             return results
         else:
             msg = "ArfcnCorrelator: Cache miss on ARFCN %s" % str(arfcn)
             print(msg)
         results.extend(self.feed_alert_generator(arfcn))
         return results
-
 
     def feed_alert_generator(self, arfcn):
         """Compare ARFCN to feed, return alerts"""
@@ -114,7 +112,7 @@ class ArfcnCorrelator(object):
         elif scan_type == "gps":
             return None
         else:
-            print("ArfcnCorrelator: Unrecognized scan type: %s" % str(scan_type))
+            print("ArfcnCorrelator: Unknown scan type: %s" % str(scan_type))
             return None
 
     @classmethod

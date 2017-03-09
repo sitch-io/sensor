@@ -1,7 +1,7 @@
 import pyudev
 import serial
 import time
-import utility
+from utility import Utility
 
 
 class DeviceDetector(object):
@@ -21,7 +21,7 @@ class DeviceDetector(object):
         print("DeviceDetector: Initializing Device Detector...")
         self.usbtty_ports = DeviceDetector.get_devices_by_subsys('usb-serial')
         usbtty_message = "DeviceDetector: Detected USB devices: \n"
-        print(usbtty_message + utility.Utility.pretty_string(self.usbtty_ports))
+        print(usbtty_message + Utility.pretty_string(self.usbtty_ports))
         time.sleep(1)
         print("DeviceDetector: Searching for GSM modem...")
         self.gsm_radios = DeviceDetector.find_gsm_radios(self.usbtty_ports)
@@ -79,7 +79,8 @@ class DeviceDetector(object):
         time.sleep(2)
         test_command = "ATI \r\n"
         positive_match = ["SIM808", "SIM900", "SIM800"]
-        result = DeviceDetector.interrogator(positive_match, port, test_command)
+        result = DeviceDetector.interrogator(positive_match, port,
+                                             test_command)
         return result
 
     @classmethod

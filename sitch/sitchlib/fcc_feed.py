@@ -18,5 +18,5 @@ class FccFeed(object):
         file_names = []
         for state in states:
             file_names.append(Utility.construct_feed_file_name(feed_base,
-                                                                   state))
+                                                               state))
         return file_names
