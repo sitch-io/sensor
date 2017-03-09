@@ -1,5 +1,7 @@
 class AlertManager(object):
+    """This class is used to ensure alerts are consistently formatted"""
     def __init__(self):
+        """Initialization takes no arguments, returns nothing."""
         self.alert_map = {
             100: "Tower out of range.",
             110: "Primary BTS metadata change.",
@@ -11,11 +13,22 @@ class AlertManager(object):
         return
 
     def get_alert_type(self, alert_id):
+        """Returns the alert description for alert_id"""
         fixed_id = int(alert_id)
         alert_text = self.alert_map[fixed_id]
         return alert_text
 
     def build_alert(self, alert_id, alert_message):
+        """This method builds the actual alert and returns it, formatted.
+
+        Args:
+            alert_id (int): The ID of the alert you want to build
+            alert_message (str): The message to be embedded in the alert.
+
+        Returns:
+            tuple: Position 0 contains the string 'sitch_alert'.  Position 1
+                contains the alert and metadata.
+        """
         message = {}
         message["id"] = alert_id
         message["type"] = self.get_alert_type(alert_id)

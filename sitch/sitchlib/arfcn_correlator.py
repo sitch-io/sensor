@@ -6,28 +6,51 @@ from utility import Utility
 
 
 class ArfcnCorrelator(object):
-    """ARFCN Enricher:
+    """The ArfcnCorrelator compares ARFCN metadata against feeds and threshold.
 
-    Confirms license for ARFCN
-
-    Checks ARFCN power measurement (if available) against threshold
-
+    The feed data is put in place by the FeedManager class, prior to
+    instantiating the ArfcnCorrelator.
     """
     def __init__(self, states, feed_dir, whitelist, power_threshold):
+        """Initializing the ArfcnCorrelator
+
+        Args:
+            states (list): A list of US state postal codes: ["CA", "TX"]
+            feed_dir (str): This is the directory path to the directory
+                containing the feed files.
+            whitelist (list): This is a list of ARFCNs that should be
+                considered trustworthy enough to skip feed comparison.
+                This does not override comparison against threshold.
+            power_threshold (str): No matter the type, it will be coerced,
+                if possible, to float.  This is the value that Kalibrate-
+                reported channel power will be compared against to make a
+                determination on whether or not to fire an alarm.
+        """
         self.alerts = alert_manager.AlertManager()
         self.geo_state = {"geometry": {"coordinates": [0, 0]}}
         self.feed_dir = feed_dir
         self.states = states
         self.power_threshold = float(power_threshold)
         self.fcc_feed = FccFeed(states, feed_dir)
-        # Whitelist goes into observed_arfcn, to bypasses feed comparison
         self.observed_arfcn = whitelist
         self.arfcn_threshold = []
         self.arfcn_range = []
         return
 
     def correlate(self, scan_bolus):
-        """Entrypoint, so to speak"""
+        """This is the method regularly accessed under normal operation.
+
+        Args:
+            scan_bolus (tuple): Position 0 contains a string defining scan
+                type.  If it's type 'gps', the geo_state instance variable
+                will be updated with Position 1's contents.  If the scan type
+                is 'kal_channel', we perform feed and threshold comparison.
+                any other scan type will be compared against the feed only.
+
+        Returns:
+            list: Returns a list of alerts.  If no alerts are generated, an
+                empty list is returned.
+        """
         retval = []
         scan_type = scan_bolus[0]
         scan = scan_bolus[1]
@@ -52,6 +75,20 @@ class ArfcnCorrelator(object):
         return retval
 
     def manage_arfcn_lists(self, direction, arfcn, aspect):
+        """This method is used to manage the instance variable lists of ARFCNs
+
+        This is necessary to maintain an accurate state over time, and reduce
+        unnecessary noise.
+
+        Args:
+          direction (str): Only will take action if this is "in" or "out"
+          arfcn (str): This is the ARFCN that will be moved in or our of
+              the list
+          aspect (str): This is used to match the ARFCN with the list it
+              should be moved in or out of.  This should be either
+              "threshold" or "not_in_range".
+
+        """
         reference = {"threshold": self.arfcn_threshold,
                      "not_in_range": self.arfcn_range}
         if direction == "in":
@@ -63,19 +100,40 @@ class ArfcnCorrelator(object):
             if reference[aspect].count(arfcn) == 0:
                 pass
             else:
-                while arfcn in reference[aspect]  :
+                while arfcn in reference[aspect]:
                     reference[aspect].remove(arfcn)
         return
 
-    def arfcn_over_threshold(self, arfcn):
-        """Returns bool"""
-        if float(arfcn) > self.power_threshold:
+    def arfcn_over_threshold(self, arfcn_power):
+        """Compares the ARFCN power against the thresholdset on instantiation.
+
+        Args:
+            arfcn_power (float): If this isn't a float already, it will be
+                coerced to float.
+
+        Returns:
+            bool:  True if arfcn_power is over threshold, False if not.
+        """
+        if float(arfcn_power) > self.power_threshold:
             return True
         else:
             return False
 
     def compare_arfcn_to_feed(self, arfcn):
-        """Returns a list of tuples, and only alarms."""
+        """This function wraps other functions that dig into the FCC license DB
+
+        This relies on the observed_arfcn instance variable for caching, to
+        skip DB comparison, that way we (probably) won't end up with a
+        forever-increasing queue size.
+
+        Args:
+            arfcn (str):  This is the text representation of the ARFCN we want
+                to compare against the FCC license database.
+
+        Returns:
+            list: You get back a list of alerts as tuples, where position 0 is
+                'sitch_alert' and position 1 is the actual alert.
+        """
         results = []
         # If we can't compare geo, have ARFCN 0 or already been found in feed:
         if (str(arfcn) in ["0", None] or
@@ -89,7 +147,15 @@ class ArfcnCorrelator(object):
         return results
 
     def feed_alert_generator(self, arfcn):
-        """Compare ARFCN to feed, return alerts"""
+        """This wraps the yield_arfcn_from_feed function, and generates alerts.
+
+        Args:
+            arfcn (str): This is the string representation of the ARFCN to be
+                correlated.
+
+        Returns:
+            list: This returns a list of alert tuples.
+        """
         results = []
         for item in ArfcnCorrelator.yield_arfcn_from_feed(arfcn, self.states,
                                                           self.feed_dir):
@@ -105,6 +171,16 @@ class ArfcnCorrelator(object):
 
     @classmethod
     def arfcn_from_scan(cls, scan_type, scan_doc):
+        """This pulls the ARFCN from different scan types
+
+        Args:
+            scan_type (str): "kal_channel", "gsm_modem_channel", or "gps".
+            scan_doc (dict): Scan document
+
+        Returns:
+            str: ARFCN from scan, or None if scan is unrecognized or
+                unsupported.
+        """
         if scan_type == "kal_channel":
             return scan_doc["arfcn_int"]
         elif scan_type == "gsm_modem_channel":
@@ -117,6 +193,17 @@ class ArfcnCorrelator(object):
 
     @classmethod
     def yield_arfcn_from_feed(cls, arfcn, states, feed_dir):
+        """Iterates over the feed files, yielding licenses for target ARFCN.
+
+        Args:
+            arfcn (str): Target ARFCN.
+            states (list): List of US state postal codes, corresponding to
+                feed files.
+            feed_dir (str): Base directory for feed files.
+
+        Yields:
+            dict: Feed row for ARFCN
+        """
         fcc_feed = FccFeed(states, feed_dir)
         for item in fcc_feed:
             if str(item["ARFCN"]) != str(arfcn):
@@ -127,6 +214,7 @@ class ArfcnCorrelator(object):
 
     @classmethod
     def is_in_range(cls, item_gps, state_gps):
+        """Returns True if items are within 40km"""
         state_gps_lat = state_gps["geometry"]["coordinates"][1]
         state_gps_lon = state_gps["geometry"]["coordinates"][0]
         max_range = 40000  # 40km
@@ -143,12 +231,16 @@ class ArfcnCorrelator(object):
 
     @classmethod
     def assemble_latlon(cls, item):
-        lat_tmpl = Template('$LOC_LAT_DEG $LOC_LAT_MIN $LOC_LAT_SEC $LOC_LAT_DIR')
-        long_tmpl = Template('$LOC_LONG_DEG $LOC_LONG_MIN $LOC_LONG_SEC $LOC_LONG_DIR')
+        """Assembles feed lat/lon components into a format that haversine will
+        parse
+        """
+        lat_tmpl = Template('$LOC_LAT_DEG $LOC_LAT_MIN $LOC_LAT_SEC $LOC_LAT_DIR')  # NOQA
+        long_tmpl = Template('$LOC_LONG_DEG $LOC_LONG_MIN $LOC_LONG_SEC $LOC_LONG_DIR')  # NOQA
         return(lat_tmpl.substitute(item), long_tmpl.substitute(item))
 
     @classmethod
     def assemble_gps(cls, item):
+        """Assembles lat/lon into a format we can work with."""
         latlon = {}
         try:
             lat, lon = ArfcnCorrelator.assemble_latlon(item)
