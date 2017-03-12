@@ -1,12 +1,23 @@
+"""Decompose Kalibrate scans."""
+
 from utility import Utility
 
 
 class KalDecomposer(object):
+    """Decompose Kalibrate scans."""
+
     @classmethod
     def decompose(cls, scan_document):
-        """The first item in each returned tuple indicates the scan doc type.
-        This module produces: "scan" (Kalibrate scan doc) and "kal_channel"
-        (Individual channel from Kalibrate scan)  """
+        """Decompose Kalibrate scans into channels.
+
+        The first item in each returned tuple indicates the scan doc type.
+            This module produces: "scan" (Kalibrate scan doc) and "kal_channel"
+            (Individual channel from Kalibrate scan)
+
+        Args:
+            scan_document (dict): Output from Kalibrate as interpreted by
+                `kalibrate` Python module.
+        """
         results_set = [("scan", scan_document)]
         if scan_document["scan_results"] == []:
             print("KalDecomposer: No results found in scan document...")

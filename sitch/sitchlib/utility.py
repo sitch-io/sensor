@@ -1,3 +1,5 @@
+"""General utilities."""
+
 import datetime
 import json
 import os
@@ -9,21 +11,22 @@ from location_tool import LocationTool
 
 
 class Utility:
-    def __init__():
-        return
-
+    """General utility class."""
     @classmethod
     def epoch_to_iso8601(cls, unix_time):
+        """Transform epoch time to ISO8601 format."""
         cleaned = float(unix_time)
         return datetime.datetime.utcfromtimestamp(cleaned).isoformat()
 
     @classmethod
     def get_now_string(cls):
+        """Get ISO8601 timestamp for now."""
         now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         return now
 
     @classmethod
     def get_platform_info(cls):
+        """Get information on platform and hardware."""
         lshw = "/usr/bin/lshw -json"
         try:
             raw_response = subprocess.check_output(lshw.split())
@@ -35,6 +38,7 @@ class Utility:
 
     @classmethod
     def start_component(cls, runcmd):
+        """Start a thing."""
         try:
             subprocess.Popen(runcmd.split())
         except KeyError as e:
@@ -44,6 +48,7 @@ class Utility:
 
     @classmethod
     def create_path_if_nonexistent(cls, path):
+        """Create filesystem directory path."""
         if os.path.exists(path) and os.path.isdir(path):
             return
         elif os.path.exists(os.path.dirname(path)):
@@ -53,6 +58,7 @@ class Utility:
 
     @classmethod
     def create_file_if_nonexistent(cls, path, lfile):
+        """Create file and path, if it doesn't already exist."""
         fullpath = os.path.join(path, lfile)
         if os.path.isfile(fullpath):
             return
@@ -64,11 +70,13 @@ class Utility:
 
     @classmethod
     def write_file(cls, location, contents):
+        """Write string to file."""
         with open(location, 'w') as fh:
             fh.write(contents)
 
     @classmethod
     def get_platform_name(cls):
+        """Get platform name from lshw output."""
         platform_info = Utility.get_platform_info
         try:
             platform_name = platform_info["product"]
@@ -79,7 +87,7 @@ class Utility:
 
     @classmethod
     def strip_list(cls, raw_struct):
-        """Strips contents from single-item list"""
+        """Strip contents from single-item list."""
         if (type(raw_struct) is list and len(raw_struct)) == 1:
             return raw_struct[0]
         else:
@@ -87,12 +95,14 @@ class Utility:
 
     @classmethod
     def get_public_ip(cls):
+        """Get public IP."""
         url = 'https://api.ipify.org/?format=json'
         result = (requests.get(url).json())['ip']
         return result
 
     @classmethod
     def calculate_distance(cls, lon_1, lat_1, lon_2, lat_2):
+        """Check to see if this method exists elsewhere!"""
         if None in [lon_1, lat_1, lon_2, lat_2]:
             print("Utility: Geo coordinate is zero, not resolving distance.")
             return 0

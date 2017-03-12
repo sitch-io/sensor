@@ -43,7 +43,7 @@ class GsmModem(object):
         return
 
     def __iter__(self):
-        """Yields scans from GSM modem."""
+        """Yield scans from GSM modem."""
         page = []
         while True:
             line = None
@@ -71,7 +71,7 @@ class GsmModem(object):
         """Set or unset engineering mode on the modem.
 
         Args:
-            status ()
+            status (bool): True to enable engineering mode, False to disable.
         """
         self.serconn.flush()
         if status is False:
@@ -94,6 +94,7 @@ class GsmModem(object):
         return
 
     def get_reg_info(self):
+        """Get registration information from the modem."""
         self.serconn.write(self.reg_info)
         self.serconn.flush()
         time.sleep(2)
@@ -105,6 +106,7 @@ class GsmModem(object):
         return output
 
     def dump_config(self):
+        """Dump modem's configuration."""
         self.serconn.write(self.config_dump)
         self.serconn.flush()
         time.sleep(2)
@@ -118,6 +120,7 @@ class GsmModem(object):
         return retval
 
     def get_imsi(self):
+        """Get the IMSI of the SIM installed in the modem."""
         rx = r'(?P<imsi>\S+)'
         self.serconn.write(self.imsi_info)
         self.serconn.flush()
@@ -144,6 +147,16 @@ class GsmModem(object):
         return retval
 
     def set_band(self, band):
+        """Set the band the GSM modem should communicate on.
+
+        If the band does not set correctly, an error will print to stdout and
+        the original setting will persist.
+
+        Args:
+            band (str): Pick one: `EGSM_MODE`, `PGSM_MODE`, `DCS_MODE`,
+                `GSM850_MODE`, `PCS_MODE`, `EGSM_DCS_MODE`, `GSM850_PCS_MODE`,
+                `EGSM_PCS_MODE`, or `ALL_BAND`.
+        """
         if band in ["EGSM_MODE", "PGSM_MODE", "DCS_MODE", "GSM850_MODE",
                     "PCS_MODE", "EGSM_DCS_MODE", "GSM850_PCS_MODE",
                     "EGSM_PCS_MODE", "ALL_BAND"]:
@@ -160,6 +173,7 @@ class GsmModem(object):
 
     @classmethod
     def clean_operator_string(cls, operator_string):
+        """Clean up the operator string."""
         rx = r'^[^\"]+\"(?P<operator_name>[^\"]+)\"'
         try:
             cleaned = re.match(rx, operator_string).group("operator_name")
@@ -171,6 +185,17 @@ class GsmModem(object):
 
     @classmethod
     def process_line(cls, line):
+        """Process line output from GSM modem.
+
+        We expect to see only lines starting with `+CENG:`.  Otherwise, it's
+            an empty dictionary getting returned.
+
+        Args:
+            line (str): Raw line output from GSM modem.
+
+        Returns:
+            dict: Structured data parsed from `line`.
+        """
         processed = None
         if line.startswith('+CENG:'):
             dataz = line.split(':')[1].lstrip().replace('"', '').replace('\r\n', '')  # NOQA
@@ -198,6 +223,15 @@ class GsmModem(object):
 
     @classmethod
     def process_12(cls, parts):
+        """Process a 12-part CENG message.
+
+        Args:
+            parts (list): Parts parsed from original CENG message.
+
+        Returns:
+            dict: Structured cell channel metadata.
+
+        """
         retval = {"cell": parts[0],
                   "arfcn": parts[1],
                   "rxl": parts[2],
@@ -215,6 +249,14 @@ class GsmModem(object):
 
     @classmethod
     def process_8(cls, parts):
+        """Process an 8-part CENG message.
+
+        Args:
+            parts (list): Parts parsed from original CENG message.
+
+        Returns:
+            dict: Structured cell channel metadata.
+        """
         retval = {"cell": parts[0],
                   "arfcn": parts[1],
                   "rxl": parts[2],
@@ -228,8 +270,17 @@ class GsmModem(object):
 
     @classmethod
     def process_7(cls, parts):
-        # In a 7-item line, cellid is not provided.  We set
-        # it to 0 to prevent barfing elsewhere.
+        """Process a 12-part CENG message.
+
+        In a 7-item line, cellid is not provided.  We set
+            it to 0 to prevent barfing elsewhere.
+
+        Args:
+            parts (list): Parts parsed from original CENG message.
+
+        Returns:
+            dict: Structured cell channel metadata.
+        """
         retval = {"cell": parts[0],
                   "arfcn": parts[1],
                   "rxl": parts[2],

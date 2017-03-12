@@ -1,11 +1,19 @@
+"""Logging functionality."""
+
 import json
 import os
 from utility import Utility as utility
 
 
 class LogHandler:
-    """ Instantiate this class with the log file prefix"""
+    """Instantiate this class with the log file prefix."""
+
     def __init__(self, config):
+        """Instantiate the LogHandler object.
+
+        Args:
+            config (object): instance of `sitchlib.ConfigHelper`.
+        """
         self.log_prefix = config.log_prefix
         self.log_method = config.log_method
         self.logstash_host = config.log_host.split(':')[0]
@@ -17,6 +25,14 @@ class LogHandler:
 
     @classmethod
     def get_log_file_name(cls, ltype):
+        """Get the name of the appropriate log file for the message type.
+
+        Args:
+            ltype (str): Log type
+
+        Returns:
+            str: Log file name
+        """
         type_to_file = {"cell": "cells.log",  # sim808 scan doc
                         "scan": "scanner.log",  # kal scan doc
                         "arfcn_power": "arfcn_power.log",  # kal ##
@@ -49,6 +65,7 @@ class LogHandler:
         return log_file
 
     def record_log_message(self, bolus):
+        """Determine log file for message and send to the writer."""
         msg_body = bolus[1]
         if type(msg_body) is dict:
             msg_string = json.dumps(msg_body)
@@ -60,7 +77,12 @@ class LogHandler:
         self.write_log_message(bolus[0], msg_string)
 
     def write_log_message(self, log_file_type, message):
-        """You should only ever send a string to this method"""
+        """Write message to disk.
+
+        Args:
+            log_file_type (str): Type of log message
+            message (str): Message to be logged to disk
+        """
         if not isinstance(message, str):
             print("Logger: Unable to log message with wrong type:")
             print(str(type(message)))
