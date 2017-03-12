@@ -1,3 +1,5 @@
+"""Device Detector interrogates USB TTY devices."""
+
 import pyudev
 import serial
 import time
@@ -5,19 +7,19 @@ from utility import Utility
 
 
 class DeviceDetector(object):
-    """ This class interrogates all detected serial ports and attempts to
-    identify the devices attached.
+    """Interrogate all USB TTY ports.
 
     Attributes:
-    gsm_radios (list): This is a list of GSM radios, represented in dict \
-    type objects.
+        gsm_radios (list): This is a list of GSM radios, represented in dict
+            type objects.
 
-    gps_devices (list): This is a list of GPS devices.  Just strings like \
-    '/dev/ttyUSB0'.
+        gps_devices (list): This is a list of GPS devices.  Just strings like
+            '/dev/ttyUSB0'.
 
     """
 
     def __init__(self):
+        """Initialization triggers interrogation of USB TTY devices."""
         print("DeviceDetector: Initializing Device Detector...")
         self.usbtty_ports = DeviceDetector.get_devices_by_subsys('usb-serial')
         usbtty_message = "DeviceDetector: Detected USB devices: \n"
@@ -33,6 +35,7 @@ class DeviceDetector(object):
 
     @classmethod
     def find_gsm_radios(cls, usbtty_ports):
+        """Interrogate USB TTY ports, return GSM radios."""
         retval = []
         for port in usbtty_ports:
             devpath = "/dev/%s" % port["sys_name"]
@@ -44,6 +47,7 @@ class DeviceDetector(object):
 
     @classmethod
     def find_gps_radios(cls, usbtty_ports):
+        """Interrogate USB TTY ports, return a list of GPS devices."""
         retval = []
         for port in usbtty_ports:
             devpath = "/dev/%s" % port["sys_name"]
@@ -54,6 +58,7 @@ class DeviceDetector(object):
 
     @classmethod
     def get_devices_by_subsys(cls, type):
+        """Get devices from udev, by type."""
         results = []
         ctx = pyudev.Context()
         for device in ctx.list_devices(subsystem=type):
@@ -69,6 +74,7 @@ class DeviceDetector(object):
 
     @classmethod
     def is_a_gps(cls, port):
+        """Wrap interrogator for determining when a GPS is discovered."""
         time.sleep(2)
         positive_match = ["$GPGGA", "$GPGLL", "$GPGSA", "$GPGSV", "$GPRMC"]
         result = DeviceDetector.interrogator(positive_match, port)
@@ -76,6 +82,7 @@ class DeviceDetector(object):
 
     @classmethod
     def is_a_gsm_modem(cls, port):
+        """Wrap interrogator for determining when a GSM modem is discovered."""
         time.sleep(2)
         test_command = "ATI \r\n"
         positive_match = ["SIM808", "SIM900", "SIM800"]
@@ -85,6 +92,17 @@ class DeviceDetector(object):
 
     @classmethod
     def interrogator(cls, match_list, port, test_command=None):
+        """Interrogate serial port, and attempt to match output.
+
+        Args:
+            match_list (list): List of strings that positively identify a
+                device of a specific type.
+            port (str): Port to be interrogated.
+            test_command (str): Command to trigger output to match against
+                match_list.
+        Return:
+            bool: True if the device is a positive match, False if not.
+        """
         detected = False
         time.sleep(2)
         serconn = serial.Serial(port, 4800, timeout=1)
@@ -109,6 +127,15 @@ class DeviceDetector(object):
 
     @classmethod
     def interrogator_matcher(cls, matchers, line):
+        """Attempt to match output against known identifing strings.
+
+        Args:
+            matchers (list): List of strings which represent positive matches.
+            line (str): Output from USB TTY device.
+
+        Returns:
+            bool: True if it's a match, False if not.
+        """
         match = False
         for m in matchers:
             if m in line:
@@ -117,6 +144,15 @@ class DeviceDetector(object):
 
     @classmethod
     def get_gsm_modem_info(cls, port):
+        """Get modem information.
+
+        Args:
+            port (str): Device/port to interrogate.
+
+        Returns:
+            dict: metadata describing modem manufacturer, model, revision,
+                and serial.
+        """
         retval = {"device": port}
         queries = {"manufacturer": "AT+GMI",
                    "model": "AT+GMM",
@@ -129,6 +165,16 @@ class DeviceDetector(object):
 
     @classmethod
     def interrogate_gsm_modem(cls, port, command):
+        """Issue command on port, return output.
+
+        Args:
+            port (str): Port/device to interrogate.
+            commmand (str): Command to be issued.
+
+        Returns:
+            str: Response from device, if any.  If none, returns an empty
+                string.
+        """
         time.sleep(2)
         serconn = serial.Serial(port, 4800, timeout=1)
         cmd = "%s\r\n" % command

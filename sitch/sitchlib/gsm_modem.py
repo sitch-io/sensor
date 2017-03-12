@@ -1,3 +1,5 @@
+"""GSM Modem device ...driver?."""
+
 import re
 import serial
 import sys
@@ -5,13 +7,20 @@ import time
 
 
 class GsmModem(object):
-    """ Initialization opens the port.  Calling GsmModem.set_eng_mode() causes
-    the module to go into engineering mode, which will
-    cause it to return cell network information.
-    It has an iterator (generator) built in that cranks out dicts.
+    """GSM Modem handler class.  Interfaces with device over serial.
 
+    Calling GsmModem.set_eng_mode() causes the module to go into
+        engineering mode, which will cause it to return cell network
+        information. It has an iterator (generator) built in that cranks
+        out dicts.
     """
+
     def __init__(self, ser_port):
+        """Initialization opens the port.
+
+        Args:
+            ser_port (str): Device to open and interact with.
+        """
         self.eng_init = 'AT+CENG=2,1 \r\n'
         self.unset_eng = 'AT+CENG=0 \r\n'
         self.gps_init = 'AT+CGPSINF=0 \r\n'
@@ -29,11 +38,12 @@ class GsmModem(object):
             ser_open_iter = ser_open_iter + 1
             self.serconn.open()
             if ser_open_iter > 5:
-                print("GSM: Failed to init and open serial port %s!" % ser_port)  # NOQA
+                print("GSM: Failed to open serial port %s!" % ser_port)
                 sys.exit(2)
         return
 
     def __iter__(self):
+        """Yields scans from GSM modem."""
         page = []
         while True:
             line = None
@@ -51,13 +61,18 @@ class GsmModem(object):
                 else:
                     page.append(processed_line)
 
-    def trigger_gps(self):
-        self.serconn.write(self.gps_init)
-        self.serconn.flush()
-        return
+#    def trigger_gps(self):
+#        """Trigger GPS"""
+#        self.serconn.write(self.gps_init)
+#        self.serconn.flush()
+#        return
 
     def eng_mode(self, status):
-        """ Status is bool. """
+        """Set or unset engineering mode on the modem.
+
+        Args:
+            status ()
+        """
         self.serconn.flush()
         if status is False:
             print("GsmModem: Unsetting engineering mode, flushing")

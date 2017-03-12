@@ -1,3 +1,5 @@
+"""Feed Manager."""
+
 import csv
 import gzip
 import os
@@ -10,7 +12,14 @@ from utility import Utility
 
 
 class FeedManager(object):
+    """Manage downloading the feed DB, and merging it into the sqlite DB."""
+
     def __init__(self, config):
+        """Initialize FeedManager.
+
+        Args:
+            config (obj): Configuration object.
+        """
         self.mcc_list = config.mcc_list
         self.state_list = config.state_list
         self.feed_dir = config.feed_dir
@@ -24,7 +33,7 @@ class FeedManager(object):
         self.arfcn_db = os.path.join(self.feed_dir, "arfcn.db")
 
     def update_feed_files(self):
-        # all_feed_ids = self.state_list + self.mcc_list
+        """Wrapper for feed file retrieval routines."""
         for feed_id in self.mcc_list:
             feed_file = FeedManager.place_feed_file(self.feed_dir,
                                                     self.url_base,
@@ -39,6 +48,7 @@ class FeedManager(object):
         return
 
     def update_feed_db(self):
+        """Wrapper for feed file reconciliation against CGI DB."""
         last_timestamp = self.get_newest_record_time()
         print("FeedManager: Reconciling feed database.  Please be patient...")
         this_timestamp = FeedManager.reconcile_cgi_db(self.cgi_feed_files,
@@ -47,6 +57,7 @@ class FeedManager(object):
         self.set_newest_record_time(this_timestamp)
 
     def get_newest_record_time(self):
+        """Get the newest record time from file in feed dir."""
         result = 0
         rx = r'^\d{10}$'
         if not os.path.isfile(self.newest_record_file):
@@ -62,6 +73,13 @@ class FeedManager(object):
         return result
 
     def set_newest_record_time(self, timestamp):
+        """Set the newest record time.
+
+        Args:
+            timestamp (str): Epoch time to be written to file  If not string,
+                will be coerced to string.
+
+        """
         with open(self.newest_record_file, 'w') as u_file:
             print("FeedManager: Setting newest DB record to %s" % Utility.epoch_to_iso8601(timestamp))  # NOQA
             u_file.write(str(timestamp).replace('.0', ''))
@@ -69,6 +87,16 @@ class FeedManager(object):
 
     @classmethod
     def reconcile_cgi_db(cls, feed_files, db_file, last_update):
+        """Reconcile all feed files against the CGI DB.
+
+        Args:
+            feed_files (list): List of paths to feed files.
+            db_file (str): Full path to CGI DB file.
+            last_update (str): Epoch time of most recent record in DB
+
+        Returns:
+            str: Epoch timestamp of most recently updated DB record.
+        """
         db_exists = os.path.isfile(db_file)
         schema = ["radio", "mcc", "net", "area", "cell",
                   "unit", "lon", "lat", "range", "carrier"]
@@ -82,6 +110,18 @@ class FeedManager(object):
 
     @classmethod
     def merge_feed_files_into_db(cls, schema, feed_files, db_file, last_upd):
+        """Wrapper for merging feed file data into CGI DB.
+
+        Args:
+            schema (list): List of fields in DB
+            feed_file (str): Path to feed file to be merged into CGI DB.
+            db_file (str): Path to CGI DB file.
+            last_upd (str): Epoch time stamp, will not attempt to merge any
+                records with timestamps before this time.
+
+        Returns:
+            str: Most recent timestamp from merged feed file.
+        """
         newest_ts_overall = float(0)
         for feed_file in feed_files:
             feed_file_exists = os.path.isfile(feed_file)
@@ -95,6 +135,16 @@ class FeedManager(object):
 
     @classmethod
     def create_and_populate_cgi_db(cls, schema, feed_files, db_file):
+        """Create DB, then merge all records from file.
+
+        Args:
+            schema (list): List of DB fields.
+            feed_files (list): List of feed files to be merged.
+            db_file (str): Full path of CGI DB file.
+
+        Returns:
+            str: Most recent timestamp from merge.
+        """
         newest_ts_overall = float(0)  # Newest timestamp
         cls.create_cgi_db(db_file, schema)
         for feed_file in feed_files:
@@ -109,9 +159,7 @@ class FeedManager(object):
 
     @classmethod
     def should_update_record(cls, anchor_time, update_time):
-        """This function returns True if create_time or update_time are newer
-        than anchor_time
-        """
+        """Compare timestamps to determine if a record should be updated."""
         if update_time > anchor_time:
             result = True
         else:
@@ -120,7 +168,15 @@ class FeedManager(object):
 
     @classmethod
     def cgi_csv_dump_to_db(cls, schema, feed_file, db_file, last_upd=0):
-        """Retuens the latest timestamp detected in the feed file"""
+        """Merge CSV into DB, taking into account the record update time.
+
+        Args:
+            schema (list): List of rows in DB.
+            feed_file (str): Path to feed CSV file.
+            db_file (str): Path to sqlite DB file.
+            last_upd (:obj:`int`, optional): Epoch time.  Records updated
+                before this date will not be inserted into the DB.
+        """
         print("FeedManager: Reconciling %s against feed DB..." % feed_file)
         proc_chunk = []
         rows_written = 0
@@ -153,6 +209,15 @@ class FeedManager(object):
 
     @classmethod
     def cgi_mass_insert(cls, schema, rows, db_file):
+        """Mass-insert records into the DB.
+
+        Args:
+            schema (list): List of DB fields.
+            rows (list): List of tuples, each tuple contains values
+                corresponding to the keys in `schema`.
+            db_file (str): Path to sqlite file.
+
+        """
         conn = sqlite3.connect(db_file)
         conn.executemany("INSERT INTO cgi VALUES (?,?,?,?,?,?,?,?,?,?)", rows)
         conn.commit()
@@ -160,13 +225,31 @@ class FeedManager(object):
 
     @classmethod
     def tup_from_row(cls, schema, row):
+        """Convert a row into a tuple, for insertion into DB.
+
+        Args:
+            schema (list): Field list for DB.
+            row (dict): Row of data.  Keys align with items in `schema`.
+
+        Returns:
+            tuple: Tuple representing values to be inserted into DB, ordered
+                by fields in `schema`.
+        """
         retlst = []
         for s in schema:
             retlst.append(row[s])
         return tuple(retlst)
 
     @classmethod
-    def create_cgi_db(cls, cgi_db, schema):
+    def create_cgi_db(cls, cgi_db):
+        """Create a DB for CGIs.
+
+        This DB has only one table, named `cgi` and the mcc+mnc+lac+cellid is
+            unique.
+
+        Args:
+            cgi_db (str): Path to CGI DB.
+        """
         conn = sqlite3.connect(cgi_db)
         print("FeedManager: Creating CGI DB at %s" % cgi_db)
         create_table_str = ("create table cgi (radio varchar, mcc varchar, " +
@@ -180,15 +263,15 @@ class FeedManager(object):
 
     @classmethod
     def place_feed_file(cls, feed_dir, url_base, item_id):
-        """ Retrieves and places feed files for use by the Enricher modules
+        """Retrieve and places feed files for use by the Enricher modules.
 
         Args:
             feed_dir (str): Destination directory for feed files
             url_base (str): Base URL for hosted feed files
             item_id(str): For FCC, this is the two-letter ("CA" or "TN",
-             for example), which is used in the retrieval of the feed file as
-             well as the construction of the local feed file name.  For MCC
-             this is the MCC, but in string form.  Not integer.
+                for example), which is used in the retrieval of the feed file
+                 as well as the construction of the local feed file name.  For
+                 MCC this is the MCC, but in string form.  Not integer.
 
         """
         destination_file = Utility.construct_feed_file_name(feed_dir,
@@ -209,5 +292,11 @@ class FeedManager(object):
 
     @classmethod
     def get_source_url(cls, url_base, mcc):
+        """Create source URL for MCC file.
+
+        Args:
+            url_base (str): Base URL for MCC file.
+            mcc (str): MCC for feed file.
+        """
         src_url = "%s/%s.csv.gz" % (url_base, mcc)
         return src_url

@@ -1,5 +1,7 @@
-import csv
-import gzip
+"""CGI Correlator module."""
+
+# import csv
+# import gzip
 import os
 import sqlite3
 import alert_manager
@@ -7,7 +9,20 @@ from utility import Utility
 
 
 class CgiCorrelator(object):
+    """The CgiCorrelator compares CGI addressing against the OpenCellID DB.
+
+    The feed data is put in place by the FeedManager class, prior to
+    instantiating the CgiCorrelator.
+    """
+
     def __init__(self, feed_dir, cgi_whitelist):
+        """Initializing CgiCorrelator.
+
+        Args:
+            feed_dir (str): Directory where feed files can be found
+            cgi_whitelist (list): List of CGIs to not alert on
+
+        """
         self.feed_dir = feed_dir
         self.alerts = alert_manager.AlertManager()
         self.prior_bts = {}
@@ -21,6 +36,20 @@ class CgiCorrelator(object):
         return
 
     def correlate(self, scan_bolus):
+        """Entrypoint for the CGI correlation component.
+
+        Args:
+            scan_bolus (tuple):  scan_bolus[0] contains the scan type.  If
+                the type is 'gps', it will set the correlator's geo location.
+                For other scan types, we expect them to look like
+                gsm_modem_channel events, and they are compared against the
+                feed database as well as state history, tracking things
+                like the current active cell's CGI.
+
+        Returns:
+            list: Returns a list of tuples, representing alerts.  If no alerts
+                fire, the list will be empty.
+        """
         retval = []
         if scan_bolus[0] == "gps":
             self.state = scan_bolus[1]
@@ -33,8 +62,9 @@ class CgiCorrelator(object):
                 return retval  # We don't correlate incomplete CGIs...
             channel["arfcn_int"] = CgiCorrelator.arfcn_int(channel["arfcn"])
             # Now we bring the hex values to decimal...
-            channel = self.convert_hex_targets(channel)
-            channel = self.convert_float_targets(channel)
+            # This happens in decomposer now.
+            # channel = self.convert_hex_targets(channel)
+            # channel = self.convert_float_targets(channel)
             # Setting CGI identifiers
             channel["cgi_str"] = CgiCorrelator.make_bts_friendly(channel)
             channel["cgi_int"] = CgiCorrelator.get_cgi_int(channel)
@@ -58,18 +88,31 @@ class CgiCorrelator(object):
 
     @classmethod
     def cgi_whitelist_message(cls, cgi_wl):
+        """Format and return the CGI whitelist initialization message.
+
+        Args:
+            cgi_wl (list): CGI whitelist
+
+        Returns:
+            str: Formatted message
+        """
         wl_string = ",".join(cgi_wl)
         message = "CgiCorrelator: Initializing with CGI whitelist: %s" % wl_string  # NOQA
         return message
 
     @classmethod
     def arfcn_int(cls, arfcn):
-        """ Attempts to derive an integer representation of ARFCN, or return
-        zero if unable to convert.
+        """Attempt to derive an integer representation of ARFCN.
+
+        Args:
+            arfcn (str): String representation of ARFCN
+
+        Returns:
+            int: Integer representation of ARFCN, zero if unable to convert.
         """
         try:
             arfcn_int = int(arfcn)
-        except:
+        except:  # NOQA
             msg = "CgiCorrelator: Unable to convert ARFCN to int"
             print(msg)
             print(arfcn)
@@ -78,6 +121,14 @@ class CgiCorrelator(object):
 
     @classmethod
     def should_skip_feed(cls, channel):
+        """Examine channel info to determine if feed comparison should happen.
+
+        Args:
+            channel (dict): Channel information.
+
+        Returns:
+            bool: True if channel information is complete, False if not.
+        """
         skip_feed_comparison = False
         skip_feed_trigger_values = ['000', '0000', '00', '0', None]
         for x in ["mcc", "mnc", "lac", "cellid"]:
@@ -87,10 +138,10 @@ class CgiCorrelator(object):
 
     @classmethod
     def get_cgi_int(cls, channel):
-        """ Attempts to create an integer representation of CGI """
+        """Attempt to create an integer representation of CGI."""
         try:
             cgi_int = int(channel["cgi_str"].replace(':', ''))
-        except:
+        except:  # NOQA
             print("CgiCorrelator: Unable to convert CGI to int")
             print(channel["cgi_str"])
             cgi_int = 0
@@ -98,6 +149,17 @@ class CgiCorrelator(object):
 
     @classmethod
     def build_chan_here(cls, channel, state):
+        """Build geo information for channel, to aid in geo correlation.
+
+        Args:
+            channel (dict): Channel metadata
+            state (dict): Geo-json representing the current location of the
+                sensor
+
+        Returns:
+            dict: Original channel structure, with the current sensor location
+                embedded.
+        """
         chan = {}
         here = {}
         try:
@@ -116,6 +178,7 @@ class CgiCorrelator(object):
 
     @classmethod
     def channel_in_feed_db(cls, channel):
+        """Return True if channel geo metadata is complete."""
         result = True
         if (channel["feed_info"]["range"] == 0 and
             channel["feed_info"]["lon"] == 0 and
@@ -125,6 +188,14 @@ class CgiCorrelator(object):
 
     @classmethod
     def channel_out_of_range(cls, channel):
+        """Check to see if sensor is out of range for CGI.
+
+        Args:
+            channel (dict): Channel metadata
+
+        Returns:
+            bool: True if the sensor is in range of the detected CGI
+        """
         result = False
         if int(channel["distance"]) > int(channel["feed_info"]["range"]):
             result = True
@@ -132,6 +203,15 @@ class CgiCorrelator(object):
 
     @classmethod
     def bts_from_channel(cls, channel):
+        """Create a simplified representation of BTS metadata.
+
+        Args:
+            channel (dict):
+
+        Returns:
+            dict: Contains MCC, MNC, LAC, and cellid
+
+        """
         bts = {"mcc": channel["mcc"],
                "mnc": channel["mnc"],
                "lac": channel["lac"],
@@ -140,6 +220,18 @@ class CgiCorrelator(object):
 
     @classmethod
     def primary_bts_changed(cls, prior_bts, channel, cgi_whitelist):
+        """Create alarms if primary BTS metadats changed.
+
+        Args:
+            prior_bts (str): Current primary BTS
+            channel (dict): Channel metadata
+            cgi_whitelist: Whitelist of CGIs to NOT alert on
+
+        Returns:
+            bool: True if the primary BTS has changed and the new BTS in not
+                on the whitelist. False otherwise.
+
+        """
         result = False
         current_bts = CgiCorrelator.bts_from_channel(channel)
         cgi_string = channel["cgi_str"]
@@ -152,6 +244,21 @@ class CgiCorrelator(object):
         return result
 
     def feed_comparison(self, channel):
+        """Compare channel metadata against the feed DB.
+
+        This function wraps a few checks against the feed DB.  It first checks
+            if the bts is in the feed DB.  Next, it checks that the sensor is
+            within range of the BTS in the feed DB.  Finally, if it's the
+            primary channel, it checks to see if the primary BTS has changed.
+
+        Args:
+            channel (dict): Channel, enriched with geo information
+
+        Returns:
+            list: If alarms are generated, they'll be returned in a list of
+                tuples.  Otherwise, an empty list comes back.
+
+        """
         comparison_results = []
         retval = []
         # Alert if tower is not in feed DB
@@ -178,6 +285,16 @@ class CgiCorrelator(object):
         return retval
 
     def check_channel_against_feed(self, channel):
+        """Determine whether or not to fire an alert for CGI presence in feed.
+
+        Args:
+            channel (dict): Channel metadata
+
+        Returns:
+            tuple: Empty if there is no alert, a two-item tuple if an alert
+                is generated.
+
+        """
         alert = ()
         if CgiCorrelator.channel_in_feed_db(channel) is False:
             bts_info = "ARFCN: %s CGI: %s" % (channel["arfcn"],
@@ -190,6 +307,16 @@ class CgiCorrelator(object):
         return alert
 
     def check_channel_range(self, channel):
+        """Check to see if the detected CGI is in range.
+
+        Args:
+            channel (dict): Channel metadata, enriched with feed info.
+
+        Returns:
+            tuple: Empry if no alert is generated.  A two-item tuple if an
+                alert condition is detected.
+
+        """
         alert = ()
         if CgiCorrelator.channel_out_of_range(channel):
             message = ("ARFCN: %s Expected range: %s Actual distance:" +
@@ -204,8 +331,15 @@ class CgiCorrelator(object):
         return alert
 
     def process_cell_zero(self, channel):
-        """ Accepts channel (zero) as arg, returns a list which will
-        be populated with any alerts we decide to fire """
+        """Process channel zero.
+
+        Args:
+            channel (dict): Channel metadata.
+
+        Returns:
+            tuple: Empry if there is no alert, a two-item tuple if an alert
+                condition is detected.
+        """
         alert = ()
         current_bts = CgiCorrelator.bts_from_channel(channel)
         if CgiCorrelator.primary_bts_changed(self.prior_bts, channel,
@@ -221,7 +355,15 @@ class CgiCorrelator(object):
 
     @classmethod
     def make_bts_friendly(cls, bts_struct):
-        """ Expecting a dict with keys for mcc, mnc, lac, cellid"""
+        """Create a human-friendly representation of CGI.
+
+        Args:
+            bts_struct (dict): Simple structure containing CGI components.
+
+        Returns:
+            str: String reperesentation of CGI, with items being
+                colon-separated.
+        """
         retval = "%s:%s:%s:%s" % (str(bts_struct["mcc"]),
                                   str(bts_struct["mnc"]),
                                   str(bts_struct["lac"]),
@@ -229,6 +371,17 @@ class CgiCorrelator(object):
         return retval
 
     def get_feed_info(self, mcc, mnc, lac, cellid):
+        """Check CGI against cache, then against the feed DB.
+
+        Args:
+            mcc (str): Mobile Country Code
+            mnc (str): Mobile Network Code
+            lac (str): Location Area Code
+            cellid (str): Cell ID
+
+        Returns:
+            dict: Dictionary containing feed information for CGI
+        """
         if self.feed_cache != []:
             for x in self.feed_cache:
                 if CgiCorrelator.cell_matches(x, mcc, mnc,
@@ -243,6 +396,19 @@ class CgiCorrelator(object):
         return normalized
 
     def get_feed_info_from_db(self, mcc, mnc, lac, cellid):
+        """Interrogate DB for CGI information.
+
+        Args:
+            (str): Mobile Country Code
+            mnc (str): Mobile Network Code
+            lac (str): Location Area Code
+            cellid (str): Cell ID
+
+        Returns:
+            dict: Dictionary containing feed information for CGI.  If no
+                information exists, the feed geo information will be zeroed
+                out.
+        """
         try:
             conn = sqlite3.connect(self.cgi_db)
             c = conn.cursor()
@@ -265,6 +431,7 @@ class CgiCorrelator(object):
 
     @classmethod
     def cell_matches(cls, cell, mcc, mnc, lac, cellid):
+        """Compare cell metadata against mcc, mnc, lac, cellid."""
         result = False
         if (cell["mcc"] == mcc and
             cell["mnc"] == mnc and
@@ -273,31 +440,33 @@ class CgiCorrelator(object):
             result = True
         return result
 
-    def get_feed_info_from_files(self, mcc, mnc, lac, cellid):
-        """ Field names get changed when loaded into the cache, to
-        match field IDs used elsewhere. """
-        feed_file = Utility.construct_feed_file_name(self.feed_dir, mcc)
-        try:
-            with gzip.open(feed_file, 'r') as feed_data:
-                consumer = csv.DictReader(feed_data)
-                for cell in consumer:
-                    normalized = self.normalize_feed_info_for_cache(cell)
-                    if CgiCorrelator.cell_matches(normalized, mcc, mnc,
-                                                  lac, cellid):
-                        return normalized
-        except IOError as e:
-            msg = "CgiCorrelator: Unable to open feed for %s!\n\t%s" % (str(mcc),  # NOQA
-                                                                        str(e))
-            print(msg)
-        """If unable to locate cell in file, we populate the
-        cache with obviously fake values """
-        cell = {"mcc": mcc, "net": mnc, "area": lac, "cell": cellid,
-                "lon": 0, "lat": 0, "range": 0}
-        normalized = self.normalize_feed_info_for_cache(cell)
-        return normalized
+#    def get_feed_info_from_files(self, mcc, mnc, lac, cellid):
+#        """Field names get changed when loaded into the cache, to
+#        match field IDs used elsewhere.
+#        """
+#        feed_file = Utility.construct_feed_file_name(self.feed_dir, mcc)
+#        try:
+#            with gzip.open(feed_file, 'r') as feed_data:
+#                consumer = csv.DictReader(feed_data)
+#                for cell in consumer:
+#                    normalized = self.normalize_feed_info_for_cache(cell)
+#                    if CgiCorrelator.cell_matches(normalized, mcc, mnc,
+#                                                  lac, cellid):
+#                        return normalized
+#        except IOError as e:
+#            msg = "CgiCorrelator: Unable to open feed for %s!\n\t%s" % (str(mcc),  # NOQA
+#                                                                       str(e))
+#            print(msg)
+#        """If unable to locate cell in file, we populate the
+#        cache with obviously fake values """
+#        cell = {"mcc": mcc, "net": mnc, "area": lac, "cell": cellid,
+#                "lon": 0, "lat": 0, "range": 0}
+#        normalized = self.normalize_feed_info_for_cache(cell)
+#        return normalized
 
     @classmethod
     def normalize_feed_info_for_cache(cls, feed_item):
+        """Normalize field keys for the feed cache."""
         cache_item = {}
         cache_item["mcc"] = feed_item["mcc"]
         cache_item["mnc"] = feed_item["net"]
@@ -310,6 +479,7 @@ class CgiCorrelator(object):
 
     @classmethod
     def convert_hex_targets(cls, channel):
+        """Convert lac and cellid from hex to decimal."""
         for target in ['lac', 'cellid']:
             if target in channel:
                 channel[target] = Utility.hex_to_dec(channel[target])
@@ -317,6 +487,7 @@ class CgiCorrelator(object):
 
     @classmethod
     def convert_float_targets(cls, channel):
+        """Convert string values for rxq and rxl to floating point."""
         for target in ['rxq', 'rxl']:
             if target in channel:
                 channel[target] = Utility.str_to_float(channel[target])

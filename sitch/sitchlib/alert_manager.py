@@ -1,5 +1,9 @@
+"""Alert Manager."""
+
+
 class AlertManager(object):
-    """This class is used to ensure alerts are consistently formatted"""
+    """AlertManager is used to ensure alerts are consistently formatted."""
+
     def __init__(self):
         """Initialization takes no arguments, returns nothing."""
         self.alert_map = {
@@ -13,13 +17,13 @@ class AlertManager(object):
         return
 
     def get_alert_type(self, alert_id):
-        """Returns the alert description for alert_id"""
+        """Return the alert description for alert_id."""
         fixed_id = int(alert_id)
         alert_text = self.alert_map[fixed_id]
         return alert_text
 
     def build_alert(self, alert_id, alert_message):
-        """This method builds the actual alert and returns it, formatted.
+        """Build the actual alert and returns it, formatted.
 
         Args:
             alert_id (int): The ID of the alert you want to build

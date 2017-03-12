@@ -1,3 +1,5 @@
+"""Config Helper."""
+
 import hvac
 import json
 import os
@@ -9,7 +11,14 @@ from utility import Utility as utility
 
 
 class ConfigHelper:
+    """Manage configuration information for entire SITCH Sensor."""
+
     def __init__(self, feed_dir="/data/"):
+        """Initialize ConfigHelper.
+
+        Args:
+            feed_dir (str): Directory where feed information can be found.
+        """
         self.detector = dd()
         self.print_devices_as_detected()
         self.device_id = ConfigHelper.get_device_id()
@@ -48,6 +57,7 @@ class ConfigHelper:
         return
 
     def print_devices_as_detected(self):
+        """Print detected GPS and GSM devices."""
         pp = pprint.PrettyPrinter()
         print("\nConfigurator: Detected GSM modems:")
         pp.pprint(self.detector.gsm_radios)
@@ -56,6 +66,7 @@ class ConfigHelper:
         return
 
     def get_gsm_modem_port(self):
+        """Get GSM modem port from detector, override with env var."""
         if os.getenv('GSM_MODEM_PORT') is None:
             if self.detector.gsm_radios != []:
                 target_device = self.detector.gsm_radios[0]["device"]
@@ -63,6 +74,7 @@ class ConfigHelper:
         return os.getenv('GSM_MODEM_PORT')
 
     def get_gps_device_port(self):
+        """Get GPS device from detector, override with env var."""
         if os.getenv('GPS_DEVICE_PORT') is None:
             if self.detector.gps_devices != []:
                 target_device = self.detector.gps_devices[0]
@@ -70,6 +82,7 @@ class ConfigHelper:
         return os.getenv('GPS_DEVICE_PORT')
 
     def build_logrotate_config(self):
+        """Generate logrotate config file contents."""
         lr_options = str("{\nrotate 14" +
                          "\ndaily" +
                          "\ncompress" +
@@ -81,10 +94,12 @@ class ConfigHelper:
 
     @classmethod
     def get_filebeat_template(cls, filename="/etc/templates/filebeat.json"):
+        """Get the filebeat config from template file."""
         with open(filename, 'r') as template_file:
             return json.load(template_file)
 
     def write_filebeat_config(self):
+        """Write out filebeat config to file."""
         fb = self.filebeat_template
         fb["output.logstash"]["hosts"] = [self.log_host]
         fb["output.logstash"]["ssl.key"] = self.ls_key_path
@@ -96,6 +111,7 @@ class ConfigHelper:
 
     @classmethod
     def get_device_id(cls):
+        """Get device ID from env var."""
         device_id = "WHOKNOWS"
         resin = os.getenv('RESIN_DEVICE_UUID', '')
         override = os.getenv('LOCATION_NAME', '')
@@ -106,6 +122,7 @@ class ConfigHelper:
         return device_id
 
     def get_secret_from_vault(self):
+        """Retrieve secrets from Vault."""
         client = hvac.Client(url=self.vault_url, token=self.vault_token)
         print("Configurator: Get secrets from %s, with path %s" % (self.vault_url,  # NOQA
                                                                    self.vault_path))  # NOQA
@@ -120,6 +137,7 @@ class ConfigHelper:
 
     @classmethod
     def get_from_env(cls, k):
+        """Get configuration items from env vars.  Hard exit if not set."""
         retval = os.getenv(k)
         if retval is None:
             print("Configurator: Required config variable not set: %s" % k)
@@ -129,7 +147,7 @@ class ConfigHelper:
 
     @classmethod
     def get_list_from_env(cls, k, optional=False):
-        """Gets a list from environment variables.
+        """Get a list from environment variables.
 
         If optional=True, the absence of this var will cause a hard exit.
         """

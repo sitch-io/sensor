@@ -1,3 +1,5 @@
+"""ARFCN Correlator."""
+
 import LatLon
 import alert_manager
 from fcc_feed import FccFeed
@@ -11,8 +13,9 @@ class ArfcnCorrelator(object):
     The feed data is put in place by the FeedManager class, prior to
     instantiating the ArfcnCorrelator.
     """
+
     def __init__(self, states, feed_dir, whitelist, power_threshold):
-        """Initializing the ArfcnCorrelator
+        """Initializing the ArfcnCorrelator.
 
         Args:
             states (list): A list of US state postal codes: ["CA", "TX"]
@@ -38,7 +41,7 @@ class ArfcnCorrelator(object):
         return
 
     def correlate(self, scan_bolus):
-        """This is the method regularly accessed under normal operation.
+        """Entrypoint for correlation, wraps individual checks.
 
         Args:
             scan_bolus (tuple): Position 0 contains a string defining scan
@@ -75,7 +78,7 @@ class ArfcnCorrelator(object):
         return retval
 
     def manage_arfcn_lists(self, direction, arfcn, aspect):
-        """This method is used to manage the instance variable lists of ARFCNs
+        """Manage the instance variable lists of ARFCNs.
 
         This is necessary to maintain an accurate state over time, and reduce
         unnecessary noise.
@@ -105,7 +108,7 @@ class ArfcnCorrelator(object):
         return
 
     def arfcn_over_threshold(self, arfcn_power):
-        """Compares the ARFCN power against the thresholdset on instantiation.
+        """Compare the ARFCN power against the thresholdset on instantiation.
 
         Args:
             arfcn_power (float): If this isn't a float already, it will be
@@ -120,7 +123,7 @@ class ArfcnCorrelator(object):
             return False
 
     def compare_arfcn_to_feed(self, arfcn):
-        """This function wraps other functions that dig into the FCC license DB
+        """Wrap other functions that dig into the FCC license DB.
 
         This relies on the observed_arfcn instance variable for caching, to
         skip DB comparison, that way we (probably) won't end up with a
@@ -147,7 +150,7 @@ class ArfcnCorrelator(object):
         return results
 
     def feed_alert_generator(self, arfcn):
-        """This wraps the yield_arfcn_from_feed function, and generates alerts.
+        """Wrap the yield_arfcn_from_feed function, and generates alerts.
 
         Args:
             arfcn (str): This is the string representation of the ARFCN to be
@@ -171,7 +174,7 @@ class ArfcnCorrelator(object):
 
     @classmethod
     def arfcn_from_scan(cls, scan_type, scan_doc):
-        """This pulls the ARFCN from different scan types
+        """Pull the ARFCN from different scan types.
 
         Args:
             scan_type (str): "kal_channel", "gsm_modem_channel", or "gps".
@@ -193,7 +196,7 @@ class ArfcnCorrelator(object):
 
     @classmethod
     def yield_arfcn_from_feed(cls, arfcn, states, feed_dir):
-        """Iterates over the feed files, yielding licenses for target ARFCN.
+        """Iterate over the feed files, yielding licenses for target ARFCN.
 
         Args:
             arfcn (str): Target ARFCN.
@@ -214,7 +217,7 @@ class ArfcnCorrelator(object):
 
     @classmethod
     def is_in_range(cls, item_gps, state_gps):
-        """Returns True if items are within 40km"""
+        """Return True if items are within 40km."""
         state_gps_lat = state_gps["geometry"]["coordinates"][1]
         state_gps_lon = state_gps["geometry"]["coordinates"][0]
         max_range = 40000  # 40km
@@ -231,23 +234,21 @@ class ArfcnCorrelator(object):
 
     @classmethod
     def assemble_latlon(cls, item):
-        """Assembles feed lat/lon components into a format that haversine will
-        parse
-        """
+        """Assemble feed lat/lon into a haversine-parseable format."""
         lat_tmpl = Template('$LOC_LAT_DEG $LOC_LAT_MIN $LOC_LAT_SEC $LOC_LAT_DIR')  # NOQA
         long_tmpl = Template('$LOC_LONG_DEG $LOC_LONG_MIN $LOC_LONG_SEC $LOC_LONG_DIR')  # NOQA
         return(lat_tmpl.substitute(item), long_tmpl.substitute(item))
 
     @classmethod
     def assemble_gps(cls, item):
-        """Assembles lat/lon into a format we can work with."""
+        """Assemble lat/lon into a format we can work with."""
         latlon = {}
         try:
             lat, lon = ArfcnCorrelator.assemble_latlon(item)
             ll = LatLon.string2latlon(lat, lon, "d% %m% %S% %H")
             latlon["lat"] = ll.to_string('D%')[0]
             latlon["lon"] = ll.to_string('D%')[1]
-        except:
+        except:  # NOQA
             print("ArfcnCorrelator: Unable to compose lat/lon from:")
             print(str(item))
         return latlon
