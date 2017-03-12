@@ -146,7 +146,7 @@ class FeedManager(object):
             str: Most recent timestamp from merge.
         """
         newest_ts_overall = float(0)  # Newest timestamp
-        cls.create_cgi_db(db_file, schema)
+        cls.create_cgi_db(db_file)
         for feed_file in feed_files:
             feed_file_exists = os.path.isfile(feed_file)
             if not feed_file_exists:
