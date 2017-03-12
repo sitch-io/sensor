@@ -25,9 +25,8 @@ class GsmDecomposer(object):
                                                                  scan_document)
                 channel["arfcn_int"] = GsmDecomposer.arfcn_int(channel["arfcn"])  # NOQA
                 # Now we bring the hex values to decimal...
-                # This happens only in the CgiCorrelator now...
-                # channel = GsmDecomposer.convert_hex_targets(channel)
-                # channel = GsmDecomposer.convert_float_targets(channel)
+                channel = GsmDecomposer.convert_hex_targets(channel)
+                channel = GsmDecomposer.convert_float_targets(channel)
                 # Setting CGI identifiers
                 channel["cgi_str"] = GsmDecomposer.make_bts_friendly(channel)
                 channel["cgi_int"] = GsmDecomposer.get_cgi_int(channel)
@@ -54,7 +53,7 @@ class GsmDecomposer(object):
         try:
             arfcn_int = int(arfcn)
         except:
-            msg = "EnrichGSM: Unable to convert ARFCN to int"
+            msg = "GsmDecomposer: Unable to convert ARFCN to int"
             print(msg)
             print(arfcn)
             arfcn_int = 0

@@ -56,8 +56,8 @@ class TestIntegrationCgiCorrelator:
         scan_body_2["cell"] = 0
         scan_body_3["mcc"] = "310"
         scan_body_3["mnc"] = "410"
-        scan_body_3["lac"] = "4398"
-        scan_body_3["cellid"] = "7E7D"
+        scan_body_3["lac"] = "17304"
+        scan_body_3["cellid"] = "32381"
         scan_body_3["cgi_str"] = "310:410:17304:32381"
         scan_body_3["cgi_int"] = 3104101730432381
         scan_body_3["cell"] = "0"

@@ -62,8 +62,8 @@ class CgiCorrelator(object):
                 return retval  # We don't correlate incomplete CGIs...
             channel["arfcn_int"] = CgiCorrelator.arfcn_int(channel["arfcn"])
             # Now we bring the hex values to decimal...
-            channel = self.convert_hex_targets(channel)
-            channel = self.convert_float_targets(channel)
+            # channel = self.convert_hex_targets(channel)
+            # channel = self.convert_float_targets(channel)
             # Setting CGI identifiers
             channel["cgi_str"] = CgiCorrelator.make_bts_friendly(channel)
             channel["cgi_int"] = CgiCorrelator.get_cgi_int(channel)
