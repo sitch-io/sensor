@@ -248,7 +248,7 @@ class ArfcnCorrelator(object):
             ll = LatLon.string2latlon(lat, lon, "d% %m% %S% %H")
             latlon["lat"] = ll.to_string('D%')[0]
             latlon["lon"] = ll.to_string('D%')[1]
-        except:  # NOQA
+        except:
             print("ArfcnCorrelator: Unable to compose lat/lon from:")
             print(str(item))
         return latlon

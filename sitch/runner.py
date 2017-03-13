@@ -1,6 +1,4 @@
-""" This is the main process which runs collector, enricher, and output
-threads.
-"""
+"""This is the main process which runs all threads."""
 
 import sitchlib
 import kalibrate
@@ -11,6 +9,7 @@ from socket import error as SocketError
 
 
 def main():
+    """All magic happens under this fn."""
     global scan_results_queue
     global message_write_queue
     global arfcn_correlator_queue
@@ -140,12 +139,13 @@ def main():
 
 
 def init_event_injector(init_event):
-    "Pass a dict into this fn."
+    """Pass the sitch init into this fn."""
     evt = [("sitch_init"), init_event]
     message_write_queue.append(evt)
 
 
 def gsm_modem_circuit_breaker(band, tty_port):
+    """Circuit breaker for GSM modem functionality."""
     if band == "nope":
         disable_scanner({"evt_cls": "gsm_consumer",
                          "evt_type": "config_state",
@@ -212,6 +212,7 @@ def gsm_modem_consumer(config):
 
 
 def gps_consumer(config):
+    """Take events from gpsd, put them in queue."""
     global gps_location
     print("Runner: Starting GPS Consumer")
     print("Runner: gpsd configured for %s" % config.gps_device_port)
@@ -232,6 +233,7 @@ def gps_consumer(config):
 
 
 def geoip_consumer(config):
+    """Take events from GeoIP and put them in queue."""
     print("Runner: Starting GeoIP Consumer")
     while True:
         geoip_listener = sitchlib.GeoIp(delay=600)
@@ -240,6 +242,7 @@ def geoip_consumer(config):
 
 
 def disable_scanner(event_struct):
+    """Scanner circuit breaker."""
     stdout_msg = "Runner: %s" % event_struct["evt_data"]
     print(stdout_msg)
     init_event_injector(event_struct)
@@ -249,6 +252,7 @@ def disable_scanner(event_struct):
 
 
 def kalibrate_consumer(config):
+    """Take calibrate scans, and put them in queue."""
     while True:
         scan_job_template = {"platform": config.platform_name,
                              "scan_results": [],
@@ -280,7 +284,7 @@ def kalibrate_consumer(config):
 
 
 def arfcn_correlator(config):
-    """This correlates any single row with an ARFCN"""
+    """ARFCN correlator thread."""
     correlator = sitchlib.ArfcnCorrelator(config.state_list,
                                           config.feed_dir,
                                           config.arfcn_whitelist,
@@ -297,7 +301,7 @@ def arfcn_correlator(config):
 
 
 def cgi_correlator(config):
-    """This correlates any single row with a CGI"""
+    """CGI correlator thread."""
     correlator = sitchlib.CgiCorrelator(config.feed_dir,
                                         config.cgi_whitelist)
     while True:
@@ -312,7 +316,7 @@ def cgi_correlator(config):
 
 
 def geo_correlator(config):
-    """This correlates geo state changes"""
+    """Correlate GPS events, look for drift."""
     correlator = sitchlib.GeoCorrelator()
     while True:
         try:
@@ -326,12 +330,15 @@ def geo_correlator(config):
 
 
 def decomposer(config):
-    """This decomposes all scans we get from devices.  Expected types:
-    "scan" (Kalibrate), "kal_channel" (channel extracted from Kalibrate scan),
-    "cell" (full scan from cellular radio), "gsm_modem_channel" (channel
-    extracted from GSM modem output), and "gps" (output from gpsd)
-    """
+    """Decompose all scans we get from devices.
 
+    Expected types:
+        * `scan` (Kalibrate)
+        * `kal_channel` (channel extracted from Kalibrate scan)
+        * `cell` (full scan from cellular radio)
+        * `gsm_modem_channel` (channel extracted from GSM modem output)
+        * `gps` (output from gpsd)
+    """
     d_composer = sitchlib.Decomposer
     while True:
         try:
@@ -367,8 +374,9 @@ def decomposer(config):
 
 
 def output(config):
+    """Retrieve messages from queue and write to disk."""
     time.sleep(5)
-    l = sitchlib.LogHandler(config)
+    logger = sitchlib.LogHandler(config)
     print("Runner: Output module instantiated.")
     print("Runner: Starting Filebeat...")
     time.sleep(5)
@@ -376,7 +384,7 @@ def output(config):
     while True:
         try:
             msg_bolus = message_write_queue.popleft()
-            l.record_log_message(msg_bolus)
+            logger.record_log_message(msg_bolus)
             del msg_bolus
         except IndexError:
             time.sleep(3)
@@ -384,6 +392,7 @@ def output(config):
             print("Runner: Exception caught while processing message for output:")  # NOQA
             print(e)
             print(msg_bolus)
+
 
 if __name__ == "__main__":
     main()

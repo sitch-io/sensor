@@ -1,7 +1,5 @@
 """CGI Correlator module."""
 
-# import csv
-# import gzip
 import os
 import sqlite3
 import alert_manager
@@ -60,13 +58,6 @@ class CgiCorrelator(object):
             channel = scan_bolus[1]
             if channel["mcc"] in ["", None]:
                 return retval  # We don't correlate incomplete CGIs...
-            channel["arfcn_int"] = CgiCorrelator.arfcn_int(channel["arfcn"])
-            # Now we bring the hex values to decimal...
-            # channel = self.convert_hex_targets(channel)
-            # channel = self.convert_float_targets(channel)
-            # Setting CGI identifiers
-            channel["cgi_str"] = CgiCorrelator.make_bts_friendly(channel)
-            channel["cgi_int"] = CgiCorrelator.get_cgi_int(channel)
             """ Here's the feed comparison part """
             channel["feed_info"] = self.get_feed_info(channel["mcc"],
                                                       channel["mnc"],
@@ -111,7 +102,7 @@ class CgiCorrelator(object):
         """
         try:
             arfcn_int = int(arfcn)
-        except:  # NOQA
+        except:
             msg = "CgiCorrelator: Unable to convert ARFCN to int"
             print(msg)
             print(arfcn)
@@ -140,7 +131,7 @@ class CgiCorrelator(object):
         """Attempt to create an integer representation of CGI."""
         try:
             cgi_int = int(channel["cgi_str"].replace(':', ''))
-        except:  # NOQA
+        except:
             print("CgiCorrelator: Unable to convert CGI to int")
             print(channel["cgi_str"])
             cgi_int = 0
@@ -180,8 +171,8 @@ class CgiCorrelator(object):
         """Return True if channel geo metadata is complete."""
         result = True
         if (channel["feed_info"]["range"] == 0 and
-            channel["feed_info"]["lon"] == 0 and
-            channel["feed_info"]["lat"] == 0):  # NOQA
+                channel["feed_info"]["lon"] == 0 and
+                channel["feed_info"]["lat"] == 0):
             result = False
         return result
 
@@ -262,13 +253,13 @@ class CgiCorrelator(object):
         retval = []
         # Alert if tower is not in feed DB
         if (channel["cgi_str"] not in self.bad_cgis and
-            channel["cgi_str"] not in self.cgi_whitelist and
-            channel["cgi_str"] not in self.good_cgis):  # NOQA
+                channel["cgi_str"] not in self.cgi_whitelist and
+                channel["cgi_str"] not in self.good_cgis):
             comparison_results.append(self.check_channel_against_feed(channel))
         # Else, be willing to alert if channel is not in range
         if (channel["cgi_str"] not in self.bad_cgis and
-            channel["cgi_str"] not in self.cgi_whitelist and
-            channel["cgi_str"] not in self.good_cgis):  # NOQA
+                channel["cgi_str"] not in self.cgi_whitelist and
+                channel["cgi_str"] not in self.good_cgis):
             comparison_results.append(self.check_channel_range(channel))
         # Test for primary BTS change
         if channel["cell"] == '0':
@@ -279,8 +270,6 @@ class CgiCorrelator(object):
         if len(retval) == 0:
             if channel["cgi_str"] not in self.good_cgis:
                 self.good_cgis.append(channel["cgi_str"])
-        # else:
-            # print(str(retval))  # Un-comment to print all CGI alerts
         return retval
 
     def check_channel_against_feed(self, channel):
@@ -389,7 +378,6 @@ class CgiCorrelator(object):
             feed_string = "%s:%s:%s:%s" % (mcc, mnc, lac, cellid)
             msg = "CgiCorrelator: Cache miss: %s" % feed_string
             print(msg)
-        # normalized = self.get_feed_info_from_files(mcc, mnc, lac, cellid)
         normalized = self.get_feed_info_from_db(mcc, mnc, lac, cellid)
         self.feed_cache.append(normalized)
         return normalized
@@ -433,35 +421,11 @@ class CgiCorrelator(object):
         """Compare cell metadata against mcc, mnc, lac, cellid."""
         result = False
         if (cell["mcc"] == mcc and
-            cell["mnc"] == mnc and
-            cell["lac"] == lac and
-            cell["cellid"] == cellid):  # NOQA
+                cell["mnc"] == mnc and
+                cell["lac"] == lac and
+                cell["cellid"] == cellid):
             result = True
         return result
-
-#    def get_feed_info_from_files(self, mcc, mnc, lac, cellid):
-#        """Field names get changed when loaded into the cache, to
-#        match field IDs used elsewhere.
-#        """
-#        feed_file = Utility.construct_feed_file_name(self.feed_dir, mcc)
-#        try:
-#            with gzip.open(feed_file, 'r') as feed_data:
-#                consumer = csv.DictReader(feed_data)
-#                for cell in consumer:
-#                    normalized = self.normalize_feed_info_for_cache(cell)
-#                    if CgiCorrelator.cell_matches(normalized, mcc, mnc,
-#                                                  lac, cellid):
-#                        return normalized
-#        except IOError as e:
-#            msg = "CgiCorrelator: Unable to open feed for %s!\n\t%s" % (str(mcc),  # NOQA
-#                                                                       str(e))
-#            print(msg)
-#        """If unable to locate cell in file, we populate the
-#        cache with obviously fake values """
-#        cell = {"mcc": mcc, "net": mnc, "area": lac, "cell": cellid,
-#                "lon": 0, "lat": 0, "range": 0}
-#        normalized = self.normalize_feed_info_for_cache(cell)
-#        return normalized
 
     @classmethod
     def normalize_feed_info_for_cache(cls, feed_item):

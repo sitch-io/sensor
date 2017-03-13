@@ -12,6 +12,7 @@ from location_tool import LocationTool
 
 class Utility:
     """General utility class."""
+
     @classmethod
     def epoch_to_iso8601(cls, unix_time):
         """Transform epoch time to ISO8601 format."""
@@ -102,7 +103,7 @@ class Utility:
 
     @classmethod
     def calculate_distance(cls, lon_1, lat_1, lon_2, lat_2):
-        """Check to see if this method exists elsewhere!"""
+        """Wrap the LocationTool.get_distance_between_points() fn."""
         if None in [lon_1, lat_1, lon_2, lat_2]:
             print("Utility: Geo coordinate is zero, not resolving distance.")
             return 0
@@ -114,6 +115,7 @@ class Utility:
 
     @classmethod
     def str_to_float(cls, s):
+        """Change string to float."""
         retval = None
         try:
             retval = float(s)
@@ -124,6 +126,7 @@ class Utility:
 
     @classmethod
     def heartbeat(cls, service_name):
+        """Generate heartbeat message."""
         scan = {"scan_program": "heartbeat",
                 "heartbeat_service_name": service_name,
                 "timestamp": Utility.get_now_string()}
@@ -131,6 +134,7 @@ class Utility:
 
     @classmethod
     def is_valid_json(cls, in_str):
+        """Test string for json validity."""
         try:
             json.loads(in_str)
             return True
@@ -139,6 +143,7 @@ class Utility:
 
     @classmethod
     def pretty_string(cls, structure):
+        """Pretty-print lines."""
         result = ""
         pp = pprint.PrettyPrinter()
         formatted = pp.pformat(structure)
@@ -149,17 +154,20 @@ class Utility:
 
     @classmethod
     def hex_to_dec(cls, hx):
+        """Change hex to decimal."""
         integer = int(hx, 16)
         return str(integer)
 
     @classmethod
     def construct_feed_file_name(cls, feed_dir, prefix):
+        """Construct full path for feed file."""
         file_name = "%s.csv.gz" % prefix
         dest_file_name = os.path.join(feed_dir, file_name)
         return dest_file_name
 
     @classmethod
     def get_performance_metrics(cls):
+        """Get sensor hardware and os performance statistics."""
         retval = {}
         cpu_times = psutil.cpu_times()
         retval["scan_program"] = "health_check"

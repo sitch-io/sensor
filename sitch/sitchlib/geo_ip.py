@@ -55,6 +55,6 @@ class GeoIp(object):
                                lat_lon[1],
                                lat_lon[0]]}}
             return
-        except:  # NOQA
+        except:
             print("GeoIP: Unable to set geo by IP: %s" % self.ip)
             return None

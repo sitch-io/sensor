@@ -52,8 +52,8 @@ class GsmDecomposer(object):
     @classmethod
     def arfcn_int(cls, arfcn):
         """Attempt to derive an integer representation of ARFCN."""
-        if arfcn == "65535":
-            return 0  # This seems to be a default ARFCN on some modems
+        if arfcn == "65535":  # This seems to be a default ARFCN on some modems
+            return 0
         try:
             arfcn_int = int(arfcn)
         except:

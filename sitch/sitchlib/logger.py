@@ -33,20 +33,20 @@ class LogHandler:
         Returns:
             str: Log file name
         """
-        type_to_file = {"cell": "cells.log",  # sim808 scan doc
+        type_to_file = {"cell": "cells.log",  # GSM modem scan doc
                         "scan": "scanner.log",  # kal scan doc
-                        "arfcn_power": "arfcn_power.log",  # kal ##
-                        "arfcn_prio": "radio_prio_arfcn.log",  # sim808 ##
-                        "arfcn_rxl": "arfcn_rxl.log",  # sim808 ##
-                        "arfcn_rxq": "arfcn_rxq.log",  # sim808 ##
-                        "arfcn_mcc": "arfcn_mcc.log",  # sim808 ##
-                        "arfcn_mnc": "arfcn_mnc.log",  # sim808 ##
-                        "arfcn_bsic": "arfcn_bsic.log",  # sim808 ##
-                        "arfcn_cellid": "arfcn_cellid.log",  # sim808 ##
-                        "arfcn_rla": "arfcn_rla.log",  # sim808 ##
-                        "arfcn_txp": "arfcn_txp.log",  # sim808 ##
-                        "arfcn_lac": "arfcn_lac.log",  # sim808 ##
-                        "arfcn_ta": "arfcn_ta.log",  # sim808 ##
+                        "arfcn_power": "arfcn_power.log",  # kal
+                        "arfcn_prio": "radio_prio_arfcn.log",  # GSM modem
+                        "arfcn_rxl": "arfcn_rxl.log",  # GSM modem
+                        "arfcn_rxq": "arfcn_rxq.log",  # GSM modem
+                        "arfcn_mcc": "arfcn_mcc.log",  # GSM modem
+                        "arfcn_mnc": "arfcn_mnc.log",  # GSM modem
+                        "arfcn_bsic": "arfcn_bsic.log",  # GSM modem
+                        "arfcn_cellid": "arfcn_cellid.log",  # GSM modem
+                        "arfcn_rla": "arfcn_rla.log",  # GSM modem
+                        "arfcn_txp": "arfcn_txp.log",  # GSM modem
+                        "arfcn_lac": "arfcn_lac.log",  # GSM modem
+                        "arfcn_ta": "arfcn_ta.log",  # GSM modem
                         "kal_channel": "kal_channel.log",  # cells from Kal
                         "gsm_modem_channel": "gsm_modem_channel.log",  # cells
                         "arfcn_enricher": "arfcn_enricher.log",

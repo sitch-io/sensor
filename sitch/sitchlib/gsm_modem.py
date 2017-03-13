@@ -1,4 +1,4 @@
-"""GSM Modem device ...driver?."""
+"""GSM Modem device ...driver?..."""
 
 import re
 import serial

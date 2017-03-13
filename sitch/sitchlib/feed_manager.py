@@ -24,7 +24,6 @@ class FeedManager(object):
         self.state_list = config.state_list
         self.feed_dir = config.feed_dir
         self.url_base = config.feed_url_base
-        # self.feed_cache = []
         self.cgi_feed_files = []
         self.arfcn_feed_files = []
         self.born_on_date = datetime.now()

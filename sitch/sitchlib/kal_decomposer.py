@@ -36,7 +36,7 @@ class KalDecomposer(object):
                     msg["scan_start"] = scan_document["scan_start"]
                     msg["scan_finish"] = scan_document["scan_finish"]
                     msg["scan_program"] = scan_document["scan_program"]
-                    msg["scanner_public_ip"] = scan_document["scanner_public_ip"]
+                    msg["scanner_public_ip"] = scan_document["scanner_public_ip"]  # NOQA
                     try:
                         msg["arfcn_int"] = int(result["channel"])
                     except:
