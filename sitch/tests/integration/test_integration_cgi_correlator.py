@@ -54,8 +54,8 @@ class TestIntegrationCgiCorrelator:
         scan_body_4 = gsm_modem_channel.copy()
         scan_body_2["mcc"] = "999"
         scan_body_2["cell"] = 0
-        scan_body_3["cgi_str"] = "999:410:17304:32381"
-        scan_body_3["cgi_int"] = 9994101730432381
+        scan_body_2["cgi_str"] = "999:410:17304:32381"
+        scan_body_2["cgi_int"] = 9994101730432381
         scan_body_3["mcc"] = "310"
         scan_body_3["mnc"] = "410"
         scan_body_3["lac"] = "17304"
