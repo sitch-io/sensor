@@ -1,3 +1,5 @@
+"""Config Helper."""
+
 import hvac
 import json
 import os
@@ -9,10 +11,18 @@ from utility import Utility as utility
 
 
 class ConfigHelper:
+    """Manage configuration information for entire SITCH Sensor."""
+
     def __init__(self, feed_dir="/data/"):
+        """Initialize ConfigHelper.
+
+        Args:
+            feed_dir (str): Directory where feed information can be found.
+        """
         self.detector = dd()
         self.print_devices_as_detected()
         self.device_id = ConfigHelper.get_device_id()
+        self.site_name = os.getenv('LOCATION_NAME', 'SITCH_SITE')
         self.platform_name = utility.get_platform_name()
         self.log_prefix = "/var/log/sitch/"
         self.log_host = ConfigHelper.get_from_env("LOG_HOST")
@@ -40,11 +50,14 @@ class ConfigHelper:
         self.gps_drift_threshold = 1000
         self.filebeat_template = self.get_filebeat_template()
         self.filebeat_config_file_path = "/etc/filebeat.yml"
+        self.arfcn_whitelist = ConfigHelper.get_list_from_env("ARFCN_WHITELIST",  # NOQA
+                                                              optional=True)
         self.cgi_whitelist = ConfigHelper.get_list_from_env("CGI_WHITELIST",
                                                             optional=True)
         return
 
     def print_devices_as_detected(self):
+        """Print detected GPS and GSM devices."""
         pp = pprint.PrettyPrinter()
         print("\nConfigurator: Detected GSM modems:")
         pp.pprint(self.detector.gsm_radios)
@@ -53,6 +66,7 @@ class ConfigHelper:
         return
 
     def get_gsm_modem_port(self):
+        """Get GSM modem port from detector, override with env var."""
         if os.getenv('GSM_MODEM_PORT') is None:
             if self.detector.gsm_radios != []:
                 target_device = self.detector.gsm_radios[0]["device"]
@@ -60,6 +74,7 @@ class ConfigHelper:
         return os.getenv('GSM_MODEM_PORT')
 
     def get_gps_device_port(self):
+        """Get GPS device from detector, override with env var."""
         if os.getenv('GPS_DEVICE_PORT') is None:
             if self.detector.gps_devices != []:
                 target_device = self.detector.gps_devices[0]
@@ -67,6 +82,7 @@ class ConfigHelper:
         return os.getenv('GPS_DEVICE_PORT')
 
     def build_logrotate_config(self):
+        """Generate logrotate config file contents."""
         lr_options = str("{\nrotate 14" +
                          "\ndaily" +
                          "\ncompress" +
@@ -78,22 +94,24 @@ class ConfigHelper:
 
     @classmethod
     def get_filebeat_template(cls, filename="/etc/templates/filebeat.json"):
+        """Get the filebeat config from template file."""
         with open(filename, 'r') as template_file:
             return json.load(template_file)
 
     def write_filebeat_config(self):
+        """Write out filebeat config to file."""
         fb = self.filebeat_template
         fb["output.logstash"]["hosts"] = [self.log_host]
         fb["output.logstash"]["ssl.key"] = self.ls_key_path
         fb["output.logstash"]["ssl.certificate"] = self.ls_cert_path
-        fb["output.logstash"]["ssl.certificate_authorities"] = [self.ls_ca_path]
+        fb["output.logstash"]["ssl.certificate_authorities"] = [self.ls_ca_path]  # NOQA
         with open(self.filebeat_config_file_path, 'w') as out_file:
             yaml.safe_dump(fb, out_file)
         return
 
-
     @classmethod
     def get_device_id(cls):
+        """Get device ID from env var."""
         device_id = "WHOKNOWS"
         resin = os.getenv('RESIN_DEVICE_UUID', '')
         override = os.getenv('LOCATION_NAME', '')
@@ -104,9 +122,10 @@ class ConfigHelper:
         return device_id
 
     def get_secret_from_vault(self):
+        """Retrieve secrets from Vault."""
         client = hvac.Client(url=self.vault_url, token=self.vault_token)
-        print("Configurator: Get secrets from %s, with path %s" % (self.vault_url,
-                                                                   self.vault_path))
+        print("Configurator: Get secrets from %s, with path %s" % (self.vault_url,  # NOQA
+                                                                   self.vault_path))  # NOQA
         try:
             response = client.read(self.vault_path)
             secrets = response["data"]
@@ -118,6 +137,7 @@ class ConfigHelper:
 
     @classmethod
     def get_from_env(cls, k):
+        """Get configuration items from env vars.  Hard exit if not set."""
         retval = os.getenv(k)
         if retval is None:
             print("Configurator: Required config variable not set: %s" % k)
@@ -127,7 +147,7 @@ class ConfigHelper:
 
     @classmethod
     def get_list_from_env(cls, k, optional=False):
-        """Gets a list from environment variables.
+        """Get a list from environment variables.
 
         If optional=True, the absence of this var will cause a hard exit.
         """

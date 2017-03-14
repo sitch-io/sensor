@@ -1,3 +1,5 @@
+"""General utilities."""
+
 import datetime
 import json
 import os
@@ -9,16 +11,23 @@ from location_tool import LocationTool
 
 
 class Utility:
-    def __init__():
-        return
+    """General utility class."""
+
+    @classmethod
+    def epoch_to_iso8601(cls, unix_time):
+        """Transform epoch time to ISO8601 format."""
+        cleaned = float(unix_time)
+        return datetime.datetime.utcfromtimestamp(cleaned).isoformat()
 
     @classmethod
     def get_now_string(cls):
+        """Get ISO8601 timestamp for now."""
         now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         return now
 
     @classmethod
     def get_platform_info(cls):
+        """Get information on platform and hardware."""
         lshw = "/usr/bin/lshw -json"
         try:
             raw_response = subprocess.check_output(lshw.split())
@@ -30,6 +39,7 @@ class Utility:
 
     @classmethod
     def start_component(cls, runcmd):
+        """Start a thing."""
         try:
             subprocess.Popen(runcmd.split())
         except KeyError as e:
@@ -39,6 +49,7 @@ class Utility:
 
     @classmethod
     def create_path_if_nonexistent(cls, path):
+        """Create filesystem directory path."""
         if os.path.exists(path) and os.path.isdir(path):
             return
         elif os.path.exists(os.path.dirname(path)):
@@ -48,6 +59,7 @@ class Utility:
 
     @classmethod
     def create_file_if_nonexistent(cls, path, lfile):
+        """Create file and path, if it doesn't already exist."""
         fullpath = os.path.join(path, lfile)
         if os.path.isfile(fullpath):
             return
@@ -59,11 +71,13 @@ class Utility:
 
     @classmethod
     def write_file(cls, location, contents):
+        """Write string to file."""
         with open(location, 'w') as fh:
             fh.write(contents)
 
     @classmethod
     def get_platform_name(cls):
+        """Get platform name from lshw output."""
         platform_info = Utility.get_platform_info
         try:
             platform_name = platform_info["product"]
@@ -74,7 +88,7 @@ class Utility:
 
     @classmethod
     def strip_list(cls, raw_struct):
-        """Strips contents from single-item list"""
+        """Strip contents from single-item list."""
         if (type(raw_struct) is list and len(raw_struct)) == 1:
             return raw_struct[0]
         else:
@@ -82,12 +96,14 @@ class Utility:
 
     @classmethod
     def get_public_ip(cls):
+        """Get public IP."""
         url = 'https://api.ipify.org/?format=json'
         result = (requests.get(url).json())['ip']
         return result
 
     @classmethod
     def calculate_distance(cls, lon_1, lat_1, lon_2, lat_2):
+        """Wrap the LocationTool.get_distance_between_points() fn."""
         if None in [lon_1, lat_1, lon_2, lat_2]:
             print("Utility: Geo coordinate is zero, not resolving distance.")
             return 0
@@ -99,6 +115,7 @@ class Utility:
 
     @classmethod
     def str_to_float(cls, s):
+        """Change string to float."""
         retval = None
         try:
             retval = float(s)
@@ -109,6 +126,7 @@ class Utility:
 
     @classmethod
     def heartbeat(cls, service_name):
+        """Generate heartbeat message."""
         scan = {"scan_program": "heartbeat",
                 "heartbeat_service_name": service_name,
                 "timestamp": Utility.get_now_string()}
@@ -116,6 +134,7 @@ class Utility:
 
     @classmethod
     def is_valid_json(cls, in_str):
+        """Test string for json validity."""
         try:
             json.loads(in_str)
             return True
@@ -124,6 +143,7 @@ class Utility:
 
     @classmethod
     def pretty_string(cls, structure):
+        """Pretty-print lines."""
         result = ""
         pp = pprint.PrettyPrinter()
         formatted = pp.pformat(structure)
@@ -134,17 +154,20 @@ class Utility:
 
     @classmethod
     def hex_to_dec(cls, hx):
+        """Change hex to decimal."""
         integer = int(hx, 16)
         return str(integer)
 
     @classmethod
     def construct_feed_file_name(cls, feed_dir, prefix):
+        """Construct full path for feed file."""
         file_name = "%s.csv.gz" % prefix
         dest_file_name = os.path.join(feed_dir, file_name)
         return dest_file_name
 
     @classmethod
     def get_performance_metrics(cls):
+        """Get sensor hardware and os performance statistics."""
         retval = {}
         cpu_times = psutil.cpu_times()
         retval["scan_program"] = "health_check"

@@ -1,6 +1,29 @@
 # Changelog
 
-## v3.4.0
+## v3.5.0
+
+### New
+
+* Migrated CGI feed to SQLite. [ash]
+
+* Added support for SIM800L GSM modem. [Ash Wilson]
+
+* Device auto-detection now supports SIM900 GSM modems. [Ash Wilson]
+
+* Added geo correlator. [Ash Wilson]
+
+### Changes
+
+* Queue depth periodically reported in device STDOUT logs. [Ash Wilson]
+
+* Christmas Tree tests veryfy end-to-end event processing, like a pseudo runner.py. [Ash Wilson]
+
+### Fix
+
+* Corrected issue where most recent record timestamp was being set to epoch 0 if no new records were written to DB. [Ash Wilson]
+
+
+## v3.4 (2017-01-29)
 
 ### New
 

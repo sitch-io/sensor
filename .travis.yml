@@ -4,9 +4,9 @@ python:
 - '2.7'
 install:
 - sudo apt-get update && sudo apt-get install -y lshw
-- pip install pytest-cov pytest-pep8 python-coveralls codeclimate-test-reporter
+- pip install pytest==3.0.4 pytest-cov pytest-pep8 python-coveralls codeclimate-test-reporter
 - pip install pyserial hvac kalibrate==1.1.2 haversine python-geoip
-  python-geoip-geolite2 pyudev gps3 LatLon psutil
+  python-geoip-geolite2 pyudev==0.21.0 gps3 LatLon psutil
 script: sudo mkdir /data/ && py.test sitch/tests/ --cov sitchlib
 after_success:
 - codeclimate-test-reporter --token $CODECLIMATE_REPO_TOKEN
