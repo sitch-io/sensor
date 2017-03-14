@@ -1,11 +1,19 @@
+"""Logging functionality."""
+
 import json
 import os
 from utility import Utility as utility
 
 
 class LogHandler:
-    """ Instantiate this class with the log file prefix"""
+    """Instantiate this class with the log file prefix."""
+
     def __init__(self, config):
+        """Instantiate the LogHandler object.
+
+        Args:
+            config (object): instance of `sitchlib.ConfigHelper`.
+        """
         self.log_prefix = config.log_prefix
         self.log_method = config.log_method
         self.logstash_host = config.log_host.split(':')[0]
@@ -17,29 +25,37 @@ class LogHandler:
 
     @classmethod
     def get_log_file_name(cls, ltype):
-        type_to_file = {"cell": "cells.log",  # sim808 scan doc
+        """Get the name of the appropriate log file for the message type.
+
+        Args:
+            ltype (str): Log type
+
+        Returns:
+            str: Log file name
+        """
+        type_to_file = {"cell": "cells.log",  # GSM modem scan doc
                         "scan": "scanner.log",  # kal scan doc
-                        "arfcn_power": "arfcn_power.log",  # kal ##
-                        "arfcn_prio": "radio_prio_arfcn.log",  # sim808 ##
-                        "arfcn_rxl": "arfcn_rxl.log",  # sim808 ##
-                        "arfcn_rxq": "arfcn_rxq.log",  # sim808 ##
-                        "arfcn_mcc": "arfcn_mcc.log",  # sim808 ##
-                        "arfcn_mnc": "arfcn_mnc.log",  # sim808 ##
-                        "arfcn_bsic": "arfcn_bsic.log",  # sim808 ##
-                        "arfcn_cellid": "arfcn_cellid.log",  # sim808 ##
-                        "arfcn_rla": "arfcn_rla.log",  # sim808 ##
-                        "arfcn_txp": "arfcn_txp.log",  # sim808 ##
-                        "arfcn_lac": "arfcn_lac.log",  # sim808 ##
-                        "arfcn_ta": "arfcn_ta.log",  # sim808 ##
+                        "arfcn_power": "arfcn_power.log",  # kal
+                        "arfcn_prio": "radio_prio_arfcn.log",  # GSM modem
+                        "arfcn_rxl": "arfcn_rxl.log",  # GSM modem
+                        "arfcn_rxq": "arfcn_rxq.log",  # GSM modem
+                        "arfcn_mcc": "arfcn_mcc.log",  # GSM modem
+                        "arfcn_mnc": "arfcn_mnc.log",  # GSM modem
+                        "arfcn_bsic": "arfcn_bsic.log",  # GSM modem
+                        "arfcn_cellid": "arfcn_cellid.log",  # GSM modem
+                        "arfcn_rla": "arfcn_rla.log",  # GSM modem
+                        "arfcn_txp": "arfcn_txp.log",  # GSM modem
+                        "arfcn_lac": "arfcn_lac.log",  # GSM modem
+                        "arfcn_ta": "arfcn_ta.log",  # GSM modem
                         "kal_channel": "kal_channel.log",  # cells from Kal
-                        "gsm_modem_channel": "gsm_modem_channel.log",  # sim808 cells
+                        "gsm_modem_channel": "gsm_modem_channel.log",  # cells
                         "arfcn_enricher": "arfcn_enricher.log",
-                        "geoip": "geoip.log",
+                        "geo_ip": "geoip.log",
                         "gps": "gps.log",
                         "heartbeat": "heartbeat.log",
                         "health_check": "health_check.log",
                         "sitch_alert": "sitch_alert.log",
-                        "sitch_init":"sitch_init.log"}
+                        "sitch_init": "sitch_init.log"}
         if ltype in type_to_file:
             log_file = type_to_file[ltype]
         else:
@@ -49,20 +65,26 @@ class LogHandler:
         return log_file
 
     def record_log_message(self, bolus):
+        """Determine log file for message and send to the writer."""
         msg_body = bolus[1]
         if type(msg_body) is dict:
             msg_string = json.dumps(msg_body)
         elif type(msg_body) is str:
             msg_string = msg_body
         else:
-            print("Logger: Unanticipated message type: %s" % str(type(msg_body)))
+            print("Logger: Unanticipated message type: %s" % str(type(msg_body)))  # NOQA
             msg_string = str(msg_body)
         self.write_log_message(bolus[0], msg_string)
 
     def write_log_message(self, log_file_type, message):
-        """You should only ever send a string to this method"""
+        """Write message to disk.
+
+        Args:
+            log_file_type (str): Type of log message
+            message (str): Message to be logged to disk
+        """
         if not isinstance(message, str):
-            print("Unable to log message with wrong type:")
+            print("Logger: Unable to log message with wrong type:")
             print(str(type(message)))
             print(str(message))
             print("Log file type:")

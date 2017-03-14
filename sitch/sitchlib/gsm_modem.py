@@ -1,3 +1,5 @@
+"""GSM Modem device ...driver?..."""
+
 import re
 import serial
 import sys
@@ -5,13 +7,20 @@ import time
 
 
 class GsmModem(object):
-    """ Initialization opens the port.  Calling GsmModem.set_eng_mode() causes
-    the module to go into engineering mode, which will
-    cause it to return cell network information.
-    It has an iterator (generator) built in that cranks out dicts.
+    """GSM Modem handler class.  Interfaces with device over serial.
 
+    Calling GsmModem.set_eng_mode() causes the module to go into
+        engineering mode, which will cause it to return cell network
+        information. It has an iterator (generator) built in that cranks
+        out dicts.
     """
+
     def __init__(self, ser_port):
+        """Initialization opens the port.
+
+        Args:
+            ser_port (str): Device to open and interact with.
+        """
         self.eng_init = 'AT+CENG=2,1 \r\n'
         self.unset_eng = 'AT+CENG=0 \r\n'
         self.gps_init = 'AT+CGPSINF=0 \r\n'
@@ -29,11 +38,12 @@ class GsmModem(object):
             ser_open_iter = ser_open_iter + 1
             self.serconn.open()
             if ser_open_iter > 5:
-                print("GSM: Failed to init and open serial port %s!" % ser_port)
+                print("GSM: Failed to open serial port %s!" % ser_port)
                 sys.exit(2)
         return
 
     def __iter__(self):
+        """Yield scans from GSM modem."""
         page = []
         while True:
             line = None
@@ -51,13 +61,18 @@ class GsmModem(object):
                 else:
                     page.append(processed_line)
 
-    def trigger_gps(self):
-        self.serconn.write(self.gps_init)
-        self.serconn.flush()
-        return
+#    def trigger_gps(self):
+#        """Trigger GPS"""
+#        self.serconn.write(self.gps_init)
+#        self.serconn.flush()
+#        return
 
     def eng_mode(self, status):
-        """ Status is bool. """
+        """Set or unset engineering mode on the modem.
+
+        Args:
+            status (bool): True to enable engineering mode, False to disable.
+        """
         self.serconn.flush()
         if status is False:
             print("GsmModem: Unsetting engineering mode, flushing")
@@ -79,6 +94,7 @@ class GsmModem(object):
         return
 
     def get_reg_info(self):
+        """Get registration information from the modem."""
         self.serconn.write(self.reg_info)
         self.serconn.flush()
         time.sleep(2)
@@ -90,6 +106,7 @@ class GsmModem(object):
         return output
 
     def dump_config(self):
+        """Dump modem's configuration."""
         self.serconn.write(self.config_dump)
         self.serconn.flush()
         time.sleep(2)
@@ -103,6 +120,7 @@ class GsmModem(object):
         return retval
 
     def get_imsi(self):
+        """Get the IMSI of the SIM installed in the modem."""
         rx = r'(?P<imsi>\S+)'
         self.serconn.write(self.imsi_info)
         self.serconn.flush()
@@ -129,6 +147,16 @@ class GsmModem(object):
         return retval
 
     def set_band(self, band):
+        """Set the band the GSM modem should communicate on.
+
+        If the band does not set correctly, an error will print to stdout and
+        the original setting will persist.
+
+        Args:
+            band (str): Pick one: `EGSM_MODE`, `PGSM_MODE`, `DCS_MODE`,
+                `GSM850_MODE`, `PCS_MODE`, `EGSM_DCS_MODE`, `GSM850_PCS_MODE`,
+                `EGSM_PCS_MODE`, or `ALL_BAND`.
+        """
         if band in ["EGSM_MODE", "PGSM_MODE", "DCS_MODE", "GSM850_MODE",
                     "PCS_MODE", "EGSM_DCS_MODE", "GSM850_PCS_MODE",
                     "EGSM_PCS_MODE", "ALL_BAND"]:
@@ -145,6 +173,7 @@ class GsmModem(object):
 
     @classmethod
     def clean_operator_string(cls, operator_string):
+        """Clean up the operator string."""
         rx = r'^[^\"]+\"(?P<operator_name>[^\"]+)\"'
         try:
             cleaned = re.match(rx, operator_string).group("operator_name")
@@ -156,9 +185,20 @@ class GsmModem(object):
 
     @classmethod
     def process_line(cls, line):
+        """Process line output from GSM modem.
+
+        We expect to see only lines starting with `+CENG:`.  Otherwise, it's
+            an empty dictionary getting returned.
+
+        Args:
+            line (str): Raw line output from GSM modem.
+
+        Returns:
+            dict: Structured data parsed from `line`.
+        """
         processed = None
-        if line.startswith('+CENG: '):
-            dataz = line.split(' ')[1].replace('"', '').replace('\r\n', '')
+        if line.startswith('+CENG:'):
+            dataz = line.split(':')[1].lstrip().replace('"', '').replace('\r\n', '')  # NOQA
             line_parts = dataz.split(',')
             if len(line_parts) == 12:
                 processed = GsmModem.process_12(line_parts)
@@ -176,13 +216,22 @@ class GsmModem(object):
         elif re.match('^OK\s*$', line):
             processed = {}
         else:
-            print("GSM: Unprocessable line from SIM808!")
+            print("GSM: Unprocessable line from modem!")
             print(line)
             processed = {}
         return processed
 
     @classmethod
     def process_12(cls, parts):
+        """Process a 12-part CENG message.
+
+        Args:
+            parts (list): Parts parsed from original CENG message.
+
+        Returns:
+            dict: Structured cell channel metadata.
+
+        """
         retval = {"cell": parts[0],
                   "arfcn": parts[1],
                   "rxl": parts[2],
@@ -200,6 +249,14 @@ class GsmModem(object):
 
     @classmethod
     def process_8(cls, parts):
+        """Process an 8-part CENG message.
+
+        Args:
+            parts (list): Parts parsed from original CENG message.
+
+        Returns:
+            dict: Structured cell channel metadata.
+        """
         retval = {"cell": parts[0],
                   "arfcn": parts[1],
                   "rxl": parts[2],
@@ -213,8 +270,17 @@ class GsmModem(object):
 
     @classmethod
     def process_7(cls, parts):
-        # In a 7-item line, cellid is not provided.  We set
-        # it to 0 to prevent barfing elsewhere.
+        """Process a 12-part CENG message.
+
+        In a 7-item line, cellid is not provided.  We set
+            it to 0 to prevent barfing elsewhere.
+
+        Args:
+            parts (list): Parts parsed from original CENG message.
+
+        Returns:
+            dict: Structured cell channel metadata.
+        """
         retval = {"cell": parts[0],
                   "arfcn": parts[1],
                   "rxl": parts[2],

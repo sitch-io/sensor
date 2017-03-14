@@ -8,6 +8,12 @@ sitchlib = imp.load_module(modulename, file, pathname, description)
 
 
 class TestUtility:
+    def test_epoch_to_iso8601(self):
+        epoch = 1488857883
+        desired = "2017-03-07T03:38:03"
+        result = sitchlib.Utility.epoch_to_iso8601(epoch)
+        assert desired == result
+
     def test_get_now_string(self):
         util = sitchlib.Utility
         dtstring = util.get_now_string()
