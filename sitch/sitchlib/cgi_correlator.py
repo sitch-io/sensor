@@ -394,7 +394,7 @@ class CgiCorrelator(object):
         Returns:
             dict: Dictionary containing feed information for CGI.  If no
                 information exists, the feed geo information will be zeroed
-                out.
+                out...
         """
         try:
             conn = sqlite3.connect(self.cgi_db)
