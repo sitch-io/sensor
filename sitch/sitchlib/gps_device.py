@@ -34,6 +34,8 @@ class GpsListener(object):
                     if self.data_stream.TPV['lon'] != 'n/a':
                         geojson = {"scan_program": "gpsd",
                                    "type": "Feature",
+                                   "sat_time": self.data_stream.TPV["time"],
+                                   "sys_time": Utility.get_now_string(),
                                    "geometry": {
                                        "type": "Point",
                                        "coordinates": [
