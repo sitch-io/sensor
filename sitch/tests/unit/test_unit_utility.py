@@ -61,5 +61,5 @@ class TestUtility:
         test_start = "2017-03-24T04:44:58.000Z"
         dt = sitchlib.Utility.dt_from_iso(test_start)
         test_finish = dt.isoformat()
-        dt_finish = sitchlib.Utility.dtt_from_iso(test_finish)
+        dt_finish = sitchlib.Utility.dt_from_iso(test_finish)
         assert dt == dt_finish
