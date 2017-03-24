@@ -15,7 +15,14 @@ class Utility:
     """General utility class."""
 
     @classmethod
+    def dt_delta_in_minutes(dt_1, dt_2):
+        delta_seconds = abs((dt_1 - dt_2).total_seconds())
+        retval = delta_seconds / 60
+        return retval
+ 
+    @classmethod
     def dt_from_iso(cls, iso_time):
+        """Exchange an ISO8601-formatted string for a datetime object."""
         return du_parser.parse(iso_time)
 
     @classmethod
