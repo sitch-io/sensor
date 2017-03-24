@@ -41,5 +41,13 @@ class GpsListener(object):
                                        "coordinates": [
                                            self.data_stream.TPV["lon"],
                                            self.data_stream.TPV["lat"]]}}
+                        geojson["time_drift"] = self.get_time_delta(geojson["sat_time"],
+                                                                    geojson["sys_time"])
                         yield copy.deepcopy(geojson)
                         time.sleep(self.delay)
+
+    def get_time_delta(self, iso_1, iso_2):
+        """Get the drift, in minutes, between two ISO times."""
+        dt_1 = Utility.dt_from_iso(iso_1)
+        dt_2 = Utility.dt_from_iso(iso_2)
+        return Utility.dt_delta_in_minutes(dt_1, dt_2)
