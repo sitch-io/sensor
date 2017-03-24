@@ -22,7 +22,7 @@ class Utility:
     @classmethod
     def get_now_string(cls):
         """Get ISO8601 timestamp for now."""
-        now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        now = datetime.datetime.now().isoformat()
         return now
 
     @classmethod
