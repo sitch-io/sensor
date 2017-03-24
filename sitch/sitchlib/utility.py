@@ -1,6 +1,7 @@
 """General utilities."""
 
 import datetime
+import dateutil.parser as du_parser
 import json
 import os
 import pprint
@@ -12,6 +13,10 @@ from location_tool import LocationTool
 
 class Utility:
     """General utility class."""
+
+    @classmethod
+    def dt_from_iso(cls, iso_time):
+        return du_parser.parse(iso_time)
 
     @classmethod
     def epoch_to_iso8601(cls, unix_time):
