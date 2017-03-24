@@ -16,6 +16,7 @@ class Utility:
 
     @classmethod
     def dt_delta_in_minutes(cls, dt_1, dt_2):
+        """Calculate the delta between two datetime objects, in minutes."""
         delta_seconds = abs((dt_1 - dt_2).total_seconds())
         retval = delta_seconds / 60
         return retval
