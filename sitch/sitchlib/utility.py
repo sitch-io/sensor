@@ -1,6 +1,7 @@
 """General utilities."""
 
 import datetime
+import dateutil.parser as du_parser
 import json
 import os
 import pprint
@@ -14,6 +15,19 @@ class Utility:
     """General utility class."""
 
     @classmethod
+    def dt_delta_in_minutes(cls, dt_1, dt_2):
+        """Calculate the delta between two datetime objects, in minutes."""
+        delta_seconds = abs((dt_1.replace(tzinfo=None) -
+                             dt_2.replace(tzinfo=None)).total_seconds())
+        retval = delta_seconds / 60
+        return retval
+
+    @classmethod
+    def dt_from_iso(cls, iso_time):
+        """Exchange an ISO8601-formatted string for a datetime object."""
+        return du_parser.parse(iso_time)
+
+    @classmethod
     def epoch_to_iso8601(cls, unix_time):
         """Transform epoch time to ISO8601 format."""
         cleaned = float(unix_time)
@@ -22,7 +36,7 @@ class Utility:
     @classmethod
     def get_now_string(cls):
         """Get ISO8601 timestamp for now."""
-        now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        now = datetime.datetime.now().isoformat()
         return now
 
     @classmethod
