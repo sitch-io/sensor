@@ -51,7 +51,7 @@ class TestIntegrationCorrelateGeo:
 
     def test_measure_time_drift_alarm(self):
         correlator = self.instantiate_geo()
-        correlator.correlate(("gps", geo_state))
+        correlator.correlate(("gps", geo_other_state))
         result = correlator.correlate(("gps", geo_time_alarm))
         assert len(result) == 1
         assert result[0][1]["id"] == 301
