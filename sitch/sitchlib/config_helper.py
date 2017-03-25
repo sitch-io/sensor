@@ -13,7 +13,7 @@ from utility import Utility as utility
 class ConfigHelper:
     """Manage configuration information for entire SITCH Sensor."""
 
-    def __init__(self, feed_dir="/data/"):
+    def __init__(self, feed_dir="/data/feed/"):
         """Initialize ConfigHelper.
 
         Args:
