@@ -33,8 +33,8 @@ def main():
             print("Runner: Mode is clutch.  Wait cycle...")
 
     print("Runner: Verify paths for feed and logs...")
-    Utility.create_path_if_nonexistent(config.feed_dir)
-    Utility.create_path_if_nonexistent(config.log_prefix)
+    sitchlib.Utility.create_path_if_nonexistent(config.feed_dir)
+    sitchlib.Utility.create_path_if_nonexistent(config.log_prefix)
 
     print("Runner: Writing Filebeat key material...")
     sitchlib.Utility.create_path_if_nonexistent(config.ls_crypto_base_path)
