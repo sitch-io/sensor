@@ -11,13 +11,13 @@ sitchlib = imp.load_module(modulename, file, pathname, description)
 test_conf = {"filebeat.prospectors": [
               {"input_type": "log",
                "document_type": "cells",
-               "keys_under_root": true,
+               "keys_under_root": True,
                "paths": [
                  "/var/log/sitch/cells.log"
                 ]},
               {"input_type": "log",
                "document_type": "scan",
-               "keys_under_root": true,
+               "keys_under_root": True,
                "paths": [
                  "/var/log/sitch/scanner.log"
                 ]}]}
