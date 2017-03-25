@@ -46,7 +46,8 @@ class GpsListener(object):
                         yield copy.deepcopy(geojson)
                         time.sleep(self.delay)
 
-    def get_time_delta(self, iso_1, iso_2):
+    @classmethod
+    def get_time_delta(cls, iso_1, iso_2):
         """Get the drift, in minutes, between two ISO times."""
         dt_1 = Utility.dt_from_iso(iso_1)
         dt_2 = Utility.dt_from_iso(iso_2)
