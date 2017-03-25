@@ -24,10 +24,11 @@
   * SITCH feed.  See https://github.com/sitch-io/feed_builder for more
   information.
 * Hardware
-  * Raspberry Pi 2
-  * Fona SIM808 GSM modem w/ USB TTY cable
+  * Raspberry Pi 3
+  * Simcom (SIM808 | SIM800L | SIM900) GSM modem with SIM
+  * USB TTY cable (for GSM modem)
   * RTL-SDR device.  Tested with NooElec NESDR Mini and NooElec NESDR XTR
-  * GlobalSat USB GPS dongle
+  * GlobalSat USB GPS dongle (any gpsd-compatible USB GPS shold work)
 
 ## Step by step...
 
@@ -47,7 +48,7 @@ We expect the following environment variables to be set in Resin:
 | KAL_GAIN          | Gain setting for Kalibrate (try 60-80)                   |
 | KAL_THRESHOLD     | Threshold for alerting on Kalibrate ARFCN power          |
 | LOCATION_NAME     | Override the default device name (Resin UUID)            |
-| LOG_HOST          |  hostname:port                                           |
+| LOG_HOST          | Logstash service hostname:port                                           |
 | MCC_LIST          | Comma-separated list of MCCs to retrieve feed files for  |
 | MODE              | Set to 'clutch' to go into a wait loop (for debugging)   |
 | STATE_LIST        | List of states (in caps) for FCC feed.  ex: "CA,TX"      |
@@ -70,7 +71,7 @@ Testing is done with pytest.  Coverage module optional.
 Testing requirements (local testing possible only on Linux):
 * lshw
 * pip packages: pytest-cov pytest-pep8 pyserial hvac kalibrate haversine
-python-geoip python-geoip-geolite2 pyudev gps3 LatLon
+python-geoip python-geoip-geolite2 pyudev gps3 LatLon python-dateutil
 
 
 1. Navigate to the base directory of the repository.
