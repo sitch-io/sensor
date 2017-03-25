@@ -24,7 +24,7 @@ class ConfigHelper:
         self.device_id = ConfigHelper.get_device_id()
         self.site_name = os.getenv('LOCATION_NAME', 'SITCH_SITE')
         self.platform_name = utility.get_platform_name()
-        self.log_prefix = "/var/log/sitch/"
+        self.log_prefix = "/data/log/sitch/"
         self.log_host = ConfigHelper.get_from_env("LOG_HOST")
         self.log_method = "local_file"
         self.kal_band = ConfigHelper.get_from_env("KAL_BAND")
@@ -105,9 +105,20 @@ class ConfigHelper:
         fb["output.logstash"]["ssl.key"] = self.ls_key_path
         fb["output.logstash"]["ssl.certificate"] = self.ls_cert_path
         fb["output.logstash"]["ssl.certificate_authorities"] = [self.ls_ca_path]  # NOQA
+        fb = self.set_filebeat_logfile_paths(self.log_prefix, fb)
         with open(self.filebeat_config_file_path, 'w') as out_file:
             yaml.safe_dump(fb, out_file)
         return
+
+    @classmethod
+    def set_filebeat_logfile_paths(log_prefix, filebeat_config):
+        """Sets all log file paths to align with configured log prefix."""
+        placeholder = "/var/log/sitch/"
+        for prospector in filebeat_config["filebeat.prospectors"]:
+            for path in prospector["paths"]:
+                working = str(path).replace(placeholder, "")
+                path = os.path.join(log_prefix, working)
+        return filebeat_config
 
     @classmethod
     def get_device_id(cls):
