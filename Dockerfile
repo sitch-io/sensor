@@ -58,6 +58,7 @@ RUN pip install virtualenv==15.1.0 && \
     hvac==0.2.16 \
     kalibrate==1.1.2 \
     haversine==0.4.5 \
+    python-dateutil==2.6.0 \
     python-geoip==1.2 \
     python-geoip-geolite2==2015.303 \
     pyudev==0.21.0 \

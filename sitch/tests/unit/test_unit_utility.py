@@ -56,3 +56,21 @@ class TestUtility:
 
     def test_unit_utility_get_performance_metrics(self):
         assert sitchlib.Utility.get_performance_metrics()
+
+    def test_unit_utility_8601_to_dt(self):
+        test_start = "2017-03-24T04:44:58.000Z"
+        dt = sitchlib.Utility.dt_from_iso(test_start)
+        test_finish = dt.isoformat()
+        dt_finish = sitchlib.Utility.dt_from_iso(test_finish)
+        assert dt == dt_finish
+
+    def test_unit_utility_dt_delta_in_minutes(self):
+        test_1 = "2017-03-24T04:44:58.000Z"
+        test_2 = "2017-03-24T04:48:58.000Z"
+        delta = 4
+        dt_1 = sitchlib.Utility.dt_from_iso(test_1)
+        dt_2 = sitchlib.Utility.dt_from_iso(test_2)
+        derived_1 = sitchlib.Utility.dt_delta_in_minutes(dt_1, dt_2)
+        derived_2 = sitchlib.Utility.dt_delta_in_minutes(dt_2, dt_1)
+        assert derived_1 == derived_2
+        assert derived_1 == delta

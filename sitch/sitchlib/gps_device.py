@@ -34,10 +34,21 @@ class GpsListener(object):
                     if self.data_stream.TPV['lon'] != 'n/a':
                         geojson = {"scan_program": "gpsd",
                                    "type": "Feature",
+                                   "sat_time": self.data_stream.TPV["time"],
+                                   "sys_time": Utility.get_now_string(),
                                    "geometry": {
                                        "type": "Point",
                                        "coordinates": [
                                            self.data_stream.TPV["lon"],
                                            self.data_stream.TPV["lat"]]}}
+                        geojson["time_drift"] = self.get_time_delta(geojson["sat_time"],
+                                                                    geojson["sys_time"])
                         yield copy.deepcopy(geojson)
                         time.sleep(self.delay)
+
+    @classmethod
+    def get_time_delta(cls, iso_1, iso_2):
+        """Get the drift, in minutes, between two ISO times."""
+        dt_1 = Utility.dt_from_iso(iso_1)
+        dt_2 = Utility.dt_from_iso(iso_2)
+        return Utility.dt_delta_in_minutes(dt_1, dt_2)
