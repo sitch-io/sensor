@@ -116,9 +116,11 @@ class ConfigHelper:
         """Sets all log file paths to align with configured log prefix."""
         placeholder = "/var/log/sitch/"
         for prospector in filebeat_config["filebeat.prospectors"]:
+            working_paths = []
             for path in prospector["paths"]:
-                working = str(path).replace(placeholder, "")
-                path = os.path.join(log_prefix, working)
+                w_path = path.replace(placeholder, "")
+                working_paths.append(os.path.join(log_prefix, w_path))
+            prospector["paths"] = working_paths
         return filebeat_config
 
     @classmethod
