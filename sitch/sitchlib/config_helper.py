@@ -13,18 +13,18 @@ from utility import Utility as utility
 class ConfigHelper:
     """Manage configuration information for entire SITCH Sensor."""
 
-    def __init__(self, feed_dir="/data/sitch/feed/"):
+    def __init__(self, sitch_var_base_dir="/data/sitch/"):
         """Initialize ConfigHelper.
 
         Args:
-            feed_dir (str): Directory where feed information can be found.
+            sitch_var_base_dir (str): Base directory for feed and log data.
         """
         self.detector = dd()
         self.print_devices_as_detected()
         self.device_id = ConfigHelper.get_device_id()
         self.site_name = os.getenv('LOCATION_NAME', 'SITCH_SITE')
         self.platform_name = utility.get_platform_name()
-        self.log_prefix = "/data/sitch/log/"
+        self.log_prefix = os.path.join(sitch_var_base_dir, "log/")
         self.log_host = ConfigHelper.get_from_env("LOG_HOST")
         self.log_method = "local_file"
         self.kal_band = ConfigHelper.get_from_env("KAL_BAND")
@@ -42,7 +42,7 @@ class ConfigHelper:
         self.vault_path = ConfigHelper.get_from_env("VAULT_PATH")
         self.mode = os.getenv("MODE", "GOGOGO")
         self.public_ip = str(utility.get_public_ip())
-        self.feed_dir = feed_dir
+        self.feed_dir = os.path.join(sitch_var_base_dir, "feed/")
         self.feed_url_base = ConfigHelper.get_from_env("FEED_URL_BASE")
         self.mcc_list = ConfigHelper.get_list_from_env("MCC_LIST")
         self.state_list = ConfigHelper.get_list_from_env("STATE_LIST")

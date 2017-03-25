@@ -69,6 +69,7 @@ class Utility:
         elif os.path.exists(os.path.dirname(path)):
             return
         os.mkdir(os.path.dirname(path))
+        print(("Utility: Creating directory: %s") % path)
         return
 
     @classmethod
