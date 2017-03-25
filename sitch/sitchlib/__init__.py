@@ -5,7 +5,6 @@ from gsm_modem import GsmModem  # NOQA
 from location_tool import LocationTool  # NOQA
 from logger import LogHandler  # NOQA
 from geo_ip import GeoIp  # NOQA
-from gsm_modem import GsmModem  # NOQA
 from utility import Utility  # NOQA
 from feed_manager import FeedManager  # NOQA
 from device_detector import DeviceDetector  # NOQA
@@ -15,4 +14,4 @@ from cgi_correlator import CgiCorrelator  # NOQA
 from geo_correlator import GeoCorrelator  # NOQA
 
 __author__ = "Ash Wilson"
-__version__ = "3.5.0"
+__version__ = "3.6.0"
