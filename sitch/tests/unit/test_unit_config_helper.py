@@ -34,8 +34,10 @@ class TestConfigHelper:
         return config
 
     def test_unit_set_filebeat_file_paths(self):
+        print test_conf
         res = sitchlib.ConfigHelper.set_filebeat_logfile_paths("/pre/fix/",
                                                                test_conf)
+        print res
         assert len(res["filebeat.prospectors"][0]["paths"]) == 1
         assert res["filebeat.prospectors"][0]["paths"][0] == "/pre/fix/cells.log"
         assert len(res["filebeat.prospectors"][1]["paths"]) == 1
