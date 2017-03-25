@@ -43,7 +43,8 @@ class GeoCorrelator(object):
             alerts = GeoCorrelator.geo_drift_check(self.geo_anchor, scan_body,
                                                    self.threshold)
             for alert in GeoCorrelator.time_drift_check(scan_body,
-                                                        self.time_threshold)
+                                                        self.time_threshold):
+                alerts.append(alert)
         return alerts
 
     @classmethod
