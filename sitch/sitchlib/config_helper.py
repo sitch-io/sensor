@@ -128,7 +128,7 @@ class ConfigHelper:
     def get_device_id(cls):
         """Get device ID from env var."""
         device_id = "WHOKNOWS"
-        resin = os.getenv('RESIN_DEVICE_UUID', '')
+        resin = os.getenv('RESIN_DEVICE_NAME_AT_INIT', '')
         override = os.getenv('LOCATION_NAME', '')
         for x in [resin, override]:
             if x != '':
