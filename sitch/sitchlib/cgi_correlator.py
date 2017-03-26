@@ -59,7 +59,7 @@ class CgiCorrelator(object):
             channel = scan_bolus[1]
             if channel["mcc"] in ["", None]:
                 return retval  # We don't correlate incomplete CGIs...
-            """ Here's the feed comparison part """
+            # Here's the feed comparison part:
             channel["feed_info"] = self.get_feed_info(channel["mcc"],
                                                       channel["mnc"],
                                                       channel["lac"],
@@ -75,7 +75,7 @@ class CgiCorrelator(object):
                 if channel["mcc"] not in self.mcc_list:
                     msg = ("MCC %s should not be observed by this sensor." %
                            channel["mcc"])
-                    chan_alert = self.alerts.build_alert(130, msg)
+                    retval.append(self.alerts.build_alert(130, msg))
                 feed_comparison_results = self.feed_comparison(channel)
                 for feed_alert in feed_comparison_results:
                     retval.append(feed_alert)
