@@ -42,14 +42,16 @@ class GeoCorrelator(object):
             alerts = []
         else:
             alerts = GeoCorrelator.geo_drift_check(self.geo_anchor, scan_body,
-                                                   self.threshold)
+                                                   self.threshold,
+                                                   self.device_id)
             for alert in GeoCorrelator.time_drift_check(scan_body,
-                                                        self.time_threshold):
+                                                        self.time_threshold,
+                                                        self.device_id):
                 alerts.append(alert)
         return alerts
 
     @classmethod
-    def geo_drift_check(cls, geo_anchor, gps_scan, threshold):
+    def geo_drift_check(cls, geo_anchor, gps_scan, threshold, device_id):
         """Fire alarm if distance between points exceeds threshold.
 
         Args:
@@ -74,11 +76,11 @@ class GeoCorrelator(object):
         else:
             message = "Possible GPS spoofing attack! %d delta from anchor" % (
                       current_distance)
-            alert = AlertManager(self.device_id).build_alert(300, message)
+            alert = AlertManager(device_id).build_alert(300, message)
             return[alert]
 
     @classmethod
-    def time_drift_check(cls, gps_scan, threshold_mins):
+    def time_drift_check(cls, gps_scan, threshold_mins, device_id):
         """Checks drift value, alarms if beyond threshold."""
         current_delta = gps_scan["time_drift"]
         if current_delta < threshold_mins:
@@ -86,5 +88,5 @@ class GeoCorrelator(object):
         else:
             message = "Possible GPS time spoofing attack! %d delta from system" % (
                       current_delta)
-            alert = AlertManager(self.device_id).build_alert(310, message)
+            alert = AlertManager(device_id).build_alert(310, message)
             return[alert]

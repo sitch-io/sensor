@@ -5,7 +5,8 @@ class AlertManager(object):
     """AlertManager is used to ensure alerts are consistently formatted."""
 
     def __init__(self, device_id):
-        """Initialization takes no arguments, returns nothing."""
+        """The device_id arg gets embedded into the alert."""
+        self.device_id = device_id
         self.alert_map = {
             100: "Tower out of range.",
             110: "Primary BTS metadata change.",
