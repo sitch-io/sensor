@@ -24,10 +24,11 @@
   * SITCH feed.  See https://github.com/sitch-io/feed_builder for more
   information.
 * Hardware
-  * Raspberry Pi 2
-  * Fona SIM808 GSM modem w/ USB TTY cable
+  * Raspberry Pi 3
+  * Simcom (SIM808 | SIM800L | SIM900) GSM modem with SIM
+  * USB TTY cable (for GSM modem)
   * RTL-SDR device.  Tested with NooElec NESDR Mini and NooElec NESDR XTR
-  * GlobalSat USB GPS dongle
+  * GlobalSat USB GPS dongle (any gpsd-compatible USB GPS shold work)
 
 ## Step by step...
 
@@ -38,6 +39,7 @@ but forking makes modifications and PRs easier to deal with.
 1. Push to your Resin application: `git push resin master`
 
 We expect the following environment variables to be set in Resin:
+
 
 | Variable           | Purpose                                                 |
 |--------------------|---------------------------------------------------------|
@@ -59,6 +61,7 @@ We expect the following environment variables to be set in Resin:
 | FEED_RADIO_TARGETS | List of radios for feed (optional, defaults to GSM)     |
 
 
+
 The CGI_WHITELIST will suppress alert 110 (BTS metadata changed) if the CGI of
 channel 0 in your GSM modem output matches an item in CGI_WHITELIST.  This is
 the format you should use: `MCC:MNC:LAC:CELLID,MCC:MNC:LAC:CELLID`  This is
@@ -72,7 +75,7 @@ Testing is done with pytest.  Coverage module optional.
 Testing requirements (local testing possible only on Linux):
 * lshw
 * pip packages: pytest-cov pytest-pep8 pyserial hvac kalibrate haversine
-python-geoip python-geoip-geolite2 pyudev gps3 LatLon
+python-geoip python-geoip-geolite2 pyudev gps3 LatLon python-dateutil
 
 
 1. Navigate to the base directory of the repository.
