@@ -131,10 +131,6 @@ def main():
     while True:
         time.sleep(120)
         active_threads = threading.enumerate()
-        print("Queue: Scan results queue depth: %s" % len(scan_results_queue))
-        print("Queue: ARFCN Correlator queue depth: %s" % len(arfcn_correlator_queue))  # NOQA
-        print("Queue: CGI Correlator queue depth: %s" % len(cgi_correlator_queue))  # NOQA
-        print("Queue: GEO Correlator queue depth: %s" % len(geo_correlator_queue))  # NOQA
         queue_sizes = {"scan_results": len(scan_results_queue),
                        "arfcn_correlator": len(cgi_correlator_queue),
                        "cgi_correlator": len(cgi_correlator_queue),
