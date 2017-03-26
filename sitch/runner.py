@@ -293,7 +293,8 @@ def arfcn_correlator(config):
     correlator = sitchlib.ArfcnCorrelator(config.state_list,
                                           config.feed_dir,
                                           config.arfcn_whitelist,
-                                          config.kal_threshold)
+                                          config.kal_threshold,
+                                          config.device_id)
     while True:
         try:
             item = arfcn_correlator_queue.popleft()
@@ -309,7 +310,8 @@ def cgi_correlator(config):
     """CGI correlator thread."""
     correlator = sitchlib.CgiCorrelator(config.feed_dir,
                                         config.cgi_whitelist,
-                                        config.mcc_list)
+                                        config.mcc_list,
+                                        config.device_id)
     while True:
         try:
             item = cgi_correlator_queue.popleft()
@@ -323,7 +325,7 @@ def cgi_correlator(config):
 
 def geo_correlator(config):
     """Correlate GPS events, look for drift."""
-    correlator = sitchlib.GeoCorrelator()
+    correlator = sitchlib.GeoCorrelator(config.device_id)
     while True:
         try:
             item = geo_correlator_queue.popleft()

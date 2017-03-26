@@ -14,7 +14,7 @@ class ArfcnCorrelator(object):
     instantiating the ArfcnCorrelator.
     """
 
-    def __init__(self, states, feed_dir, whitelist, power_threshold):
+    def __init__(self, states, feed_dir, whitelist, power_threshold, device_id):
         """Initializing the ArfcnCorrelator.
 
         Args:
@@ -29,7 +29,7 @@ class ArfcnCorrelator(object):
                 reported channel power will be compared against to make a
                 determination on whether or not to fire an alarm.
         """
-        self.alerts = alert_manager.AlertManager()
+        self.alerts = alert_manager.AlertManager(device_id)
         self.geo_state = {"geometry": {"coordinates": [0, 0]}}
         self.feed_dir = feed_dir
         self.states = states

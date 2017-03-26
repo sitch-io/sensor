@@ -4,7 +4,7 @@
 class AlertManager(object):
     """AlertManager is used to ensure alerts are consistently formatted."""
 
-    def __init__(self):
+    def __init__(self, device_id):
         """Initialization takes no arguments, returns nothing."""
         self.alert_map = {
             100: "Tower out of range.",
@@ -37,6 +37,7 @@ class AlertManager(object):
         """
         message = {}
         message["id"] = alert_id
+        message["device_id"] = self.device_id
         message["type"] = self.get_alert_type(alert_id)
         message["details"] = alert_message
         retval = ("sitch_alert", message)

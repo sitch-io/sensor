@@ -13,7 +13,7 @@ class CgiCorrelator(object):
     instantiating the CgiCorrelator.
     """
 
-    def __init__(self, feed_dir, cgi_whitelist, mcc_list):
+    def __init__(self, feed_dir, cgi_whitelist, mcc_list, device_id):
         """Initializing CgiCorrelator.
 
         Args:
@@ -22,7 +22,7 @@ class CgiCorrelator(object):
 
         """
         self.feed_dir = feed_dir
-        self.alerts = alert_manager.AlertManager()
+        self.alerts = alert_manager.AlertManager(device_id)
         self.prior_bts = {}
         self.state = {"geometry": {"coordinates": [0, 0]}}
         self.feed_cache = []

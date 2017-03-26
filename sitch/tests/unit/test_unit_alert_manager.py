@@ -8,7 +8,7 @@ sitchlib = imp.load_module(modulename, file, pathname, description)
 
 class TestAlertManager:
     def test_alert_manager_init(self):
-        alert_manager = sitchlib.AlertManager()
+        alert_manager = sitchlib.AlertManager("DEVICE_ID")
         assert alert_manager
 
     def test_get_alert_type(self):

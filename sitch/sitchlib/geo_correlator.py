@@ -7,11 +7,12 @@ from utility import Utility
 class GeoCorrelator(object):
     """Geographic correlator."""
 
-    def __init__(self):
+    def __init__(self, device_id):
         """Initialize the Geographic Correlator."""
         self.geo_anchor = {}
         self.threshold = 10
         self.time_threshold = 10
+        self.device_id = device_id
 
     def correlate(self, scan_bolus):
         """Correlate one geo event.
@@ -73,7 +74,7 @@ class GeoCorrelator(object):
         else:
             message = "Possible GPS spoofing attack! %d delta from anchor" % (
                       current_distance)
-            alert = AlertManager().build_alert(300, message)
+            alert = AlertManager(self.device_id).build_alert(300, message)
             return[alert]
 
     @classmethod
@@ -85,5 +86,5 @@ class GeoCorrelator(object):
         else:
             message = "Possible GPS time spoofing attack! %d delta from system" % (
                       current_delta)
-            alert = AlertManager().build_alert(310, message)
+            alert = AlertManager(self.device_id).build_alert(310, message)
             return[alert]
