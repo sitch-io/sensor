@@ -307,7 +307,8 @@ def arfcn_correlator(config):
 def cgi_correlator(config):
     """CGI correlator thread."""
     correlator = sitchlib.CgiCorrelator(config.feed_dir,
-                                        config.cgi_whitelist)
+                                        config.cgi_whitelist,
+                                        config.mcc_list)
     while True:
         try:
             item = cgi_correlator_queue.popleft()

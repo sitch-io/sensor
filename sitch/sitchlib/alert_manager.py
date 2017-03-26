@@ -10,9 +10,10 @@ class AlertManager(object):
             100: "Tower out of range.",
             110: "Primary BTS metadata change.",
             120: "Tower not in feed DB.",
+            130: "Bad MCC (Mobile Country Code) detected.",
             200: "ARFCN FCCH detected above power threshold.",
             300: "GPS geo drift over threshold.",
-            301: "GPS time delta over threshold.",
+            310: "GPS time delta over threshold.",
             400: "Failed to locate a valid license for ARFCN in this area."
         }
         return

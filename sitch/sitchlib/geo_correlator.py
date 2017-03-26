@@ -85,5 +85,5 @@ class GeoCorrelator(object):
         else:
             message = "Possible GPS time spoofing attack! %d delta from system" % (
                       current_delta)
-            alert = AlertManager().build_alert(301, message)
+            alert = AlertManager().build_alert(310, message)
             return[alert]

@@ -13,7 +13,7 @@ class CgiCorrelator(object):
     instantiating the CgiCorrelator.
     """
 
-    def __init__(self, feed_dir, cgi_whitelist):
+    def __init__(self, feed_dir, cgi_whitelist, mcc_list):
         """Initializing CgiCorrelator.
 
         Args:
@@ -28,6 +28,7 @@ class CgiCorrelator(object):
         self.feed_cache = []
         self.good_cgis = []
         self.bad_cgis = []
+        self.mcc_list = mcc_list
         self.cgi_whitelist = cgi_whitelist
         self.cgi_db = os.path.join(feed_dir, "cgi.db")
         print(CgiCorrelator.cgi_whitelist_message(self.cgi_whitelist))
@@ -71,6 +72,10 @@ class CgiCorrelator(object):
             # In the event we have incomplete information, bypass comparison.
             skip_feed_comparison = CgiCorrelator.should_skip_feed(channel)
             if skip_feed_comparison is False:
+                if channel["mcc"] not in self.mcc_list:
+                    msg = ("MCC %s should not be observed by this sensor." %
+                           chan["mcc"])
+                    chan_alert = self.alerts.build_alert(130, msg)
                 feed_comparison_results = self.feed_comparison(channel)
                 for feed_alert in feed_comparison_results:
                     retval.append(feed_alert)
