@@ -13,18 +13,19 @@ from utility import Utility as utility
 class ConfigHelper:
     """Manage configuration information for entire SITCH Sensor."""
 
-    def __init__(self, feed_dir="/data/"):
+    def __init__(self, sitch_var_base_dir="/data/sitch/"):
         """Initialize ConfigHelper.
 
         Args:
-            feed_dir (str): Directory where feed information can be found.
+            sitch_var_base_dir (str): Base directory for feed and log data.
         """
         self.detector = dd()
         self.print_devices_as_detected()
         self.device_id = ConfigHelper.get_device_id()
+        self.feed_radio_targets = self.get_list_from_env("FEED_RADIO_TARGETS")
         self.site_name = os.getenv('LOCATION_NAME', 'SITCH_SITE')
         self.platform_name = utility.get_platform_name()
-        self.log_prefix = "/var/log/sitch/"
+        self.log_prefix = os.path.join(sitch_var_base_dir, "log/")
         self.log_host = ConfigHelper.get_from_env("LOG_HOST")
         self.log_method = "local_file"
         self.kal_band = ConfigHelper.get_from_env("KAL_BAND")
@@ -42,7 +43,7 @@ class ConfigHelper:
         self.vault_path = ConfigHelper.get_from_env("VAULT_PATH")
         self.mode = os.getenv("MODE", "GOGOGO")
         self.public_ip = str(utility.get_public_ip())
-        self.feed_dir = feed_dir
+        self.feed_dir = os.path.join(sitch_var_base_dir, "feed/")
         self.feed_url_base = ConfigHelper.get_from_env("FEED_URL_BASE")
         self.mcc_list = ConfigHelper.get_list_from_env("MCC_LIST")
         self.state_list = ConfigHelper.get_list_from_env("STATE_LIST")
@@ -105,15 +106,29 @@ class ConfigHelper:
         fb["output.logstash"]["ssl.key"] = self.ls_key_path
         fb["output.logstash"]["ssl.certificate"] = self.ls_cert_path
         fb["output.logstash"]["ssl.certificate_authorities"] = [self.ls_ca_path]  # NOQA
+        fb["filebeat.registry_file"] = os.path.join(self.log_prefix, "fb_registry")
+        fb = self.set_filebeat_logfile_paths(self.log_prefix, fb)
         with open(self.filebeat_config_file_path, 'w') as out_file:
             yaml.safe_dump(fb, out_file)
         return
 
     @classmethod
+    def set_filebeat_logfile_paths(cls, log_prefix, filebeat_config):
+        """Sets all log file paths to align with configured log prefix."""
+        placeholder = "/var/log/sitch/"
+        for prospector in filebeat_config["filebeat.prospectors"]:
+            working_paths = []
+            for path in prospector["paths"]:
+                w_path = path.replace(placeholder, "")
+                working_paths.append(os.path.join(log_prefix, w_path))
+            prospector["paths"] = working_paths
+        return filebeat_config
+
+    @classmethod
     def get_device_id(cls):
         """Get device ID from env var."""
         device_id = "WHOKNOWS"
-        resin = os.getenv('RESIN_DEVICE_UUID', '')
+        resin = os.getenv('RESIN_DEVICE_NAME_AT_INIT', '')
         override = os.getenv('LOCATION_NAME', '')
         for x in [resin, override]:
             if x != '':

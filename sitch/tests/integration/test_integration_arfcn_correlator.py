@@ -72,13 +72,13 @@ gsm_modem_channel = {"cgi_str": "310:266:253:21553",
 class TestIntegrationCorrelateArfcn:
     def instantiate_arfcn(self):
         arfcn_correlator = sitchlib.ArfcnCorrelator(states, feedpath,
-                                                   [], 1000000)
+                                                   [], 1000000, "SENSOR_ID")
         arfcn_correlator.correlate(("gps", geo_state))
         return arfcn_correlator
 
     def instantiate_arfcn_bad_geo_state(self):
         arfcn_correlator = sitchlib.ArfcnCorrelator(states, feedpath,
-                                                  [], 1000000)
+                                                  [], 1000000, "SENSOR_ID")
         arfcn_correlator.correlate(("gps", bad_geo_state))
         return arfcn_correlator
 

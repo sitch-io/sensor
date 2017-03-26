@@ -40,23 +40,27 @@ but forking makes modifications and PRs easier to deal with.
 
 We expect the following environment variables to be set in Resin:
 
-| Variable          | Purpose                                                  |
-|-------------------|----------------------------------------------------------|
-| FEED_URL_BASE     | Base URL for feed data retrieval                         |
-| GSM_MODEM_BAND    | Band to scan with SIM808 (try GSM850_MODE)               |
-| KAL_BAND          | Band to scan with Kalibrate (try GSM850)                 |
-| KAL_GAIN          | Gain setting for Kalibrate (try 60-80)                   |
-| KAL_THRESHOLD     | Threshold for alerting on Kalibrate ARFCN power          |
-| LOCATION_NAME     | Override the default device name (Resin UUID)            |
-| LOG_HOST          | Logstash service hostname:port                                           |
-| MCC_LIST          | Comma-separated list of MCCs to retrieve feed files for  |
-| MODE              | Set to 'clutch' to go into a wait loop (for debugging)   |
-| STATE_LIST        | List of states (in caps) for FCC feed.  ex: "CA,TX"      |
-| GSM_MODEM_PORT    | Override GSM modem autodetect                            |
-| VAULT_PATH        | Path to logstash cert/keys in Vault                      |
-| VAULT_TOKEN       | Token for accessing credentials in vault                 |
-| VAULT_URL         | URL for accessing Vault. ex: https://v.example.com:port  |
-| CGI_WHITELIST     | List of CGIs we trust (see below)                        |
+
+| Variable           | Purpose                                                 |
+|--------------------|---------------------------------------------------------|
+| FEED_URL_BASE      | Base URL for feed data retrieval                        |
+| GSM_MODEM_BAND     | Band to scan with SIM808 (try GSM850_MODE)              |
+| KAL_BAND           | Band to scan with Kalibrate (try GSM850)                |
+| KAL_GAIN           | Gain setting for Kalibrate (try 60-80)                  |
+| KAL_THRESHOLD      | Threshold for alerting on Kalibrate ARFCN power         |
+| LOCATION_NAME      | Override the default device name (Resin UUID)           |
+| LOG_HOST           |  hostname:port                                          |
+| MCC_LIST           | Comma-separated list of MCCs to retrieve feed files for |
+| MODE               | Set to 'clutch' to go into a wait loop (for debugging)  |
+| STATE_LIST         | List of states (in caps) for FCC feed.  ex: "CA,TX"     |
+| GSM_MODEM_PORT     | Override GSM modem autodetect                           |
+| VAULT_PATH         | Path to logstash cert/keys in Vault                     |
+| VAULT_TOKEN        | Token for accessing credentials in vault                |
+| VAULT_URL          | URL for accessing Vault. ex: https://v.example.com:port |
+| CGI_WHITELIST      | List of CGIs we trust (see below)                       |
+| FEED_RADIO_TARGETS | List of radios for feed (optional, defaults to GSM)     |
+
+
 
 The CGI_WHITELIST will suppress alert 110 (BTS metadata changed) if the CGI of
 channel 0 in your GSM modem output matches an item in CGI_WHITELIST.  This is

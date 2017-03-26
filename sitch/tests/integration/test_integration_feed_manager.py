@@ -22,7 +22,7 @@ class TestIntegrationFeedManager:
         expected = 279315
         actual = 0
         print("Using temp directory %s" % tempdir)
-        sitchlib.FeedManager.reconcile_cgi_db(cgi_feed_files, cgi_db, 0)
+        sitchlib.FeedManager.reconcile_cgi_db(cgi_feed_files, cgi_db, "GSM", 0)
         conn = sqlite3.connect(cgi_db)
         c = conn.cursor()
         for row in c.execute('SELECT * FROM cgi'):
