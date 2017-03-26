@@ -166,6 +166,8 @@ class ArfcnCorrelator(object):
             if self.is_in_range(item_gps, self.geo_state):
                 self.manage_arfcn_lists("out", arfcn, "not_in_range")
                 return results
+        if arfcn is None:
+            return results
         msg = "Unable to locate a license for ARFCN %s" % str(arfcn)
         self.manage_arfcn_lists("in", arfcn, "not_in_range")
         alert = self.alerts.build_alert(400, msg)
