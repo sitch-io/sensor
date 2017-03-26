@@ -181,9 +181,10 @@ class Utility:
         return dest_file_name
 
     @classmethod
-    def get_performance_metrics(cls):
+    def get_performance_metrics(cls, queue_sizes={}):
         """Get sensor hardware and os performance statistics."""
         retval = {}
+        retval["queue_sizes"] = queue_sizes
         cpu_times = psutil.cpu_times()
         retval["scan_program"] = "health_check"
         retval["timestamp"] = Utility.get_now_string()

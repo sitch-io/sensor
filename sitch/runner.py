@@ -131,14 +131,19 @@ def main():
     while True:
         time.sleep(120)
         active_threads = threading.enumerate()
-        #  Heartbeat messages
-        for item in active_threads:
-            message_write_queue.append(("heartbeat", sitchlib.Utility.heartbeat(item.name)))  # NOQA
-        message_write_queue.append(("health_check", sitchlib.Utility.get_performance_metrics()))  # NOQA
         print("Queue: Scan results queue depth: %s" % len(scan_results_queue))
         print("Queue: ARFCN Correlator queue depth: %s" % len(arfcn_correlator_queue))  # NOQA
         print("Queue: CGI Correlator queue depth: %s" % len(cgi_correlator_queue))  # NOQA
         print("Queue: GEO Correlator queue depth: %s" % len(geo_correlator_queue))  # NOQA
+        queue_sizes = {"scan_results": len(scan_results_queue),
+                       "arfcn_correlator": len(cgi_correlator_queue),
+                       "cgi_correlator": len(cgi_correlator_queue),
+                       "geo_correlator": len(geo_correlator_queue)}
+        #  Heartbeat messages
+        for item in active_threads:
+            message_write_queue.append(("heartbeat", sitchlib.Utility.heartbeat(item.name)))  # NOQA
+        message_write_queue.append(("health_check", sitchlib.Utility.get_performance_metrics(queue_sizes)))  # NOQA
+
     return
 
 
