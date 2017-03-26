@@ -23,6 +23,7 @@ class FeedManager(object):
         self.mcc_list = config.mcc_list
         self.state_list = config.state_list
         self.feed_dir = config.feed_dir
+        self.target_radios = config.feed_radio_targets
         self.url_base = config.feed_url_base
         self.cgi_feed_files = []
         self.arfcn_feed_files = []
@@ -52,6 +53,7 @@ class FeedManager(object):
         print("FeedManager: Reconciling feed database.  Please be patient...")
         this_timestamp = FeedManager.reconcile_cgi_db(self.cgi_feed_files,
                                                       self.cgi_db,
+                                                      self.target_radios,
                                                       last_timestamp)
         self.set_newest_record_time(this_timestamp)
 
@@ -85,7 +87,7 @@ class FeedManager(object):
         return
 
     @classmethod
-    def reconcile_cgi_db(cls, feed_files, db_file, last_update):
+    def reconcile_cgi_db(cls, feed_files, db_file, target_radios, last_update):
         """Reconcile all feed files against the CGI DB.
 
         Args:
@@ -101,14 +103,15 @@ class FeedManager(object):
                   "unit", "lon", "lat", "range", "carrier"]
         # If DB file does not exist, create it, then rip the DB from file
         if not db_exists:
-            ts = cls.create_and_populate_cgi_db(schema, feed_files, db_file)
+            ts = cls.create_and_populate_cgi_db(schema, feed_files,
+                                                db_file, target_radios)
         else:
-            ts = cls.merge_feed_files_into_db(schema, feed_files,
-                                              db_file, last_update)
+            ts = cls.merge_feed_files_into_db(schema, feed_files, db_file,
+                                              target_radios, last_update)
         return ts
 
     @classmethod
-    def merge_feed_files_into_db(cls, schema, feed_files, db_file, last_upd):
+    def merge_feed_files_into_db(cls, schema, feed_files, db_file, target_radios, last_upd):  # NOQA
         """Wrapper for merging feed file data into CGI DB.
 
         Args:
@@ -127,13 +130,13 @@ class FeedManager(object):
             if not feed_file_exists:
                 print("FeedManager: Feed file does not exist: %s" % feed_file)
             else:
-                newest_ts = cls.cgi_csv_dump_to_db(schema, feed_file, db_file, last_upd)  # NOQA
+                newest_ts = cls.cgi_csv_dump_to_db(schema, feed_file, db_file, target_radios, last_upd)  # NOQA
                 if newest_ts > newest_ts_overall:
                     newest_ts_overall = float(newest_ts)
         return newest_ts_overall
 
     @classmethod
-    def create_and_populate_cgi_db(cls, schema, feed_files, db_file):
+    def create_and_populate_cgi_db(cls, schema, feed_files, db_file, target_radios):  # NOQA
         """Create DB, then merge all records from file.
 
         Args:
@@ -151,7 +154,8 @@ class FeedManager(object):
             if not feed_file_exists:
                 print("FeedManager: Feed file does not exist: %s" % feed_file)
             else:
-                newest_ts = cls.cgi_csv_dump_to_db(schema, feed_file, db_file)
+                newest_ts = cls.cgi_csv_dump_to_db(schema, feed_file, db_file,
+                                                   target_radios)
                 if newest_ts > newest_ts_overall:
                     newest_ts_overall = float(newest_ts)
         return newest_ts_overall
@@ -166,7 +170,7 @@ class FeedManager(object):
         return result
 
     @classmethod
-    def cgi_csv_dump_to_db(cls, schema, feed_file, db_file, last_upd=0):
+    def cgi_csv_dump_to_db(cls, schema, feed_file, db_file, target_radios, last_upd=0):
         """Merge CSV into DB, taking into account the record update time.
 
         Args:
@@ -188,6 +192,8 @@ class FeedManager(object):
                 if latest_timestamp < float(row["updated"]):
                     latest_timestamp = float(row["updated"])
                 if not cls.should_update_record(last_upd, row["updated"]):
+                    continue
+                if not row["radio"] in target_radios:
                     continue
                 if not rows_examined % 100000:
                     print("FeedManager: %s rows examined in %s" % (str(rows_examined), feed_file))  # NOQA

@@ -1,6 +1,8 @@
 FROM resin/armv7hf-debian:jessie
 MAINTAINER http://sitch.io
 
+ENV FEED_RADIO_TARGETS="GSM"
+
 RUN apt-get update && apt-get install -y --no-install-recommends \
     git=1:2.1.4-2.1+deb8u2 \
     logrotate=3.8.7-1+b1 \

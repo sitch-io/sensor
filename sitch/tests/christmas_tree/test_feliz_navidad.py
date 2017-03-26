@@ -29,11 +29,12 @@ class TestFelizNavidad:
         kal_decomp = decomposer.decompose(samples.kal_scan_1)
         # First we light up the ARFCN correlator...
         arfcn_correlator = sitchlib.ArfcnCorrelator(states, feedpath,
-                                                    [], 1000000)
+                                                    [], 1000000, "DEVICE_ID")
         # Now we light up the CGI correlator...
-        cgi_correlator = sitchlib.CgiCorrelator(feedpath, [])
+        cgi_correlator = sitchlib.CgiCorrelator(feedpath, [], ["310", "311"],
+                                                "DEVICE_ID")
         # Lastly, the geo correlator...
-        geo_correlator = sitchlib.GeoCorrelator()
+        geo_correlator = sitchlib.GeoCorrelator("DEVICE_ID")
         # Run gps_a, Kalibrate, and GSM stuff through the ARFCN correlator
         arfcn_results = []
         for gps in gps_a_decomp:
