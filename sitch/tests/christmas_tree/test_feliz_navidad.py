@@ -31,7 +31,7 @@ class TestFelizNavidad:
         arfcn_correlator = sitchlib.ArfcnCorrelator(states, feedpath,
                                                     [], 1000000)
         # Now we light up the CGI correlator...
-        cgi_correlator = sitchlib.CgiCorrelator(feedpath, [])
+        cgi_correlator = sitchlib.CgiCorrelator(feedpath, [], [310, 311])
         # Lastly, the geo correlator...
         geo_correlator = sitchlib.GeoCorrelator()
         # Run gps_a, Kalibrate, and GSM stuff through the ARFCN correlator
