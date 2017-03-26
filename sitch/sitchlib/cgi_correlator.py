@@ -13,7 +13,7 @@ class CgiCorrelator(object):
     instantiating the CgiCorrelator.
     """
 
-    def __init__(self, feed_dir, cgi_whitelist):
+    def __init__(self, feed_dir, cgi_whitelist, mcc_list, device_id):
         """Initializing CgiCorrelator.
 
         Args:
@@ -22,12 +22,13 @@ class CgiCorrelator(object):
 
         """
         self.feed_dir = feed_dir
-        self.alerts = alert_manager.AlertManager()
+        self.alerts = alert_manager.AlertManager(device_id)
         self.prior_bts = {}
         self.state = {"geometry": {"coordinates": [0, 0]}}
         self.feed_cache = []
         self.good_cgis = []
         self.bad_cgis = []
+        self.mcc_list = mcc_list
         self.cgi_whitelist = cgi_whitelist
         self.cgi_db = os.path.join(feed_dir, "cgi.db")
         print(CgiCorrelator.cgi_whitelist_message(self.cgi_whitelist))
@@ -58,7 +59,7 @@ class CgiCorrelator(object):
             channel = scan_bolus[1]
             if channel["mcc"] in ["", None]:
                 return retval  # We don't correlate incomplete CGIs...
-            """ Here's the feed comparison part """
+            # Here's the feed comparison part:
             channel["feed_info"] = self.get_feed_info(channel["mcc"],
                                                       channel["mnc"],
                                                       channel["lac"],
@@ -71,6 +72,10 @@ class CgiCorrelator(object):
             # In the event we have incomplete information, bypass comparison.
             skip_feed_comparison = CgiCorrelator.should_skip_feed(channel)
             if skip_feed_comparison is False:
+                if channel["mcc"] not in self.mcc_list:
+                    msg = ("MCC %s should not be observed by this sensor. ARFCN: %s CGI: %s Cell Priority: %s" %  # NOQA
+                           (channel["mcc"], channel["arfcn"], channel["cgi_str"], channel["cell"]))  # NOQA
+                    retval.append(self.alerts.build_alert(130, msg))
                 feed_comparison_results = self.feed_comparison(channel)
                 for feed_alert in feed_comparison_results:
                     retval.append(feed_alert)

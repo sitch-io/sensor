@@ -39,7 +39,7 @@ geo_time_alarm = {"scan_program": "gpsd",
 
 class TestIntegrationCorrelateGeo:
     def instantiate_geo(self):
-        geo_correlator = sitchlib.GeoCorrelator()
+        geo_correlator = sitchlib.GeoCorrelator("SENSOR_ID")
         return geo_correlator
 
     def test_instantiate_measure_drift(self):
@@ -54,4 +54,4 @@ class TestIntegrationCorrelateGeo:
         correlator.correlate(("gps", geo_other_state))
         result = correlator.correlate(("gps", geo_time_alarm))
         assert len(result) == 1
-        assert result[0][1]["id"] == 301
+        assert result[0][1]["id"] == 310

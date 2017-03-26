@@ -32,6 +32,10 @@ def main():
             time.sleep(30)
             print("Runner: Mode is clutch.  Wait cycle...")
 
+    print("Runner: Verify paths for feed and logs...")
+    sitchlib.Utility.create_path_if_nonexistent(config.feed_dir)
+    sitchlib.Utility.create_path_if_nonexistent(config.log_prefix)
+
     print("Runner: Writing Filebeat key material...")
     sitchlib.Utility.create_path_if_nonexistent(config.ls_crypto_base_path)
     sitchlib.Utility.write_file(config.ls_ca_path,
@@ -127,14 +131,15 @@ def main():
     while True:
         time.sleep(120)
         active_threads = threading.enumerate()
+        queue_sizes = {"scan_results": len(scan_results_queue),
+                       "arfcn_correlator": len(cgi_correlator_queue),
+                       "cgi_correlator": len(cgi_correlator_queue),
+                       "geo_correlator": len(geo_correlator_queue)}
         #  Heartbeat messages
         for item in active_threads:
             message_write_queue.append(("heartbeat", sitchlib.Utility.heartbeat(item.name)))  # NOQA
-        message_write_queue.append(("health_check", sitchlib.Utility.get_performance_metrics()))  # NOQA
-        print("Queue: Scan results queue depth: %s" % len(scan_results_queue))
-        print("Queue: ARFCN Correlator queue depth: %s" % len(arfcn_correlator_queue))  # NOQA
-        print("Queue: CGI Correlator queue depth: %s" % len(cgi_correlator_queue))  # NOQA
-        print("Queue: GEO Correlator queue depth: %s" % len(geo_correlator_queue))  # NOQA
+        message_write_queue.append(("health_check", sitchlib.Utility.get_performance_metrics(queue_sizes)))  # NOQA
+
     return
 
 
@@ -288,7 +293,8 @@ def arfcn_correlator(config):
     correlator = sitchlib.ArfcnCorrelator(config.state_list,
                                           config.feed_dir,
                                           config.arfcn_whitelist,
-                                          config.kal_threshold)
+                                          config.kal_threshold,
+                                          config.device_id)
     while True:
         try:
             item = arfcn_correlator_queue.popleft()
@@ -303,7 +309,9 @@ def arfcn_correlator(config):
 def cgi_correlator(config):
     """CGI correlator thread."""
     correlator = sitchlib.CgiCorrelator(config.feed_dir,
-                                        config.cgi_whitelist)
+                                        config.cgi_whitelist,
+                                        config.mcc_list,
+                                        config.device_id)
     while True:
         try:
             item = cgi_correlator_queue.popleft()
@@ -317,7 +325,7 @@ def cgi_correlator(config):
 
 def geo_correlator(config):
     """Correlate GPS events, look for drift."""
-    correlator = sitchlib.GeoCorrelator()
+    correlator = sitchlib.GeoCorrelator(config.device_id)
     while True:
         try:
             item = geo_correlator_queue.popleft()
