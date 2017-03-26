@@ -73,8 +73,8 @@ class CgiCorrelator(object):
             skip_feed_comparison = CgiCorrelator.should_skip_feed(channel)
             if skip_feed_comparison is False:
                 if channel["mcc"] not in self.mcc_list:
-                    msg = ("MCC %s should not be observed by this sensor." %
-                           channel["mcc"])
+                    msg = ("MCC %s should not be observed by this sensor. ARFCN: %s CGI: %s Cell Priority: %s" %  # NOQA
+                           channel["mcc"], channel["arfcn"], channel["cgi_str"], channel["cell"])  # NOQA
                     retval.append(self.alerts.build_alert(130, msg))
                 feed_comparison_results = self.feed_comparison(channel)
                 for feed_alert in feed_comparison_results:
