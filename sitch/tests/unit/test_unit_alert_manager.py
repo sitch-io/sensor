@@ -13,7 +13,7 @@ class TestAlertManager:
 
     def test_get_alert_type(self):
         types = [100, 110, 200]
-        alert_manager = sitchlib.AlertManager()
+        alert_manager = sitchlib.AlertManager("DEVICE_ID")
         for t in types:
             assert alert_manager.get_alert_type(t)
 
