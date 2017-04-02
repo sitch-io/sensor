@@ -27,10 +27,10 @@ class LocationTool(object):
             return None
 
     @classmethod
-    def validate_geo(cls, lonlat):
+    def validate_geo(cls, latlon):
         """Validate that lon/lat are valid numbers for Planet Earth"""
-        lon = float(lonlat[0])
-        lat = float(lonlat[1])
+        lat = float(latlon[0])
+        lon = float(latlon[1])
         valid = True
         if lat < -90:
             valid = False
