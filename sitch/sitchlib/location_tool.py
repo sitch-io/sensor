@@ -59,10 +59,10 @@ class LocationTool(object):
             print("LocationTool: Invalid geo value. Returning 0 for distance.")
             distance = 0
         elif cls.validate_geo(point_1) is False:
-            print("LocationTool: Invalid geo value(%s). Distance = 0.") % str(point_1)
+            print("LocationTool: Invalid geo lat/lon value(%s). Distance = 0.") % str(point_1)  # NOQA
             distance = 0
         elif cls.validate_geo(point_2) is False:
-            print("LocationTool: Invalid geo value(%s). Distance = 0.") % str(point_2)
+            print("LocationTool: Invalid geo lat/lon value(%s). Distance = 0.") % str(point_2)  # NOQA
             distance = 0
         else:
             point_1 = (float(point_1[0]), float(point_1[1]))

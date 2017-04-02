@@ -122,8 +122,8 @@ class Utility:
         if None in [lon_1, lat_1, lon_2, lat_2]:
             print("Utility: Geo coordinate is zero, not resolving distance.")
             return 0
-        pos_1 = (lon_1, lat_1)
-        pos_2 = (lon_2, lat_2)
+        pos_1 = (lat_1, lon_1)
+        pos_2 = (lat_2, lon_2)
         dist_in_km = LocationTool.get_distance_between_points(pos_1, pos_2)
         dist_in_m = dist_in_km * 1000
         return dist_in_m
