@@ -32,3 +32,13 @@ class TestLocationTool:
         chattanooga = (35.244, 85.1835)
         distance = loc_tool.get_distance_between_points(elseweyr, chattanooga)
         assert distance == 0
+
+    def test_geo_validator_pass(self):
+        lon = -122.4095923
+        lat = 37.782316
+        assert sitchlib.LocationTool.validate_geo((lat, lon)) is True
+
+    def test_geo_validator_fail(self):
+        lat = -122.4095923
+        lon = 37.782316
+        assert sitchlib.LocationTool.validate_geo((lat, lon)) is False
