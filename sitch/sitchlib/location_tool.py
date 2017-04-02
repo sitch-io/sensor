@@ -27,6 +27,22 @@ class LocationTool(object):
             return None
 
     @classmethod
+    def validate_geo(cls, lon, lat):
+        """Validate that lon/lat are valid numbers for Planet Earth"""
+        valid = True
+        if lat < -90:
+            valid = False
+        elif lat > 90:
+            valid = False
+        elif lon < -180:
+            valid = False
+        elif lon > 180:
+            valid = False
+        else:
+            pass
+        return valid
+
+    @classmethod
     def get_distance_between_points(cls, point_1, point_2):
         """Calculate distance between points.
 
@@ -39,6 +55,12 @@ class LocationTool(object):
         """
         if None in [point_1, point_2]:
             print("LocationTool: Invalid geo value. Returning 0 for distance.")
+            distance = 0
+        elif cls.validate_geo(point_1) is False:
+            print("LocationTool: Invalid geo value(%s). Distance = 0.") % str(point_1)
+            distance = 0
+        elif cls.validate_geo(point_2) is False:
+            print("LocationTool: Invalid geo value(%s). Distance = 0.") % str(point_2)
             distance = 0
         else:
             point_1 = (float(point_1[0]), float(point_1[1]))
