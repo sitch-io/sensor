@@ -47,23 +47,13 @@ COPY configs/filebeat.json /etc/templates
 # Get the scripts in place
 COPY sitch/ /app/sitch
 
+COPY requirements.txt /requirements.txt
+
 WORKDIR /app/sitch
 
 RUN pip install virtualenv==15.1.0 && \
     virtualenv venv && \
     . ./venv/bin/activate && \
-    pip install \
-    psutil==5.0.1 \
-    pyserial==3.2.1 \
-    pyyaml==3.12 \
-    gps3==0.33.3 \
-    hvac==0.2.16 \
-    kalibrate==1.1.2 \
-    haversine==0.4.5 \
-    python-dateutil==2.6.0 \
-    python-geoip==1.2 \
-    python-geoip-geolite2==2015.303 \
-    pyudev==0.21.0 \
-    LatLon==1.0.2
+    pip install -r /requirements.txt
 
 CMD /app/sitch/venv/bin/python ./runner.py 2>&1
