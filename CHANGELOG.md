@@ -1,6 +1,23 @@
 # Changelog
 
-## v3.6.0
+## v3.7.0
+
+### Other
+
+* Test (#71) (#72) [Ash Wilson]
+
+  chg: usr: Changed feed dir to /data/sitch/feed, and log dir to /data/sitch/log/.  Relocated filebeat registry to /data/sitch/log/fb_registry
+
+  * new: usr: Target specific radio types.  Speed up feed ingestion for GSM-only sensors.
+
+  * chg: usr: Added alarm 130 for detection of a bad Mobile Country Code (MCC).
+
+  * chg: usr: Length of sensor processing queues added to health check.
+
+  * chg: usr: Alerts contain sensor ID, derived from Resin device name.
+
+
+## v3.6.0 (2017-03-25)
 
 ### New
 
