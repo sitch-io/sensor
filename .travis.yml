@@ -10,6 +10,7 @@ install:
 script:
 - sudo mkdir /data/
 - py.test sitch/tests/ --cov sitchlib
+- cat ~/.ssh/config
 - if [ $TRAVIS_BRANCH = 'test' ]; then echo "Host git.resin.io" >> ~/.ssh/config; echo "    StrictHostKeyChecking no" >> ~/.ssh/config; git remote add testing ${RESIN_TESTING_REMOTE}; git push --force testing test:master; fi
 after_success:
 - codeclimate-test-reporter --token $CODECLIMATE_REPO_TOKEN
