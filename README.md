@@ -61,7 +61,6 @@ We expect the following environment variables to be set in Resin:
 | FEED_RADIO_TARGETS | List of radios for feed (optional, defaults to GSM)     |
 
 
-
 The CGI_WHITELIST will suppress alert 110 (BTS metadata changed) if the CGI of
 channel 0 in your GSM modem output matches an item in CGI_WHITELIST.  This is
 the format you should use: `MCC:MNC:LAC:CELLID,MCC:MNC:LAC:CELLID`  This is
