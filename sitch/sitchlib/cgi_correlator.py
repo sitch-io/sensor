@@ -160,8 +160,8 @@ class CgiCorrelator(object):
         try:
             chan["lat"] = channel["feed_info"]["lat"]
             chan["lon"] = channel["feed_info"]["lon"]
-            here["lat"] = state["geometry"]["coordinates"][0]
-            here["lon"] = state["geometry"]["coordinates"][1]
+            here["lat"] = state["geometry"]["coordinates"][1]
+            here["lon"] = state["geometry"]["coordinates"][0]
         except (TypeError, ValueError, KeyError) as e:
             print("CgiCorrelator: Incomplete geo info...")
             print("CgiCorrelator: Error: %s" % str(e))
