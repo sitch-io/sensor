@@ -1,6 +1,27 @@
 # Changelog
 
-## v3.7.0
+## v3.7.1
+
+### Changes
+
+* Changed feed dir to /data/sitch/feed, and log dir to /data/sitch/log/.  Relocated filebeat registry to /data/sitch/log/fb_registry. [Ash Wilson]
+
+  * Target specific radio types.  Speed up feed ingestion for GSM-only sensors.
+
+  * Added alarm 130 for detection of a bad Mobile Country Code (MCC).
+
+  * Use human-friendly sensor name in metrics, derived from Resin device name.  Location name override still works for non-Resin environments.
+
+  * Length of sensor processing queues added to health check.
+
+  * Alerts contain sensor ID, derived from Resin device name.
+
+  * Geo distance check validates that lon/lat could be valid coordinates.
+
+  * Fixed lat/lon swap bug in Utility.calculate_distance
+
+
+## v3.7.0 (2017-03-26)
 
 ### Other
 
