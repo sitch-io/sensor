@@ -26,7 +26,7 @@ def read_file(filename):
 
 
 def get_version():
-    raw_init_file = read("../sitch/sitchlib/__init__.py")
+    raw_init_file = read_file("../sitch/sitchlib/__init__.py")
     rx_compiled = re.compile(r"\s*__version__\s*=\s*\"(\S+)\"")
     ver = rx_compiled.search(raw_init_file).group(1)
     return ver
