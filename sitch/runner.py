@@ -129,7 +129,7 @@ def main():
     print("Runner: Starting writer thread...")
     writer_thread.start()
     while True:
-        time.sleep(120)
+        time.sleep(config.health_check_interval)
         active_threads = threading.enumerate()
         queue_sizes = {"scan_results": len(scan_results_queue),
                        "arfcn_correlator": len(cgi_correlator_queue),
