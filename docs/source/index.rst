@@ -12,10 +12,11 @@ Version |release|
 Contents:
 
 .. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+  :maxdepth: 2
+  :caption: Contents:
 
   environment_variables
+  sensor_api
 
 
 Indices and tables

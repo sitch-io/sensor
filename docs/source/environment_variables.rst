@@ -14,7 +14,7 @@ The SITCH Sensor requires some environment variables to be set in order to opera
 +---------------------------+-------------------------------------------------------+
 | FEED_URL_BASE             | Base URL for Sensor feed.                             |
 +---------------------------+-------------------------------------------------------+
-| GSM_MODEM_BAND            | Restrict GSM modem to this band                       |
+| GSM_MODEM_BAND            | Restrict GSM modem to this band.  Options:            |
 |                           | (EGSM_MODE | PGSM_MODE | DCS_MODE | GSM850_MODE |     |
 |                           | PCS_MODE | EGSM_DCS_MODE | GSM850_PCS_MODE |          |
 |                           | EGSM_PCS_MODE | ALL_BAND)                             |
