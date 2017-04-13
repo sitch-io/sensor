@@ -1,6 +1,13 @@
 # Changelog
 
-## v3.7.1
+## v3.7.2
+
+### New
+
+* Use HEALTH_CHECK_INTERVAL to override default interval of 3600s between sensor self-checks. [Ash Wilson]
+
+
+## v3.7.1 (2017-04-04)
 
 ### Changes
 
