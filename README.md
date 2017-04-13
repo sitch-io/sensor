@@ -59,6 +59,7 @@ We expect the following environment variables to be set in Resin:
 | VAULT_URL          | URL for accessing Vault. ex: https://v.example.com:port |
 | CGI_WHITELIST      | List of CGIs we trust (see below)                       |
 | FEED_RADIO_TARGETS | List of radios for feed (optional, defaults to GSM)     |
+| NO_FEED_UPDATE     | If set, do not attempt to update the feed on boot.      |
 
 
 The CGI_WHITELIST will suppress alert 110 (BTS metadata changed) if the CGI of

@@ -6,7 +6,7 @@ import threading
 import time
 from collections import deque
 from socket import error as SocketError
-
+from os import getenv
 
 def main():
     """All magic happens under this fn."""
@@ -67,7 +67,8 @@ def main():
 
     print("Runner: Instantiating feed manager...")
     feed_mgr = sitchlib.FeedManager(config)
-    feed_mgr.update_feed_files()
+    if getenv("NO_FEED_UPDATE") is None:
+        feed_mgr.update_feed_files()
     print("Runner: Creating feed DB...")
     feed_mgr.update_feed_db()
 
