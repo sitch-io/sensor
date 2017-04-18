@@ -59,6 +59,7 @@ We expect the following environment variables to be set in Resin:
 | VAULT_URL          | URL for accessing Vault. ex: https://v.example.com:port |
 | CGI_WHITELIST      | List of CGIs we trust (see below)                       |
 | FEED_RADIO_TARGETS | List of radios for feed (optional, defaults to GSM)     |
+| NO_FEED_UPDATE     | If set, do not attempt to update the feed on boot.      |
 | HEALTH_CHECK_INTERVAL | Seconds between health checks.  Defaults to 3600.    |
 
 
