@@ -41,6 +41,9 @@ The SITCH Sensor requires some environment variables to be set in order to opera
 | MODE                      | Set to "clutch" to go into a wait loop during start.  |
 |                           | Useful for troubleshooting.                           |
 +---------------------------+-------------------------------------------------------+
+| NO_FEED_UPDATE            | (Optional) If set, do not attempt to update the feed  |
+|                           | on boot.                                              |
++---------------------------+-------------------------------------------------------+
 | STATE_LIST                | Comma-separated list of states for feed ingestion.    |
 |                           | California and Texas would be: "CA,TX"                |
 +---------------------------+-------------------------------------------------------+
