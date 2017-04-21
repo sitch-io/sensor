@@ -35,7 +35,7 @@ class FeedManager(object):
 
     def update_feed_files(self):
         """Wrapper for feed file retrieval routines."""
-        if (os.path.isfile(db_file) and self.no_feed_update is not None):
+        if (os.path.isfile(self.cgi_db) and self.no_feed_update is not None):
             # Skip the update process if db exists and config says no update.
             print("FeedManager: DB exists. NO_FEED_UPDATE is set...")
             print("FeedManager: Skipping feed update!")
