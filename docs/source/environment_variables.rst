@@ -41,6 +41,9 @@ The SITCH Sensor requires some environment variables to be set in order to opera
 | MODE                      | Set to "clutch" to go into a wait loop during start.  |
 |                           | Useful for troubleshooting.                           |
 +---------------------------+-------------------------------------------------------+
+| NO_FEED_UPDATE            | (Optional) If set, do not attempt to update the feed  |
+|                           | on boot.                                              |
++---------------------------+-------------------------------------------------------+
 | STATE_LIST                | Comma-separated list of states for feed ingestion.    |
 |                           | California and Texas would be: "CA,TX"                |
 +---------------------------+-------------------------------------------------------+
@@ -51,4 +54,16 @@ The SITCH Sensor requires some environment variables to be set in order to opera
 +---------------------------+-------------------------------------------------------+
 | VAULT_URL                 | URL for Vault instance containing Logstash/Filebeat   |
 |                           | credentials.  Looks like: "https://ser.ver.com:8200"  |
++---------------------------+-------------------------------------------------------+
+| NO_FEED_UPDATE            | If set, do not attempt to update the feed on boot.    |
++---------------------------+-------------------------------------------------------+
+| GSM_MODEM_PORT            | (Optional) GSM modem USB-TTY port. This should        |
+|                           | be autodetected and not need to be set.               |
+|                           | Looks like: /dev/ttyUSB0                              |
+|                           | See: "Found but undetected TTY " in the docs          |
++---------------------------+-------------------------------------------------------+
+| GPS_DEVICE_PORT           | (Optional) GPS device USB-TTY port. This should       |
+|                           | be autodetected and not need to be set.               |
+|                           | Looks like: /dev/ttyUSB0                              |
+|                           | See: "Found but undetected TTY " in the docs          |
 +---------------------------+-------------------------------------------------------+

@@ -31,9 +31,15 @@ class FeedManager(object):
         self.cgi_db = os.path.join(self.feed_dir, "cgi.db")
         self.newest_record_file = os.path.join(self.feed_dir, "newest_record")
         self.arfcn_db = os.path.join(self.feed_dir, "arfcn.db")
+        self.no_feed_update = config.no_feed_update
 
     def update_feed_files(self):
         """Wrapper for feed file retrieval routines."""
+        if (os.path.isfile(self.cgi_db) and self.no_feed_update is not None):
+            # Skip the update process if db exists and config says no update.
+            print("FeedManager: DB exists. NO_FEED_UPDATE is set...")
+            print("FeedManager: Skipping feed update!")
+            return
         for feed_id in self.mcc_list:
             feed_file = FeedManager.place_feed_file(self.feed_dir,
                                                     self.url_base,
