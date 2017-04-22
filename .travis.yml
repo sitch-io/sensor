@@ -5,11 +5,25 @@ python:
 install:
 - sudo apt-get update && sudo apt-get install -y lshw
 - pip install pytest==3.0.4 pytest-cov pytest-pep8 python-coveralls codeclimate-test-reporter
-- pip install pyserial hvac kalibrate==1.1.2 haversine python-geoip
-  python-geoip-geolite2 pyudev==0.21.0 gps3 LatLon psutil python-dateutil
-script: sudo mkdir /data/ && py.test sitch/tests/ --cov sitchlib
+- pip install pyserial hvac kalibrate==1.1.2 haversine python-geoip python-geoip-geolite2
+  pyudev==0.21.0 gps3 LatLon psutil python-dateutil
+script:
+- sudo mkdir /data/
+- py.test sitch/tests/ --cov sitchlib
+-
+- if [ $TRAVIS_BRANCH == 'test' ] && [ $TRAVIS_EVENT_TYPE != 'pull_request' ];
+  then echo "Host git.resin.io" >> ~/.ssh/config;
+  echo "    StrictHostKeyChecking no" >> ~/.ssh/config;
+  echo "    IdentityFile ~/.ssh/resin_deploy" >> ~/.ssh/config;
+  git remote add testing ${RESIN_TESTING_REMOTE};
+  git push --force testing test:master; fi
 after_success:
 - codeclimate-test-reporter --token $CODECLIMATE_REPO_TOKEN
 env:
   global:
-    secure: YDiEDTMd1/lodlkCMJsctiL9PGjtAlPokPoNdux1YT4Qlb5sr5mhqg75lp61bstc2NXGExXHBtCKJdNH3xo06g2vJz+5nVIGYSH7Dbmx37+9xeS6H8TRoGf2EvnT+tFsJ3fAyKUFC8aXxB2UBgY8LOwk09xOJsNPsfa1hqIe3f3tBWqCpMiPLy3fsapNlQZIycq70JCt7rza4N0NuJKOaoJvhedg8E/0IHleWbHfXJ6kmnB83W3cFAO9p5quFB/h+UiIjPGwYtIRODunbb/dsJfaH60wbZqC3705ppF9d6/FMmL874npNIc+ZfnCqIP1RCqZgDGUer5qf9DuohCUH/X1d47rw6Ec0WtPPt5lf4AVbax2zGbOUzXQ99TZTdOTxde7n4XnVZq1P/+w8Bqgf0DuiTpMPxdGEGnfMlNysXTrwvGlDpv/XVA0jJjCxV6z9fnGfWNmxZWBqfQIE5/ZbaHY3BtMjbeTXPQvZ1EXglSbV7CshK+TWQG4o9KiYOdKI+JiQvIsvA9AW96+x2A7bOtyLn1PLsfntEUpyjih6g4d9r+H75qbPR7CGVcd9pNhavKy04gB7B6nh07xgaKLXlZ4L6rIf5ygecdq4jMcfcIEQXzxEfUfhU5VSFadTain2KXD6+l1LB7hXGOEPDwsa2mxXdkkNgDQ8vW6CyJgj7E=
+  - secure: YDiEDTMd1/lodlkCMJsctiL9PGjtAlPokPoNdux1YT4Qlb5sr5mhqg75lp61bstc2NXGExXHBtCKJdNH3xo06g2vJz+5nVIGYSH7Dbmx37+9xeS6H8TRoGf2EvnT+tFsJ3fAyKUFC8aXxB2UBgY8LOwk09xOJsNPsfa1hqIe3f3tBWqCpMiPLy3fsapNlQZIycq70JCt7rza4N0NuJKOaoJvhedg8E/0IHleWbHfXJ6kmnB83W3cFAO9p5quFB/h+UiIjPGwYtIRODunbb/dsJfaH60wbZqC3705ppF9d6/FMmL874npNIc+ZfnCqIP1RCqZgDGUer5qf9DuohCUH/X1d47rw6Ec0WtPPt5lf4AVbax2zGbOUzXQ99TZTdOTxde7n4XnVZq1P/+w8Bqgf0DuiTpMPxdGEGnfMlNysXTrwvGlDpv/XVA0jJjCxV6z9fnGfWNmxZWBqfQIE5/ZbaHY3BtMjbeTXPQvZ1EXglSbV7CshK+TWQG4o9KiYOdKI+JiQvIsvA9AW96+x2A7bOtyLn1PLsfntEUpyjih6g4d9r+H75qbPR7CGVcd9pNhavKy04gB7B6nh07xgaKLXlZ4L6rIf5ygecdq4jMcfcIEQXzxEfUfhU5VSFadTain2KXD6+l1LB7hXGOEPDwsa2mxXdkkNgDQ8vW6CyJgj7E=
+  - secure: KvYrKhF7ukPErSaCIFEiaWVc3xaj0GvieW2BLnSlCZ2ZKKvX9Q5gjxArivR/uOfFFJnEAz9Lhdd2dac7v/NVfpdAENDmDJ3fJiLpbHLcin0LqJhp/IsDJaPNZAd3YmTbzMKhhv9kdmobDdGEK5N9CkTvhfr2IPuEEvilJK0/09sB0Jx1p+xwV0iOSWr6LmvptHvvhkeq0lQEU9gfhQObTlNGSPxFDjFkag6YUwBHPeNZXkxKAxEubvWoCmujYNmw+pNQ5RVCd11cmh1De0MZCO7DrcyXzZD6wHRvoJ5lQicRF5jRE3F5aC57GZK6YkEnsjmwRAulUZR7upeBd2HqKBPbvCltrTCcYhLSRpsS+pk9SZ3kXxF94kPSvlQNdHSPPy5sKrEamlb/tVqit4Ud2d7D1zjC/EI8k+KDBcnMG5dSL1cp+D6yTA6+JwSY35d8BPiYc2fkAq40pI+H6OuoIAxBAL2zBYakwMonbsXkYZfD0ej2hLLAQlpN1WLTUkoFTm/QF4p2rhJ8fOaIx9tuxIcfGaADijypcm1COYKcIWI6EQ8ixnjVRje1MHwhymXvK4aQUElAWKJI1HFvSuQkZNNP0RZtzfpl+4i9AU46fxzrCAiyTggWgice+FoqtK9dLT5F4xJuTh/zrZ1NHymGz/sIZ5gV4wNkwrvM4oWJC9I=
+before_install:
+- openssl aes-256-cbc -K $encrypted_af588c71c191_key -iv $encrypted_af588c71c191_iv
+  -in resin_deploy.enc -out ~/.ssh/resin_deploy -d
+- chmod 600 ~/.ssh/resin_deploy
