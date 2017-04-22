@@ -57,6 +57,7 @@ class ConfigHelper:
                                                               optional=True)
         self.cgi_whitelist = ConfigHelper.get_list_from_env("CGI_WHITELIST",
                                                             optional=True)
+        self.no_feed_update = os.getenv("NO_FEED_UPDATE")
         return
 
     def print_devices_as_detected(self):
