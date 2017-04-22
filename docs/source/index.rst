@@ -7,7 +7,6 @@ Welcome to Sitch Sensor's documentation!
 ========================================
 
 Version |release|
------------------
 
 
 .. toctree::
