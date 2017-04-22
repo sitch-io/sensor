@@ -9,13 +9,14 @@ Welcome to Sitch Sensor's documentation!
 Version |release|
 -----------------
 
-Contents:
 
 .. toctree::
   :maxdepth: 2
   :caption: Contents:
 
   environment_variables
+  data
+  troubleshooting
   sensor_api
 
 
