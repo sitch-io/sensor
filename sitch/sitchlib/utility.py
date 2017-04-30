@@ -181,7 +181,7 @@ class Utility:
         return dest_file_name
 
     @classmethod
-    def get_performance_metrics(cls, queue_sizes={}):
+    def get_performance_metrics(cls, application_uptime_s, queue_sizes={}):
         """Get sensor hardware and os performance statistics."""
         retval = {}
         retval["queue_sizes"] = queue_sizes
@@ -197,4 +197,5 @@ class Utility:
                          "swap_percent_used": psutil.swap_memory().percent}
         retval["root_vol"] = psutil.disk_usage('/').percent
         retval["data_vol"] = psutil.disk_usage('/data/').percent
+        retval["application_uptime_seconds"] = application_uptime_s
         return retval
