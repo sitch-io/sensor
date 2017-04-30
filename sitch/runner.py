@@ -1,5 +1,6 @@
 """This is the main process which runs all threads."""
 
+import datetime
 import sitchlib
 import kalibrate
 import threading
@@ -16,6 +17,8 @@ def main():
     global cgi_correlator_queue
     global geo_correlator_queue
     global gps_location
+    global app_start_time
+    app_start_time = datetime.datetime.now()
     gps_location = {}
     scan_results_queue = deque([])
     message_write_queue = deque([])
@@ -137,8 +140,12 @@ def main():
                        "geo_correlator": len(geo_correlator_queue)}
         #  Heartbeat messages
         for item in active_threads:
-            message_write_queue.append(("heartbeat", sitchlib.Utility.heartbeat(item.name)))  # NOQA
-        message_write_queue.append(("health_check", sitchlib.Utility.get_performance_metrics(queue_sizes)))  # NOQA
+            message_write_queue.append(("heartbeat",
+                                        sitchlib.Utility.heartbeat(item.name)))
+        message_write_queue.append(
+            ("health_check",
+             sitchlib.Utility.get_performance_metrics(get_app_uptime(),
+                                                      queue_sizes)))
 
     return
 
@@ -148,6 +155,9 @@ def init_event_injector(init_event):
     evt = [("sitch_init"), init_event]
     message_write_queue.append(evt)
 
+
+def get_app_uptime():
+    return ((datetime.datetime.now() - app_start_time).seconds)
 
 def gsm_modem_circuit_breaker(band, tty_port):
     """Circuit breaker for GSM modem functionality."""
