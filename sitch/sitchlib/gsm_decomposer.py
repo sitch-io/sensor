@@ -24,7 +24,7 @@ class GsmDecomposer(object):
                 channel = GsmDecomposer.enrich_channel_with_scan(channel,
                                                                  scan_document)
                 # channel["arfcn_int"] = GsmDecomposer.arfcn_int(channel["arfcn"])  # NOQA
-                if channel["arfcn"] == 0 and channel["cell"] != "0":
+                if channel["arfcn"] == 0 and channel["cell"] != 0:
                     continue  # If the data is incomplete, we don't forward
                 # Now we bring the hex values to decimal...
                 channel = GsmDecomposer.convert_hex_targets(channel)
