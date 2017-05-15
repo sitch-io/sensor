@@ -267,7 +267,7 @@ class CgiCorrelator(object):
                 channel["cgi_str"] not in self.good_cgis):
             comparison_results.append(self.check_channel_range(channel))
         # Test for primary BTS change
-        if channel["cell"] == '0':
+        if channel["cell"] == 0:
             comparison_results.append(self.process_cell_zero(channel))
         for result in comparison_results:
             if result != ():
