@@ -410,7 +410,7 @@ class CgiCorrelator(object):
             if result:
                 cell = {"mcc": result[0], "net": result[1], "area": result[2],
                         "cell": result[3], "lon": result[4], "lat": result[5],
-                        "range": result[6]}
+                        "range": int(result[6])}
             else:
                 cell = {"mcc": mcc, "net": mnc, "area": lac, "cell": cellid,
                         "lon": 0, "lat": 0, "range": 0}
