@@ -55,12 +55,15 @@ class TestFelizNavidad:
         cgi_results = []
         for g in gsm_decomp:
             cgi_results.extend(cgi_correlator.correlate(g))
+        print("CGI Results")
         for c in cgi_results:
             print c
         assert len(cgi_results) == 4  # Four of six are correlated and not in DB
+        print("GEO Results")
         for g in geo_results:
             print g
         assert len(geo_results) == 1  # One alert for delta being over threshold
+        print("ARFCN Results")
         for a in arfcn_results:
             print a
         assert len(arfcn_results) == 3

@@ -23,8 +23,8 @@ class GsmDecomposer(object):
             try:
                 channel = GsmDecomposer.enrich_channel_with_scan(channel,
                                                                  scan_document)
-                channel["arfcn_int"] = GsmDecomposer.arfcn_int(channel["arfcn"])  # NOQA
-                if channel["arfcn_int"] == 0 and channel["cell"] != "0":
+                # channel["arfcn_int"] = GsmDecomposer.arfcn_int(channel["arfcn"])  # NOQA
+                if channel["arfcn"] == 0 and channel["cell"] != 0:
                     continue  # If the data is incomplete, we don't forward
                 # Now we bring the hex values to decimal...
                 channel = GsmDecomposer.convert_hex_targets(channel)
@@ -49,19 +49,19 @@ class GsmDecomposer(object):
         channel["scanner_public_ip"] = scan_document["scanner_public_ip"]
         return channel
 
-    @classmethod
-    def arfcn_int(cls, arfcn):
-        """Attempt to derive an integer representation of ARFCN."""
-        if arfcn == "65535":  # This seems to be a default ARFCN on some modems
-            return 0
-        try:
-            arfcn_int = int(arfcn)
-        except:
-            msg = "GsmDecomposer: Unable to convert ARFCN to int"
-            print(msg)
-            print(arfcn)
-            arfcn_int = 0
-        return arfcn_int
+    # @classmethod
+    # def arfcn_int(cls, arfcn):
+    #    """Attempt to derive an integer representation of ARFCN."""
+    #   if arfcn == "65535":  # This seems to be a default ARFCN on some modems
+    #        return 0
+    #    try:
+    #        arfcn_int = int(arfcn)
+    #    except:
+    #        msg = "GsmDecomposer: Unable to convert ARFCN to int"
+    #        print(msg)
+    #        print(arfcn)
+    #        arfcn_int = 0
+    #    return arfcn_int
 
     @classmethod
     def get_cgi_int(cls, channel):
@@ -105,5 +105,5 @@ class GsmDecomposer(object):
         """Convert rxq and rxl to float."""
         for target in ['rxq', 'rxl']:
             if target in channel:
-                channel[target] = Utility.str_to_float(channel[target])
+                channel[target] = Utility.val_to_float(channel[target])
         return channel

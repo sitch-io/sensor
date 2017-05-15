@@ -30,7 +30,7 @@ gsm_modem_channel = {"cgi_str": "310:266:253:21553",
                      "scan_finish": "2017-01-30 01:33:48",
                      "rxl": 7,
                      "arfcn_int": 1692,
-                     "cell": "4",
+                     "cell": 4,
                      "scanner_public_ip": "71.204.189.222",
                      "cellid": "21553",
                      "cgi_int": 31026625321553,
@@ -63,8 +63,8 @@ class TestIntegrationCgiCorrelator:
         scan_body_3["cellid"] = "32381"
         scan_body_3["cgi_str"] = "310:410:17304:32381"
         scan_body_3["cgi_int"] = 3104101730432381
-        scan_body_3["cell"] = "0"
-        scan_body_4["cell"] = "0"
+        scan_body_3["cell"] = 0
+        scan_body_4["cell"] = 0
         zero_one = ("gsm_modem_channel", scan_body_3)
         zero_two = ("gsm_modem_channel", scan_body_4)
         scan_2 = ("gsm_modem_channel", scan_body_2)
