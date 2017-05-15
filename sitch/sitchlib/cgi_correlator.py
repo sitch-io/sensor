@@ -95,24 +95,24 @@ class CgiCorrelator(object):
         message = "CgiCorrelator: Initializing with CGI whitelist: %s" % wl_string  # NOQA
         return message
 
-    @classmethod
-    def arfcn_int(cls, arfcn):
-        """Attempt to derive an integer representation of ARFCN.
+    # @classmethod
+    # def arfcn_int(cls, arfcn):
+    #    """Attempt to derive an integer representation of ARFCN.
+    #
+    #    Args:
+    #        arfcn (str): String representation of ARFCN
 
-        Args:
-            arfcn (str): String representation of ARFCN
-
-        Returns:
-            int: Integer representation of ARFCN, zero if unable to convert.
-        """
-        try:
-            arfcn_int = int(arfcn)
-        except:
-            msg = "CgiCorrelator: Unable to convert ARFCN to int"
-            print(msg)
-            print(arfcn)
-            arfcn_int = 0
-        return arfcn_int
+    #    Returns:
+    #        int: Integer representation of ARFCN, zero if unable to convert.
+    #    """
+    #    try:
+    #        arfcn_int = int(arfcn)
+    #    except:
+    #        msg = "CgiCorrelator: Unable to convert ARFCN to int"
+    #        print(msg)
+    #        print(arfcn)
+    #        arfcn_int = 0
+    #    return arfcn_int
 
     @classmethod
     def should_skip_feed(cls, channel):
@@ -267,7 +267,7 @@ class CgiCorrelator(object):
                 channel["cgi_str"] not in self.good_cgis):
             comparison_results.append(self.check_channel_range(channel))
         # Test for primary BTS change
-        if channel["cell"] == '0':
+        if channel["cell"] == 0:
             comparison_results.append(self.process_cell_zero(channel))
         for result in comparison_results:
             if result != ():
@@ -410,7 +410,7 @@ class CgiCorrelator(object):
             if result:
                 cell = {"mcc": result[0], "net": result[1], "area": result[2],
                         "cell": result[3], "lon": result[4], "lat": result[5],
-                        "range": result[6]}
+                        "range": int(result[6])}
             else:
                 cell = {"mcc": mcc, "net": mnc, "area": lac, "cell": cellid,
                         "lon": 0, "lat": 0, "range": 0}

@@ -53,7 +53,6 @@ class TestIntegrationKalDecomposer:
                     'scanner_name': 'test_site'}
         return samp_kal
 
-
     def test_kal_good(self):
         kal_scan = self.build_scan_doc()
         result = sitchlib.Decomposer.decompose(kal_scan)

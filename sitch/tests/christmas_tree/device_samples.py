@@ -5,8 +5,8 @@ class DeviceSamples(object):
                         "time_drift": 2,
                         "sys_time": "2017-03-25T00:32:48.416592",
                         "geometry": {
-                        "type": "Point",
-                        "coordinates": [-122.431297, 37.773972]}}
+                            "type": "Point",
+                            "coordinates": [-122.431297, 37.773972]}}
 
     gps_device_loc_b = {"scan_program": "gpsd",
                         "type": "Feature",
@@ -14,45 +14,45 @@ class DeviceSamples(object):
                         "time_drift": 2,
                         "sys_time": "2017-03-25T00:32:48.416592",
                         "geometry": {
-                        "type": "Point",
-                        "coordinates": [-100.431297, 32.773972]}}
+                            "type": "Point",
+                            "coordinates": [-100.431297, 32.773972]}}
 
     geoip_loc_a = {"scan_program": "geoip",
                    "type": "Feature",
                    "geometry": {
-                   "type": "Point",
-                   "coordinates": [-122.431297, 37.773972]}}
+                       "type": "Point",
+                       "coordinates": [-122.431297, 37.773972]}}
 
     geoip_loc_b = {"scan_program": "geoip",
                    "type": "Feature",
                    "geometry": {
-                   "type": "Point",
-                   "coordinates": [-100.431297, 32.773972]}}
+                       "type": "Point",
+                       "coordinates": [-100.431297, 32.773972]}}
 
     gsm_modem_1 = {"platform": "PLATFORM-NAME",
                    "scan_results": [
-                    {'bsic': '12', 'mcc': '310', 'rla': '00', 'lac': '178d',
-                     'mnc': '411', 'txp': '05', 'rxl': '33', 'cell': '0',
-                     'rxq': '00', 'ta': '255', 'cellid': '000f', 'arfcn': '0154'},
-                    {'cell': '1', 'rxl': '20', 'lac': '178d', 'bsic': '30',
+                    {'bsic': '12', 'mcc': '310', 'rla': 0, 'lac': '178d',
+                     'mnc': '411', 'txp': 05, 'rxl': 33, 'cell': 0,
+                     'rxq': 00, 'ta': 255, 'cellid': '000f', 'arfcn': 154},
+                    {'cell': 1, 'rxl': 20, 'lac': '178d', 'bsic': '30',
                      'mnc': '411', 'mcc': '310', 'cellid': '0010',
-                     'arfcn': '0128'},
-                    {'cell': '2', 'rxl': '10', 'lac': '178d', 'bsic': '00',
+                     'arfcn': 128},
+                    {'cell': 2, 'rxl': 10, 'lac': '178d', 'bsic': '00',
                      'mnc': '411', 'mcc': '310', 'cellid': '76e2',
-                     'arfcn': '0179'},
-                    {'cell': '3', 'rxl': '10', 'lac': '178d', 'bsic': '51',
+                     'arfcn': 179},
+                    {'cell': 3, 'rxl': 10, 'lac': '178d', 'bsic': '51',
                      'mnc': '411', 'mcc': '310', 'cellid': '1208',
-                     'arfcn': '0181'},
-                    {'cell': '4', 'rxl': '31', 'lac': '0000', 'bsic': '00',
-                     'mnc': '', 'mcc': '', 'cellid': 'ffff', 'arfcn': '0237'},
-                    {'cell': '5', 'rxl': '23', 'lac': '0000', 'bsic': '00',
-                     'mnc': '', 'mcc': '', 'cellid': 'ffff', 'arfcn': '0238'},
-                    {'cell': '6', 'rxl': '23', 'lac': '0000', 'bsic': '00',
-                     'mnc': '', 'mcc': '', 'cellid': 'ffff', 'arfcn': '0236'}
+                     'arfcn': 181},
+                    {'cell': 4, 'rxl': 31, 'lac': 0000, 'bsic': '00',
+                     'mnc': '', 'mcc': '', 'cellid': 'ffff', 'arfcn': 237},
+                    {'cell': 5, 'rxl': 23, 'lac': '0000', 'bsic': '00',
+                     'mnc': '', 'mcc': '', 'cellid': 'ffff', 'arfcn': 238},
+                    {'cell': 6, 'rxl': 23, 'lac': '0000', 'bsic': '00',
+                     'mnc': '', 'mcc': '', 'cellid': 'ffff', 'arfcn': 236}
                           ],
                    "scan_start": "",
                    "scan_finish": "2016-05-07 02:36:50",
-                   "scan_program": "GSM_MODEM",
+                   "scan_program": "gsm_modem",
                    "scan_location": "SCAN_LOCATION",
                    "site_name": "SITE_NAME",
                    "scanner_public_ip": "66.18.61.61",
