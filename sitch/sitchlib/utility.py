@@ -129,8 +129,8 @@ class Utility:
         return dist_in_m
 
     @classmethod
-    def str_to_float(cls, s):
-        """Change string to float."""
+    def val_to_float(cls, s):
+        """Coerce to float."""
         retval = None
         try:
             retval = float(s)

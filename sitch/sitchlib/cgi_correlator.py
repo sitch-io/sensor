@@ -95,24 +95,24 @@ class CgiCorrelator(object):
         message = "CgiCorrelator: Initializing with CGI whitelist: %s" % wl_string  # NOQA
         return message
 
-    @classmethod
-    def arfcn_int(cls, arfcn):
-        """Attempt to derive an integer representation of ARFCN.
+    # @classmethod
+    # def arfcn_int(cls, arfcn):
+    #    """Attempt to derive an integer representation of ARFCN.
+    #
+    #    Args:
+    #        arfcn (str): String representation of ARFCN
 
-        Args:
-            arfcn (str): String representation of ARFCN
-
-        Returns:
-            int: Integer representation of ARFCN, zero if unable to convert.
-        """
-        try:
-            arfcn_int = int(arfcn)
-        except:
-            msg = "CgiCorrelator: Unable to convert ARFCN to int"
-            print(msg)
-            print(arfcn)
-            arfcn_int = 0
-        return arfcn_int
+    #    Returns:
+    #        int: Integer representation of ARFCN, zero if unable to convert.
+    #    """
+    #    try:
+    #        arfcn_int = int(arfcn)
+    #    except:
+    #        msg = "CgiCorrelator: Unable to convert ARFCN to int"
+    #        print(msg)
+    #        print(arfcn)
+    #        arfcn_int = 0
+    #    return arfcn_int
 
     @classmethod
     def should_skip_feed(cls, channel):

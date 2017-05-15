@@ -208,7 +208,7 @@ def gsm_modem_consumer(config):
             retval["scan_results"] = report
             retval["scan_finish"] = sitchlib.Utility.get_now_string()
             retval["scan_location"] = str(config.device_id)
-            retval["scan_program"] = "GSM_MODEM"
+            retval["scan_program"] = "gsm_modem"
             retval["band"] = config.gsm_modem_band
             retval["scanner_public_ip"] = config.public_ip
             retval["site_name"] = config.site_name

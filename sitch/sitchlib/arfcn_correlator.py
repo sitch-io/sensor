@@ -14,7 +14,8 @@ class ArfcnCorrelator(object):
     instantiating the ArfcnCorrelator.
     """
 
-    def __init__(self, states, feed_dir, whitelist, power_threshold, device_id):
+    def __init__(self, states, feed_dir, whitelist, power_threshold,
+                 device_id):
         """Initializing the ArfcnCorrelator.
 
         Args:
@@ -189,7 +190,7 @@ class ArfcnCorrelator(object):
         if scan_type == "kal_channel":
             return scan_doc["arfcn_int"]
         elif scan_type == "gsm_modem_channel":
-            return scan_doc["arfcn_int"]
+            return scan_doc["arfcn"]
         elif scan_type == "gps":
             return None
         else:
