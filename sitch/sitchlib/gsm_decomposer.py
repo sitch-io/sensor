@@ -47,21 +47,8 @@ class GsmDecomposer(object):
         channel["site_name"] = scan_document["site_name"]
         channel["scan_location"] = scan_document["scan_location"]
         channel["scanner_public_ip"] = scan_document["scanner_public_ip"]
+        channel["event_timestamp"] = scan_document["event_timestamp"]
         return channel
-
-    # @classmethod
-    # def arfcn_int(cls, arfcn):
-    #    """Attempt to derive an integer representation of ARFCN."""
-    #   if arfcn == "65535":  # This seems to be a default ARFCN on some modems
-    #        return 0
-    #    try:
-    #        arfcn_int = int(arfcn)
-    #    except:
-    #        msg = "GsmDecomposer: Unable to convert ARFCN to int"
-    #        print(msg)
-    #        print(arfcn)
-    #        arfcn_int = 0
-    #    return arfcn_int
 
     @classmethod
     def get_cgi_int(cls, channel):

@@ -159,6 +159,7 @@ def init_event_injector(init_event):
 def get_app_uptime():
     return ((datetime.datetime.now() - app_start_time).seconds)
 
+
 def gsm_modem_circuit_breaker(band, tty_port):
     """Circuit breaker for GSM modem functionality."""
     if band == "nope":
@@ -222,6 +223,7 @@ def gsm_modem_consumer(config):
             retval["band"] = config.gsm_modem_band
             retval["scanner_public_ip"] = config.public_ip
             retval["site_name"] = config.site_name
+            retval["event_timestamp"] = retval["scan_finish"]
             processed = retval.copy()
             scan_results_queue.append(processed)
 

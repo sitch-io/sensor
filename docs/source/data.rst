@@ -6,6 +6,7 @@ The following sections describe the data for the files found in '/data/sitch/log
 
 .. include:: log_cells.rst
 
+
 geoip.log
 ---------
 
@@ -37,40 +38,8 @@ gps.log
 
 
 
-gsm_modem_channel.log
----------------------
+.. include:: log_gsm_modem_channel.rst
 
-::
-
-{"cgi_str": "310:260:275:20082",
- "site_name": "sitch-site-testing",
- "bsic": "16",
- "mcc": "310",
- "rla": "08",
- "lac": "275",
- "band": "ALL_BAND",
- "feed_info": {
-   "mcc": "310",
-   "lon": "-122",
-   "lac": "275",
-   "range": "325",
-   "lat": "37",
-   "mnc": "260",
-   "cellid": "20082"},
- "scan_location": "sitch-site-testing",
- "mnc": "260",
- "txp": "03",
- "distance": 500,
- "scan_finish": "2017-05-06T06:25:55.478570",
- "rxl": 19.0,
- "arfcn_int": 684,
- "cell": "0",
- "scanner_public_ip": "1.1.1.1",
- "rxq": 0.0,
- "ta": "255",
- "cellid": "20082",
- "cgi_int": 31026027520082,
- "arfcn": "0684"}
 
 health_check.log
 ----------------

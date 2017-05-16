@@ -1,47 +1,39 @@
-cells.log
----------
+gsm_modem_channel.log
+---------------------
 
 ::
 
-    {"scan_results": [
-      {"cgi_str": "310:260:275:20000",
-       "site_name": "sitch-site-testing",
-       "bsic": "16",
-       "mcc": "310",
-       "rla": 0,
-       "lac": "275",
-       "band": "ALL_BAND",
-       "feed_info": {
-         "mcc": "310",
-         "lon": "-122.464146",
-         "lac": "275",
-         "range": 325,
-         "lat": "37.776641",
-         "mnc": "260",
-         "cellid": "20082"},
-       "scan_location": "sitch-site-testing",
-       "mnc": "260",
-       "txp": 03,
-       "distance": 534.3820159387475,
-       "scan_finish": "2017-05-06T06:25:49.837957",
-       "rxl": 20.0,
-       "cell": 0,
-       "scanner_public_ip": "1.1.1.1",
-       "rxq": 0.0,
-       "ta": 255,
-       "cellid": "20082",
-       "cgi_int": 31026027520082,
-       "arfcn": 684}
-       ...],
-      "band": "ALL_BAND",
-      "site_name": "sitch-site-testing",
-      "platform": "Unspecified",
-      "scan_start": "",
-      "scan_location": "sitch-site-testing",
-      "scanner_public_ip": "1.1.1.1",
-      "scan_finish": "2017-05-06T06:25:49.837957",
-      "scan_program": "gsm_modem"
-      "event_timestamp": "2017-05-06T06:25:49.837957"}
+    {"cgi_str": "310:260:275:20082",
+    "site_name": "sitch-site-testing",
+    "bsic": "16",
+    "mcc": "310",
+    "rla": 8,
+    "lac": "275",
+    "band": "ALL_BAND",
+    "feed_info": {
+        "mcc": "310",
+        "lon": "-122.123",
+        "lac": "275",
+        "range": 325,
+        "lat": "37.123",
+        "mnc": "260",
+        "cellid": "20082"
+        },
+    "scan_location": "sitch-site-testing",
+    "mnc": "260",
+    "txp": 3,
+    "distance": 568.12345,
+    "scan_finish": "2017-05-16T02:21:23.901298",
+    "event_timestamp": "2017-05-16T02:21:23.901298",
+    "rxl": 24.0,
+    "cell": 0,
+    "scanner_public_ip": "1.1.1.1",
+    "rxq": 0.0,
+    "ta": 255,
+    "cellid": "20082",
+    "cgi_int": 31026027520082,
+    "arfcn": 684}
+
 
 <cell>
 ======
