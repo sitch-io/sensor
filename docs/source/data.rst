@@ -7,17 +7,8 @@ The following sections describe the data for the files found in '/data/sitch/log
 .. include:: log_cells.rst
 
 
-geoip.log
----------
+.. include:: log_geoip.rst
 
-::
-
-{"geometry":
-  {"type": "Point",
-   "coordinates":
-     [-122, 37]},
-   "scan_program": "geo_ip",
-   "type": "Feature"}
 
 
 gps.log
