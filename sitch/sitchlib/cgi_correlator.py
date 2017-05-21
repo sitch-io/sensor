@@ -75,7 +75,11 @@ class CgiCorrelator(object):
                 if channel["mcc"] not in self.mcc_list:
                     msg = ("MCC %s should not be observed by this sensor. ARFCN: %s CGI: %s Cell Priority: %s" %  # NOQA
                            (channel["mcc"], channel["arfcn"], channel["cgi_str"], channel["cell"]))  # NOQA
-                    retval.append(self.alerts.build_alert(130, msg))
+                    alert = self.alerts.build_alert(130, msg)
+                    alert["site_name"] = channel["site_name"]
+                    alert["sensor_name"] = channel["sensor_name"]
+                    alert["sensor_id"] = channel["sensor_id"]
+                    retval.append(alert)
                 feed_comparison_results = self.feed_comparison(channel)
                 for feed_alert in feed_comparison_results:
                     retval.append(feed_alert)
@@ -94,25 +98,6 @@ class CgiCorrelator(object):
         wl_string = ",".join(cgi_wl)
         message = "CgiCorrelator: Initializing with CGI whitelist: %s" % wl_string  # NOQA
         return message
-
-    # @classmethod
-    # def arfcn_int(cls, arfcn):
-    #    """Attempt to derive an integer representation of ARFCN.
-    #
-    #    Args:
-    #        arfcn (str): String representation of ARFCN
-
-    #    Returns:
-    #        int: Integer representation of ARFCN, zero if unable to convert.
-    #    """
-    #    try:
-    #        arfcn_int = int(arfcn)
-    #    except:
-    #        msg = "CgiCorrelator: Unable to convert ARFCN to int"
-    #        print(msg)
-    #        print(arfcn)
-    #        arfcn_int = 0
-    #    return arfcn_int
 
     @classmethod
     def should_skip_feed(cls, channel):
@@ -271,6 +256,9 @@ class CgiCorrelator(object):
             comparison_results.append(self.process_cell_zero(channel))
         for result in comparison_results:
             if result != ():
+                retval[1]["site_name"] = channel["site_name"]
+                retval[1]["sensor_name"] = channel["sensor_name"]
+                retval[1]["sensor_id"] = channel["sensor_id"]
                 retval.append(result)
         if len(retval) == 0:
             if channel["cgi_str"] not in self.good_cgis:
