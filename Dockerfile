@@ -15,7 +15,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libfftw3-double3=3.3.4-2 \
     librtlsdr0=0.5.3-3 \
     libusb-1.0-0=2:1.0.19-1 \
-    libc6=2.19-18+deb8u7 \
+    libc6=2.19-18+deb8u9 \
     libudev1=215-17+deb8u6 \
     python=2.7.9-1 \
     python-gps=3.11-3 \
