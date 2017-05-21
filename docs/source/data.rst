@@ -9,25 +9,7 @@ The following sections describe the data for the files found in '/data/sitch/log
 
 .. include:: log_geoip.rst
 
-
-
-gps.log
--------
-
-::
-
-{"sat_time": "2017-05-02T06:26:08.000Z",
- "geometry": {
-   "type": "Point",
-   "coordinates":
-     [-122, 37]
-     },
-   "time_drift": 0.006355733333333334,
-   "sys_time": "2017-05-02T06:26:08.381344",
-   "scan_program": "gpsd",
-   "type": "Feature"}
-
-
+.. include:: log_gps.rst
 
 .. include:: log_gsm_modem_channel.rst
 
