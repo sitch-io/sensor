@@ -18,16 +18,8 @@ The following sections describe the data for the files found in '/data/sitch/log
 
 .. include:: log_kal_channel.rst
 
+.. include:: log_scanner.rst
 
-sitch_alert.log
----------------
-
-::
-
-{"details": "Primary BTS was 310:260:275:20082 now 310:260:275:42302. Site: sitch-site-testing",
- "type": "Primary BTS metadata change.",
- "id": 110,
- "device_id": "sitch-site-testing"}
 
 
 sitch_init.log
