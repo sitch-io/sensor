@@ -35,6 +35,7 @@ class KalDecomposer(object):
                     msg["site_name"] = scan_document["scan_location"]
                     msg["scan_start"] = scan_document["scan_start"]
                     msg["scan_finish"] = scan_document["scan_finish"]
+                    msg["event_timestamp"] = scan_document["event_timestamp"]
                     msg["scan_program"] = scan_document["scan_program"]
                     msg["scanner_public_ip"] = scan_document["scanner_public_ip"]  # NOQA
                     try:

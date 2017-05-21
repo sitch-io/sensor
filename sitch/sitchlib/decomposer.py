@@ -9,7 +9,7 @@ from geoip_decomposer import GeoipDecomposer
 class Decomposer(object):
     """Decompose device messages into normalized log messages."""
 
-    decomp_ref = {"Kalibrate": KalDecomposer(),
+    decomp_ref = {"kalibrate": KalDecomposer(),
                   "gsm_modem": GsmDecomposer(),
                   "gpsd": GpsDecomposer(),
                   "geo_ip": GeoipDecomposer()}
