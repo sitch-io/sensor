@@ -4,6 +4,7 @@ class DeviceSamples(object):
                         "sat_time": "2017-03-25T00:30:48.000Z",
                         "time_drift": 2,
                         "sys_time": "2017-03-25T00:32:48.416592",
+                        "event_timestamp": "2016-05-07 04:10:35",
                         "geometry": {
                             "type": "Point",
                             "coordinates": [-122.431297, 37.773972]}}
@@ -13,17 +14,20 @@ class DeviceSamples(object):
                         "sat_time": "2017-03-25T00:30:48.000Z",
                         "time_drift": 2,
                         "sys_time": "2017-03-25T00:32:48.416592",
+                        "event_timestamp": "2016-05-07 04:10:35",
                         "geometry": {
                             "type": "Point",
                             "coordinates": [-100.431297, 32.773972]}}
 
     geoip_loc_a = {"scan_program": "geoip",
+                   "event_timestamp": "2016-05-07 04:10:35",
                    "type": "Feature",
                    "geometry": {
                        "type": "Point",
                        "coordinates": [-122.431297, 37.773972]}}
 
     geoip_loc_b = {"scan_program": "geoip",
+                   "event_timestamp": "2016-05-07 04:10:35",
                    "type": "Feature",
                    "geometry": {
                        "type": "Point",
@@ -52,6 +56,7 @@ class DeviceSamples(object):
                           ],
                    "scan_start": "",
                    "scan_finish": "2016-05-07 02:36:50",
+                   "event_timestamp": '2016-05-07 04:10:35',
                    "scan_program": "gsm_modem",
                    "scan_location": "SCAN_LOCATION",
                    "site_name": "SITE_NAME",
@@ -101,5 +106,6 @@ class DeviceSamples(object):
                         '0: Generic RTL2832U OEM', 'modifier': '-',
                         'channel': '242'}],
                   'scan_start': '2016-05-07 04:10:35',
-                  'scan_program': 'Kalibrate',
+                  'event_timestamp': '2016-05-07 04:10:35',
+                  'scan_program': 'kalibrate',
                   'scanner_name': 'DEVICE-ID'}

@@ -16,55 +16,7 @@ The following sections describe the data for the files found in '/data/sitch/log
 
 .. include:: log_heartbeat.rst
 
-
-
-
-
-kal_channel.log
----------------
-
-::
-
-{"site_name": "sitch-site-testing",
- "power": 854930.16,
- "final_freq": "874979084",
- "band": "GSM-850",
- "scan_finish": "2017-05-07T06:28:38.545421",
- "sample_rate": "270833.002142",
- "gain": "80.0",
- "scanner_public_ip": "1.1.1.1",
- "scan_start": "2017-05-07T06:23:39.482440",
- "scan_program": "kalibrate",  # to lower
- "arfcn_int": 157,
- "channel": "157"}
-
-
-scanner.log
------------
-
-::
-
-{"site_name": ["sitch-site-testing"],  # NO LIST
- "scan_results": [
- {"channel_detect_threshold": "105949.217083",
-  "power": "854930.16",
-  "final_freq": "874979084",
-  "mod_freq": 20916.0,
-  "band": "GSM-850",
-  "sample_rate": "270833.002142",
-  "gain": "80.0",
-  "base_freq": 875000000.0,
-  "device": "0: Generic RTL2832U OEM",
-  "modifier": "-",
-  "channel": "157"}
-  ],
- "platform": "Unspecified",
- "scan_start": "2017-05-07T06:23:39.482440",
- "scan_location": "sitch-site-testing",
- "scanner_public_ip": "1.1.1.1",
- "scan_finish": "2017-05-07T06:28:38.545421",
- "scan_program": "Kalibrate",
- "scanner_name": "sitch-site-testing"}
+.. include:: log_kal_channel.rst
 
 
 sitch_alert.log

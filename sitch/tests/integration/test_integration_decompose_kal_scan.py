@@ -49,7 +49,8 @@ class TestIntegrationKalDecomposer:
                             '0: Generic RTL2832U OEM', 'modifier': '-',
                             'channel': '242'}],
                     'scan_start': '2016-05-07 04:10:35',
-                    'scan_program': 'Kalibrate',
+                    'event_timestamp': '2016-05-07 04:10:35',
+                    'scan_program': 'kalibrate',
                     'scanner_name': 'test_site'}
         return samp_kal
 

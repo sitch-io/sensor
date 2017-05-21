@@ -291,11 +291,12 @@ def kalibrate_consumer(config):
         scan_document["scan_start"] = start_time
         scan_document["scan_finish"] = end_time
         scan_document["scan_results"] = kal_results
-        scan_document["scan_program"] = "Kalibrate"
+        scan_document["scan_program"] = "kalibrate"
         scan_document["scanner_name"] = config.device_id
         scan_document["scan_location"] = str(config.device_id)
         scan_document["site_name"] = config.site_name,
         scan_document["scanner_public_ip"] = config.public_ip
+        scan_document["event_timestamp"] = end_time
         scan_results_queue.append(scan_document.copy())
     return
 
@@ -352,12 +353,18 @@ def geo_correlator(config):
 def decomposer(config):
     """Decompose all scans we get from devices.
 
-    Expected types:
-        * `scan` (Kalibrate)
-        * `kal_channel` (channel extracted from Kalibrate scan)
+    Expected input data structure types:
+        * `kalibrate`
+        * `gsm_modem`
+        * `geo_ip`
+        * `gpsd`
+    Output data structure types:
+        * `scan` (kalibrate)
+        * `kal_channel` (channel extracted from kalibrate scan)
         * `cell` (full scan from cellular radio)
         * `gsm_modem_channel` (channel extracted from GSM modem output)
         * `gps` (output from gpsd)
+        * `geo_ip` (Pass-through, pretty much unmodified)
     """
     d_composer = sitchlib.Decomposer
     while True:
