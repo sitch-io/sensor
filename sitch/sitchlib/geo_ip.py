@@ -32,7 +32,9 @@ class GeoIp(object):
         while True:
             self.set_ip
             self.set_geo
-            yield copy.deepcopy(self.geo)
+            result = copy.deepcopy(self.geo)
+            result["event_timestamp"] = Utility.get_now_string()
+            yield result
             time.sleep(self.delay)
 
     def set_ip(self):
