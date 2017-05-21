@@ -64,7 +64,6 @@ class DeviceSamples(object):
                    "scan_finish": "2016-05-07 02:36:50",
                    "event_timestamp": '2016-05-07 04:10:35',
                    "scan_program": "gsm_modem",
-                   "scan_location": "SCAN_LOCATION",
                    "site_name": "test_site",
                    "sensor_id": "test_sensor_id",
                    "sensor_name": "test_sensor",
