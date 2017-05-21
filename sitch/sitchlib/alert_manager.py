@@ -1,4 +1,5 @@
 """Alert Manager."""
+from utility import Utility
 
 
 class AlertManager(object):
@@ -41,5 +42,6 @@ class AlertManager(object):
         message["device_id"] = self.device_id
         message["type"] = self.get_alert_type(alert_id)
         message["details"] = alert_message
+        message["event_timestamp"] = Utility.get_now_string()
         retval = ("sitch_alert", message)
         return retval
