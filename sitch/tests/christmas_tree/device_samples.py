@@ -1,6 +1,8 @@
 class DeviceSamples(object):
     gps_device_loc_a = {"scan_program": "gpsd",
                         "site_name": "test_site",
+                        "sensor_id": "test_sensor_id",
+                        "sensor_name": "test_sensor",
                         "type": "Feature",
                         "sat_time": "2017-03-25T00:30:48.000Z",
                         "time_drift": 2,
@@ -12,6 +14,8 @@ class DeviceSamples(object):
 
     gps_device_loc_b = {"scan_program": "gpsd",
                         "site_name": "test_site",
+                        "sensor_id": "test_sensor_id",
+                        "sensor_name": "test_sensor",
                         "type": "Feature",
                         "sat_time": "2017-03-25T00:30:48.000Z",
                         "time_drift": 2,

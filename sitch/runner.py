@@ -246,6 +246,8 @@ def gps_consumer(config):
             gps_listener = sitchlib.GpsListener(delay=120)
             for fix in gps_listener:
                 fix["site_name"] = config.site_name
+                fix["sensor_id"] = config.device_id
+                fix["sensor_name"] = config.sensor_name
                 scan_results_queue.append(fix)
         except IndexError:
             time.sleep(3)
