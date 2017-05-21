@@ -14,6 +14,7 @@ Version |release|
   :caption: Contents:
 
   environment_variables
+  alert_types
   data
   troubleshooting
   sensor_api

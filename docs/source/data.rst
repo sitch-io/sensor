@@ -20,7 +20,7 @@ The following sections describe the data for the files found in '/data/sitch/log
 
 .. include:: log_scanner.rst
 
-
+.. include:: log_sitch_alert.rst
 
 sitch_init.log
 --------------
