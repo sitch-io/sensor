@@ -191,16 +191,19 @@ def gsm_modem_consumer(config):
         reg_info = consumer.get_reg_info()
         init_event_injector({"evt_cls": "gsm_consumer",
                              "evt_type": "registration",
+                             "event_timestamp": sitchlib.Utility.get_now_string(),  # NOQA
                              "evt_data": str(reg_info)})
         print("Runner: Dumping current GSM modem config...")
         dev_config = consumer.dump_config()
         init_event_injector({"evt_cls": "gsm_consumer",
                              "evt_type": "device_config",
+                             "event_timestamp": sitchlib.Utility.get_now_string(),  # NOQA
                              "evt_data": " | ".join(dev_config)})
         print("Runner: Getting IMSI from SIM...")
         imsi = consumer.get_imsi()
         init_event_injector({"evt_cls": "gsm_consumer",
                              "evt_type": "sim_imsi",
+                             "event_timestamp": sitchlib.Utility.get_now_string(),  # NOQA
                              "evt_data": str(imsi)})
         time.sleep(2)
         consumer.set_band(band)
