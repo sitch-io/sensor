@@ -19,12 +19,16 @@ states = ["CA"]
 
 
 class TestFelizNavidad:
+    def message_has_base_attributes(self, message):
+        assert message["event_timestamp"]
+        assert message["site_name"]
+        assert message["sensor_id"]
+        assert message["sensor_name"]
+
     def test_feliz_navidad(self):
         decomposer = sitchlib.Decomposer()
         gps_a_decomp = decomposer.decompose(samples.gps_device_loc_a)
         gps_b_decomp = decomposer.decompose(samples.gps_device_loc_b)
-        # geoip_a_decomp = decomposer.decompose(samples.geoip_loc_a)
-        # geoip_b_decomp = decomposer.decompose(samples.geoip_loc_b)
         gsm_decomp = decomposer.decompose(samples.gsm_modem_1)
         kal_decomp = decomposer.decompose(samples.kal_scan_1)
         # First we light up the ARFCN correlator...
@@ -38,32 +42,40 @@ class TestFelizNavidad:
         # Run gps_a, Kalibrate, and GSM stuff through the ARFCN correlator
         arfcn_results = []
         for gps in gps_a_decomp:
+            self.message_has_base_attributes(gps)
             arfcn_correlator.correlate(gps)
         for k in kal_decomp:
             if k[0] == "kal_channel":
+                self.message_has_base_attributes(k)
                 arfcn_results.extend(arfcn_correlator.correlate(k))
-        # arfcn_results.extend(arfcn_correlator.correlate("Kalibrate", kal_decomp))
         for g in gsm_decomp:
+            self.message_has_base_attributes(g)
             arfcn_results.extend(arfcn_correlator.correlate(g))
         # Run GPS A then B through GPS correlator
         geo_results = []
         for geo in gps_a_decomp:
+            self.message_has_base_attributes(geo)
             geo_results.extend(geo_correlator.correlate(geo))
         for geo in gps_b_decomp:
+            self.message_has_base_attributes(geo)
             geo_results.extend(geo_correlator.correlate(geo))
         # Flush everything applicable through the CGI correlator now...
         cgi_results = []
         for g in gsm_decomp:
+            self.message_has_base_attributes(g)
             cgi_results.extend(cgi_correlator.correlate(g))
         print("CGI Results")
         for c in cgi_results:
+            self.message_has_base_attributes(c)
             print c
-        assert len(cgi_results) == 4  # Four of six are correlated and not in DB
+        assert len(cgi_results) == 4  # 4 of 6 are correlated and not in DB
         print("GEO Results")
         for g in geo_results:
+            self.message_has_base_attributes(g)
             print g
-        assert len(geo_results) == 1  # One alert for delta being over threshold
+        assert len(geo_results) == 1  # 1 alert for delta being over threshold
         print("ARFCN Results")
         for a in arfcn_results:
+            self.message_has_base_attributes(a)
             print a
         assert len(arfcn_results) == 3
