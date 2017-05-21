@@ -256,9 +256,9 @@ class CgiCorrelator(object):
             comparison_results.append(self.process_cell_zero(channel))
         for result in comparison_results:
             if result != ():
-                retval[1]["site_name"] = channel["site_name"]
-                retval[1]["sensor_name"] = channel["sensor_name"]
-                retval[1]["sensor_id"] = channel["sensor_id"]
+                result[1]["site_name"] = channel["site_name"]
+                result[1]["sensor_name"] = channel["sensor_name"]
+                result[1]["sensor_id"] = channel["sensor_id"]
                 retval.append(result)
         if len(retval) == 0:
             if channel["cgi_str"] not in self.good_cgis:
