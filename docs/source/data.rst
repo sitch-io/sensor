@@ -6,55 +6,18 @@ The following sections describe the data for the files found in '/data/sitch/log
 
 .. include:: log_cells.rst
 
-
 .. include:: log_geoip.rst
 
 .. include:: log_gps.rst
 
 .. include:: log_gsm_modem_channel.rst
 
+.. include:: log_health_check.rst
 
-health_check.log
-----------------
-
-::
-
-{"cpu_times":
-  {"iowait": 4694.23,
-  "idle": 3089452.32,
-  "user": 1786751.62,
-  "system": 125489.34},
-"data_vol": 5.5,
-"root_vol": 5.5,
-"cpu_percent": [42.0, 53.0, 35.9, 38.0],
-"mem":
-  {"swap_percent_used": 0.0,
-  "free": 464707584},
-"queue_sizes": {
-  "arfcn_correlator": 0,
-  "geo_correlator": 0,
-  "scan_results": 0,
-  "cgi_correlator": 0},
-"application_uptime_seconds": 32461,
-"timestamp": "2017-05-07T06:32:09.816725",
-"scan_program": "health_check"}
+.. include:: log_heartbeat.rst
 
 
-heartbeat.log
--------------
 
-::
-
-{"heartbeat_service_name": "MainThread", "timestamp": "2017-05-07T06:32:09.815061", "scan_program": "heartbeat"}
-{"heartbeat_service_name": "kalibrate_consumer", "timestamp": "2017-05-07T06:32:09.815243", "scan_program": "heartbeat"}
-{"heartbeat_service_name": "arfcn_correlator", "timestamp": "2017-05-07T06:32:09.815323", "scan_program": "heartbeat"}
-{"heartbeat_service_name": "decomposer", "timestamp": "2017-05-07T06:32:09.815391", "scan_program": "heartbeat"}
-{"heartbeat_service_name": "gsm_modem_consumer", "timestamp": "2017-05-07T06:32:09.815456", "scan_program": "heartbeat"}
-{"heartbeat_service_name": "geoip_consumer", "timestamp": "2017-05-07T06:32:09.815520", "scan_program": "heartbeat"}
-{"heartbeat_service_name": "writer", "timestamp": "2017-05-07T06:32:09.815584", "scan_program": "heartbeat"}
-{"heartbeat_service_name": "geo_correlator", "timestamp": "2017-05-07T06:32:09.815648", "scan_program": "heartbeat"}
-{"heartbeat_service_name": "gps_consumer", "timestamp": "2017-05-07T06:32:09.815711", "scan_program": "heartbeat"}
-{"heartbeat_service_name": "cgi_correlator", "timestamp": "2017-05-07T06:32:09.815780", "scan_program": "heartbeat"}
 
 
 kal_channel.log
