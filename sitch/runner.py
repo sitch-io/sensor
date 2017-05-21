@@ -298,9 +298,11 @@ def kalibrate_consumer(config):
         scan_document["scan_finish"] = end_time
         scan_document["scan_results"] = kal_results
         scan_document["scan_program"] = "kalibrate"
-        scan_document["scanner_name"] = config.device_id
-        scan_document["scan_location"] = str(config.device_id)
-        scan_document["site_name"] = config.site_name,
+        # scan_document["scanner_name"] = config.device_id
+        # scan_document["scan_location"] = str(config.device_id)
+        scan_document["site_name"] = config.site_name
+        scan_document["sensor_id"] = config.device_id
+        scan_document["sensor_name"] = config.sensor_name
         scan_document["scanner_public_ip"] = config.public_ip
         scan_document["event_timestamp"] = end_time
         scan_results_queue.append(scan_document.copy())

@@ -72,9 +72,10 @@ class DeviceSamples(object):
 
     kal_scan_1 = {'platform': 'PLATFORM-NAME',
                   'scan_finish': '2016-05-07 04:14:30',
-                  'scan_location': 'SCAN_LOCATION',
-                  "site_name": "SITE_NAME",
+                  'site_name': 'SITE_NAME',
                   'scanner_public_ip': '0.0.0.0',
+                  'sensor_name': 'SENSOR_NAME',
+                  'sensor_id': 'SENSOR_ID',
                   'scan_results': [
                     {'channel_detect_threshold': '279392.605625',
                         'power': '5909624.47', 'final_freq': '869176168',
@@ -113,5 +114,4 @@ class DeviceSamples(object):
                         'channel': '242'}],
                   'scan_start': '2016-05-07 04:10:35',
                   'event_timestamp': '2016-05-07 04:10:35',
-                  'scan_program': 'kalibrate',
-                  'scanner_name': 'DEVICE-ID'}
+                  'scan_program': 'kalibrate'}
