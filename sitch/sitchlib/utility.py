@@ -144,7 +144,7 @@ class Utility:
         """Generate heartbeat message."""
         scan = {"scan_program": "heartbeat",
                 "heartbeat_service_name": service_name,
-                "timestamp": Utility.get_now_string()}
+                "event_timestamp": Utility.get_now_string()}
         return scan
 
     @classmethod
@@ -187,7 +187,7 @@ class Utility:
         retval["queue_sizes"] = queue_sizes
         cpu_times = psutil.cpu_times()
         retval["scan_program"] = "health_check"
-        retval["timestamp"] = Utility.get_now_string()
+        retval["event_timestamp"] = Utility.get_now_string()
         retval["cpu_percent"] = psutil.cpu_percent(percpu=True)
         retval["cpu_times"] = {"user": cpu_times.user,
                                "system": cpu_times.system,
