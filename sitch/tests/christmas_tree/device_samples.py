@@ -65,10 +65,11 @@ class DeviceSamples(object):
                    "event_timestamp": '2016-05-07 04:10:35',
                    "scan_program": "gsm_modem",
                    "scan_location": "SCAN_LOCATION",
-                   "site_name": "SITE_NAME",
+                   "site_name": "test_site",
+                   "sensor_id": "test_sensor_id",
+                   "sensor_name": "test_sensor",
                    "scanner_public_ip": "66.18.61.61",
-                   "band": "GSM850_MODE",
-                   "scanner_name": "DEVICE-ID"}
+                   "band": "GSM850_MODE"}
 
     kal_scan_1 = {'platform': 'PLATFORM-NAME',
                   'scan_finish': '2016-05-07 04:14:30',

@@ -226,6 +226,8 @@ def gsm_modem_consumer(config):
             retval["band"] = config.gsm_modem_band
             retval["scanner_public_ip"] = config.public_ip
             retval["site_name"] = config.site_name
+            retval["sensor_id"] = config.device_id
+            retval["sensor_name"] = config.sensor_name
             retval["event_timestamp"] = retval["scan_finish"]
             processed = retval.copy()
             scan_results_queue.append(processed)
