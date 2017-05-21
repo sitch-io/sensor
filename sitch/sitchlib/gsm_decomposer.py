@@ -45,7 +45,8 @@ class GsmDecomposer(object):
         channel["band"] = scan_document["band"]
         channel["scan_finish"] = scan_document["scan_finish"]
         channel["site_name"] = scan_document["site_name"]
-        channel["scan_location"] = scan_document["scan_location"]
+        channel["sensor_id"] = scan_document["sensor_id"]
+        channel["sensor_name"] = scan_document["sensor_name"]
         channel["scanner_public_ip"] = scan_document["scanner_public_ip"]
         channel["event_timestamp"] = scan_document["scan_finish"]
         return channel
