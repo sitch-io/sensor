@@ -20,10 +20,10 @@ states = ["CA"]
 
 class TestFelizNavidad:
     def message_has_base_attributes(self, message):
-        assert message["event_timestamp"]
-        assert message["site_name"]
-        assert message["sensor_id"]
-        assert message["sensor_name"]
+        assert message[1]["event_timestamp"]
+        assert message[1]["site_name"]
+        assert message[1]["sensor_id"]
+        assert message[1]["sensor_name"]
 
     def test_feliz_navidad(self):
         decomposer = sitchlib.Decomposer()
