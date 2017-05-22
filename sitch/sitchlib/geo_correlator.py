@@ -47,6 +47,9 @@ class GeoCorrelator(object):
             for alert in GeoCorrelator.time_drift_check(scan_body,
                                                         self.time_threshold,
                                                         self.device_id):
+                alert[1]["site_name"] = scan_body["site_name"]
+                alert[1]["sensor_name"] = scan_body["sensor_name"]
+                alert[1]["sensor_id"] = scan_body["sensor_id"]
                 alerts.append(alert)
         return alerts
 
@@ -86,7 +89,6 @@ class GeoCorrelator(object):
         if current_delta < threshold_mins:
             return []
         else:
-            message = "Possible GPS time spoofing attack! %d delta from system" % (
-                      current_delta)
+            message = "Possible GPS time spoofing attack! %d delta from system" % (current_delta)  # NOQA
             alert = AlertManager(device_id).build_alert(310, message)
             return[alert]
