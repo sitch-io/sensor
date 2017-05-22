@@ -76,9 +76,9 @@ class CgiCorrelator(object):
                     msg = ("MCC %s should not be observed by this sensor. ARFCN: %s CGI: %s Cell Priority: %s" %  # NOQA
                            (channel["mcc"], channel["arfcn"], channel["cgi_str"], channel["cell"]))  # NOQA
                     alert = self.alerts.build_alert(130, msg)
-                    alert["site_name"] = channel["site_name"]
-                    alert["sensor_name"] = channel["sensor_name"]
-                    alert["sensor_id"] = channel["sensor_id"]
+                    alert[1]["site_name"] = channel["site_name"]
+                    alert[1]["sensor_name"] = channel["sensor_name"]
+                    alert[1]["sensor_id"] = channel["sensor_id"]
                     retval.append(alert)
                 feed_comparison_results = self.feed_comparison(channel)
                 for feed_alert in feed_comparison_results:
