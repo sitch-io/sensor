@@ -10,18 +10,26 @@ feedpath = os.path.join(os.path.dirname(os.path.abspath(__file__)),
 file, pathname, description = imp.find_module(modulename, [modulepath])
 sitchlib = imp.load_module(modulename, file, pathname, description)
 
-geo_state = {"geometry":
+geo_state = {"site_name": "SITE_NAME",
+             "sensor_name": "SENSOR_NAME",
+             "sensor_id": "SENSOR_ID",
+             "geometry":
              {"coordinates":
               [-122.431297, 37.773972]}}
 
-bad_geo_state = {"geometry":
+bad_geo_state = {"site_name": "SITE_NAME",
+                 "sensor_name": "SENSOR_NAME",
+                 "sensor_id": "SENSOR_ID",
+                 "geometry":
                  {"coordinates":
                   [0, 0]}}
 
 states = ["CA"]
 
 gsm_modem_channel = {"cgi_str": "310:266:253:21553",
-                     "site_name": "sitch_testing",
+                     "site_name": "SITE_NAME",
+                     "sensor_name": "SENSOR_NAME",
+                     "sensor_id": "SENSOR_ID",
                      "mcc": "310",
                      "lac": "253",
                      "band": "ALL_BAND",
