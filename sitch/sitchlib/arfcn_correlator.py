@@ -68,12 +68,18 @@ class ArfcnCorrelator(object):
                           scan["site_name"],
                           scan["power"])
                 alert = self.alerts.build_alert(200, message)
+                alert[1]["site_name"] = scan["site_name"]
+                alert[1]["sensor_name"] = scan["sensor_name"]
+                alert[1]["sensor_id"] = scan["sensor_id"]
                 retval.append(alert)
                 self.manage_arfcn_lists("in", arfcn, "threshold")
             else:
                 self.manage_arfcn_lists("out", arfcn, "threshold")
         feed_alerts = self.compare_arfcn_to_feed(arfcn)
         for feed_alert in feed_alerts:
+            feed_alert[1]["site_name"] = scan["site_name"]
+            feed_alert[1]["sensor_name"] = scan["sensor_name"]
+            feed_alert[1]["sensor_id"] = scan["sensor_id"]
             retval.append(feed_alert)
         self.observed_arfcn.append(arfcn)
         return retval

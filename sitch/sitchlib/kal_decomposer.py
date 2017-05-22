@@ -33,6 +33,8 @@ class KalDecomposer(object):
                     msg["channel"] = result["channel"]
                     msg["gain"] = result["gain"]
                     msg["site_name"] = scan_document["scan_location"]
+                    msg["sensor_id"] = scan_document["sensor_id"]
+                    msg["sensor_name"] = scan_document["sensor_name"]
                     msg["scan_start"] = scan_document["scan_start"]
                     msg["scan_finish"] = scan_document["scan_finish"]
                     msg["event_timestamp"] = scan_document["event_timestamp"]

@@ -73,6 +73,8 @@ class DeviceSamples(object):
     kal_scan_1 = {'platform': 'PLATFORM-NAME',
                   'scan_finish': '2016-05-07 04:14:30',
                   'site_name': 'SITE_NAME',
+                  "sensor_id": "test_sensor_id",
+                  "sensor_name": "test_sensor",
                   'scanner_public_ip': '0.0.0.0',
                   'sensor_name': 'SENSOR_NAME',
                   'sensor_id': 'SENSOR_ID',
