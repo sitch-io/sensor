@@ -16,6 +16,7 @@ Version |release|
   environment_variables
   alert_types
   data
+  event_lifecycle
   troubleshooting
   sensor_api
 
