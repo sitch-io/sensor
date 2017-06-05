@@ -186,75 +186,30 @@ In the case of the GSM modem you will also see that the following message has re
 
 
 No events in Kibana
-===================
+-------------------
 
 The SITCH sensor relies on Filebeat to read events from log files and transmit
 them to the Logstash instance running in the SITCH service.  There are a few
 indicators when the transmission process is broken:
 
-1. No log files being written:
-  Confirm that log files are being written at ``/data/sitch/log/``.  If your
-  sensor isn't populating log files, the most likely reason is that the
-  sensor is in a reboot loop due to mis-configuration.  Check the
-  Device Summary page in Resin, for the affected sensor.  If the reason that
-  the sensor isn't coming online cleanly isn't celarly explained in the log
-  messages, please reach out in the gitter channel
-  (https://gitter.im/sitch-io/sensor) or open an issue in the sensor project
-  on Github: https://github.com/sitch-io/sensor/issues
+1. Confirm that log files are being written:
+  * Confirm that log files are being written at ``/data/sitch/log/``.  If your sensor isn't populating log files, the most likely reason is that the sensor is in a reboot loop due to mis-configuration.
+  * Check the Device Summary page in Resin, for the affected sensor. If the reason that the sensor isn't coming online cleanly isn't celarly explained in the log messages, please reach out in the gitter channel (https://gitter.im/sitch-io/sensor) or open an issue in the sensor project on Github: https://github.com/sitch-io/sensor/issues
+2. Make sure that the filebeat process is running on the sensor:
+  * Check using ``ps ef`` from the terminal: you should see a line containing: ``/usr/local/bin/filebeat-linux-arm -c /etc/filebeat.yml``.  If you don't, you can try to start the process manually and look for errors printed to stdout.
+  * Your crypto certs and keys are retieved in the sensor initialization process and dropped at ``/host/run/dbus/crypto/``.  You should see three files there: ``ca.crt``, ``logstash.crt``, and ``logstash.key``.  If you don't have those files on your system, there's a really good chance that your sensor environment variables aren't set correctly.
+  * You should confirm that the ``VAULT_PATH``, ``VAULT_TOKEN``, and ``VAULT_URL`` environment variables are correct, and that the network path is open between your sensor and Vault.
+  * You can confirm the network path is open by running this command: ``openssl s_client -connect VAULT_HOSTNAME:8200``.  Replace ``VAULT_HOSTNAME`` with the DNS name from the output of ``echo $VAULT_URL``, when run in the terminal on the sensor.  So if your $VAULT_URL is ``https://myvault.mydomain.com:8200``, the command you should run in the terminal on the sensor is: ``openssl s_client -connect myvault.mydomain.com:8200``.
+  * An error message containing ``gethostbyname failure`` indicates a failure in DNS resolution.
+  * A message containing ``connect: Connection refused`` indicates that the OpenSSL client is unable to connect to the port that Vault is running on, and you need to check your iptables and security groups settings, and confirm that Vault is actually listening on that port.
+  * You should also confirm that Vault is actually running.
+  * If the Vault container is stopped and restarted, you will need to unseal the Vault again.  See the docs for the demo environment (https://github.com/sitch-io/demo) for details on how to unseal the vault.
+3. Confirm that Filebeat is processing the log files:
+  * There's a registry file managed by Filebeat, located at ``/data/sitch/log/fb_registry``.  This file is what Filebeat uses to maintain its place in your log files, in the event it gets restarted.
+4. If Filebeat appears to be transmitting events to Logstash and you still don't see events in Kibana, you can run the logstash container in debug mode by changing the docker-compose.yml file's setting for ``services.logstash.image`` from ``docker.io/sitch/logstash`` to ``docker.io/sitch/logstash:debug``.  Then, use docker-compose to take your stack down and back up again.  This will be very verbose, and can cause a substantial amount of disk space consumption.  Don't leave it like that forever.
+5. If there is no indication that Logstash is having trouble getting events into Elasticsearch, check that you have an index for logstash built in Kibana.
+  * Navigate to this URL: https://MY_SITCH_SERVICE_HOSTNAME:8443/app/kibana#/management/kibana/indices , replacing MY_SITCH_SERVICE_HOSTNAME with the hostname of your SITCH service-side environment.  If you have an index, you should have events.
+  * Try adjusting your time window, and confirm that the system clocks in your SITCH service side components are correct.
+  * Time drift can not only cause the query in Kibana to look weird, but it can cause an SSL connection negotiation failure between the sensor and service.
 
-1. Make sure that the filebeat process is running on the sensor:
-  Check using ``ps ef`` from the terminal: you should see a line containing:
-  ``/usr/local/bin/filebeat-linux-arm -c /etc/filebeat.yml``.  If you don't,
-  you can try to start the process manually and look for errors printed to
-  stdout.  Your crypto certs and keys are retieved in the sensor initialization
-  process and dropped at ``/host/run/dbus/crypto/``.  You should see three files
-  there: ``ca.crt``, ``logstash.crt``, and ``logstash.key``.  If you don't have
-  those files on your system, there's a really good chance that your sensor
-  environment variables aren't set correctly.  You should confirm that the
-  ``VAULT_PATH``, ``VAULT_TOKEN``, and ``VAULT_URL`` environment variables
-  are correct, and that the network path is open between your sensor and Vault.
-  You can confirm the network path is open by running this command:
-  ``openssl s_client -connect VAULT_HOSTNAME:8200``.  Replace
-  ``VAULT_HOSTNAME`` with the DNS name from the output of ``echo $VAULT_URL``,
-  when run in the terminal on the sensor.  So if your $VAULT_URL is
-  ``https://myvault.mydomain.com:8200``, the command you should run in the
-  terminal on the sensor is:
-  ``openssl s_client -connect myvault.mydomain.com:8200``.  An error message
-  containing ``gethostbyname failure`` indicates a failure in DNS resolution.
-  A message containing ``connect: Connection refused`` indicates that the
-  OpenSSL client is unable to connect to the port that Vault is running on,
-  and you need to check your iptables and security groups settings, and confirm
-  that Vault is actually listening on that port.  You should also confirm that
-  Vault is actually running.  If the Vault container is stopped and restarted,
-  you will need to unseal the Vault again.  See the docs for the demo
-  environment (https://github.com/sitch-io/demo) for details on how to unseal
-  the vault.
-
-1. Confirm that Filebeat is processing the log files:
-  There's a registry file managed by Filebeat, located at
-  ``/data/sitch/log/fb_registry``.  This file is what Filebeat uses to maintain
-  its place in your log files, in the event it gets restarted.
-
-1. If Filebeat appears to be transmitting events to Logstash and you still
-  don't see events in Kibana, you can run the logstash container in debug
-  mode by changing the docker-compose.yml file's setting for
-  ``services.logstash.image`` from ``docker.io/sitch/logstash`` to
-  ``docker.io/sitch/logstash:debug``.  This will be very verbose, and can
-  cause a substantial amount of disk space consumption.  Don't leave it like
-  that forever.
-
-1. If there is no indication that Logstash is having trouble getting events
-  into Elasticsearch, check that you have an index for logstash
-  built in Kibana by navigating to this URL:
-  https://MY_SITCH_SERVICE_HOSTNAME:8443/app/kibana#/management/kibana/indices ,
-  replacing MY_SITCH_SERVICE_HOSTNAME with the hostname of your SITCH
-  service-side environment.  If you have an index, you should have events.
-  Try adjusting your time window, and confirm that the system clocks in your
-  SITCH service side components are correct.  Time drift can not only cause the
-  query in Kibana to look weird, but it can cause a connection negotiation
-  failure between the sensor and service.
-
-If none of the above lead you to success, please don't hesitate to file an
-issue in the sensor's Github repository:
-https://github.com/sitch-io/sensor/issues and/or reach out in the Gitter
-channel: https://gitter.im/sitch-io/sensor.
+If none of the above lead you to success, please don't hesitate to file an issue in the sensor's Github repository: https://github.com/sitch-io/sensor/issues and/or reach out in the Gitter channel: https://gitter.im/sitch-io/sensor.
