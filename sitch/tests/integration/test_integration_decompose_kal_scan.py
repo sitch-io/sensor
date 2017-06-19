@@ -15,10 +15,13 @@ sitchlib = imp.load_module(modulename, file, pathname, description)
 
 class TestIntegrationKalDecomposer:
     def build_scan_doc(self):
-        samp_kal = {'platform': u'AMLOGIC',
+        samp_kal = {'platform': 'PLATFORM-NAME',
+                    'event_type': 'kalibrate_scan',
                     'scan_finish': '2016-05-07 04:14:30',
-                    'scan_location': {'name': 'test_site'},
+                    'site_name': 'SITE_NAME',
                     'scanner_public_ip': '0.0.0.0',
+                    'sensor_name': 'SENSOR_NAME',
+                    'sensor_id': 'SENSOR_ID',
                     'scan_results': [
                         {'channel_detect_threshold': '279392.605625',
                             'power': '599624.47', 'final_freq': '869176168',

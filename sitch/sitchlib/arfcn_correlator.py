@@ -148,7 +148,7 @@ class ArfcnCorrelator(object):
         # If we can't compare geo, have ARFCN 0 or already been found in feed:
         if (str(arfcn) in ["0", None] or
                 arfcn in self.observed_arfcn or
-                self.geo_state == {"geometry": {"coordinates": [0, 0]}}):
+                self.geo_state["geometry"] == {"coordinates": [0, 0]}):
             return results
         else:
             msg = "ArfcnCorrelator: Cache miss on ARFCN %s" % str(arfcn)

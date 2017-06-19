@@ -30,6 +30,10 @@ class AlertManager(object):
     def build_alert(self, alert_id, alert_message):
         """Build the actual alert and returns it, formatted.
 
+        DEPRECATION NOTICE:  The 'alert_id' field has been introduced for
+        better readability.  It's currently set to be the same as 'id'.
+        At some point in the future, the 'id' field will be removed.
+
         Args:
             alert_id (int): The ID of the alert you want to build
             alert_message (str): The message to be embedded in the alert.
@@ -40,6 +44,7 @@ class AlertManager(object):
         """
         message = Utility.generate_base_event()
         message["alert_id"] = alert_id
+        message["id"] = alert_id
         message["type"] = self.get_alert_type(alert_id)
         message["event_type"] = "sitch_alert"
         message["details"] = alert_message

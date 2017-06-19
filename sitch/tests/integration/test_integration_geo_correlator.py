@@ -63,4 +63,4 @@ class TestIntegrationCorrelateGeo:
         correlator.correlate(("gps", geo_other_state))
         result = correlator.correlate(("gps", geo_time_alarm))
         assert len(result) == 1
-        assert result[0][1]["id"] == 310
+        assert result[0][1]["alert_id"] == 310
