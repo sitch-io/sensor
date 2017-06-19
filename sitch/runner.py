@@ -221,11 +221,12 @@ def gsm_modem_consumer(config):
             retval = dict(scan_job_template)
             retval["scan_results"] = report
             retval["scan_finish"] = sitchlib.Utility.get_now_string()
-            retval["scan_location"] = str(config.device_id)
             retval["scan_program"] = "gsm_modem"
             retval["band"] = config.gsm_modem_band
             retval["scanner_public_ip"] = config.public_ip
             retval["site_name"] = config.site_name
+            retval["sensor_id"] = config.device_id
+            retval["sensor_name"] = config.sensor_name
             retval["event_timestamp"] = retval["scan_finish"]
             processed = retval.copy()
             scan_results_queue.append(processed)
@@ -245,6 +246,9 @@ def gps_consumer(config):
         try:
             gps_listener = sitchlib.GpsListener(delay=120)
             for fix in gps_listener:
+                fix["site_name"] = config.site_name
+                fix["sensor_id"] = config.device_id
+                fix["sensor_name"] = config.sensor_name
                 scan_results_queue.append(fix)
         except IndexError:
             time.sleep(3)
@@ -295,9 +299,11 @@ def kalibrate_consumer(config):
         scan_document["scan_finish"] = end_time
         scan_document["scan_results"] = kal_results
         scan_document["scan_program"] = "kalibrate"
-        scan_document["scanner_name"] = config.device_id
-        scan_document["scan_location"] = str(config.device_id)
-        scan_document["site_name"] = config.site_name,
+        # scan_document["scanner_name"] = config.device_id
+        # scan_document["scan_location"] = str(config.device_id)
+        scan_document["site_name"] = config.site_name
+        scan_document["sensor_id"] = config.device_id
+        scan_document["sensor_name"] = config.sensor_name
         scan_document["scanner_public_ip"] = config.public_ip
         scan_document["event_timestamp"] = end_time
         scan_results_queue.append(scan_document.copy())
@@ -386,6 +392,7 @@ def decomposer(config):
                         message_write_queue.append(result)
                     elif s_type == "cell":
                         message_write_queue.append(result)
+                        cgi_correlator_queue.append(result)
                     elif s_type == "gsm_modem_channel":
                         cgi_correlator_queue.append(result)
                         arfcn_correlator_queue.append(result)

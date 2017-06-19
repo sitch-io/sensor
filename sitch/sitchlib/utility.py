@@ -23,6 +23,16 @@ class Utility:
         return retval
 
     @classmethod
+    def generate_base_event(cls):
+        base_event = {"site_name": os.getenv('LOCATION_NAME', 'SITCH_SITE'),
+                      "sensor_name": os.getenv('RESIN_DEVICE_NAME_AT_INIT',
+                                               'NOT_RESIN-MANAGED'),
+                      "sensor_id": os.getenv('HOSTNAME', 'NO_HOSTNAME'),
+                      "event_timestamp": cls.get_now_string(),
+                      "event_type": "base_event"}
+        return base_event.copy()
+
+    @classmethod
     def dt_from_iso(cls, iso_time):
         """Exchange an ISO8601-formatted string for a datetime object."""
         return du_parser.parse(iso_time)
@@ -129,8 +139,8 @@ class Utility:
         return dist_in_m
 
     @classmethod
-    def val_to_float(cls, s):
-        """Coerce to float."""
+    def str_to_float(cls, s):
+        """Change string to float."""
         retval = None
         try:
             retval = float(s)
@@ -144,7 +154,7 @@ class Utility:
         """Generate heartbeat message."""
         scan = {"scan_program": "heartbeat",
                 "heartbeat_service_name": service_name,
-                "event_timestamp": Utility.get_now_string()}
+                "timestamp": Utility.get_now_string()}
         return scan
 
     @classmethod
@@ -170,7 +180,12 @@ class Utility:
     @classmethod
     def hex_to_dec(cls, hx):
         """Change hex to decimal."""
-        integer = int(hx, 16)
+        try:
+            integer = int(str(hx), 16)
+        except Exception as e:
+            print("Unable to convert %s to an integer" % str(hx))
+            print e
+            integer = 0
         return str(integer)
 
     @classmethod
@@ -187,7 +202,7 @@ class Utility:
         retval["queue_sizes"] = queue_sizes
         cpu_times = psutil.cpu_times()
         retval["scan_program"] = "health_check"
-        retval["event_timestamp"] = Utility.get_now_string()
+        retval["timestamp"] = Utility.get_now_string()
         retval["cpu_percent"] = psutil.cpu_percent(percpu=True)
         retval["cpu_times"] = {"user": cpu_times.user,
                                "system": cpu_times.system,

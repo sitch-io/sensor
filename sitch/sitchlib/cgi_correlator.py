@@ -52,8 +52,10 @@ class CgiCorrelator(object):
         retval = []
         if scan_bolus[0] == "gps":
             self.state = scan_bolus[1]
+        elif scan_bolus[0] == "cell":
+            retval = self.check_scan_document(scan_bolus[1])
         elif scan_bolus[0] != "gsm_modem_channel":
-            print("CgiCorrelator: Unsupported scan type: %s" % scan_bolus[0])
+            print("CgiCorrelator: Unsupported scan type: %s" % str(scan_bolus[0]))  # NOQA
             pass
         else:
             channel = scan_bolus[1]
@@ -75,11 +77,47 @@ class CgiCorrelator(object):
                 if channel["mcc"] not in self.mcc_list:
                     msg = ("MCC %s should not be observed by this sensor. ARFCN: %s CGI: %s Cell Priority: %s" %  # NOQA
                            (channel["mcc"], channel["arfcn"], channel["cgi_str"], channel["cell"]))  # NOQA
-                    retval.append(self.alerts.build_alert(130, msg))
+                    alert = self.alerts.build_alert(130, msg)
+                    alert[1]["site_name"] = channel["site_name"]
+                    alert[1]["sensor_name"] = channel["sensor_name"]
+                    alert[1]["sensor_id"] = channel["sensor_id"]
+                    retval.append(alert)
                 feed_comparison_results = self.feed_comparison(channel)
                 for feed_alert in feed_comparison_results:
                     retval.append(feed_alert)
         return retval
+
+    def check_scan_document(self, scan_document):
+        """Check to see if there are no in-LAI neighbors for channel 0"""
+        results = []
+        chan_0 = self.get_cell_by_id(scan_document, 0)
+        chan_1 = self.get_cell_by_id(scan_document, 1)
+        chan_0_lai = self.get_lai_for_channel(chan_0)
+        chan_1_lai = self.get_lai_for_channel(chan_1)
+        print("LAIs: %s\t%s" % (chan_0_lai, chan_1_lai))
+        if chan_0_lai != chan_1_lai:
+            message = "Serving cell has no neighbors! Serving cell LAI: %s Next neighbor LAI: %s" % (chan_0_lai, chan_1_lai)  # NOQA
+            alert = self.alerts.build_alert(140, message)
+            alert[1]["site_name"] = scan_document["site_name"]
+            alert[1]["sensor_name"] = scan_document["sensor_name"]
+            alert[1]["sensor_id"] = scan_document["sensor_id"]
+            results.append(alert)
+        return results
+
+    @classmethod
+    def get_lai_for_channel(cls, channel):
+        chan_clean = cls.convert_hex_targets(channel)
+        lai = ":".join([chan_clean["mcc"], chan_clean["mnc"],
+                        chan_clean["lac"]])
+        return lai
+
+    @classmethod
+    def get_cell_by_id(cls, scan_document, cell_no):
+        """Get cell from doc by ID"""
+        for cell in scan_document["scan_results"]:
+            if cell["cell"] == cell_no:
+                return cell
+        raise ValueError("CgiCorrelator: No cell by ID for %s in %s" % (cell_no, scan_document))  # NOQA
 
     @classmethod
     def cgi_whitelist_message(cls, cgi_wl):
@@ -94,25 +132,6 @@ class CgiCorrelator(object):
         wl_string = ",".join(cgi_wl)
         message = "CgiCorrelator: Initializing with CGI whitelist: %s" % wl_string  # NOQA
         return message
-
-    # @classmethod
-    # def arfcn_int(cls, arfcn):
-    #    """Attempt to derive an integer representation of ARFCN.
-    #
-    #    Args:
-    #        arfcn (str): String representation of ARFCN
-
-    #    Returns:
-    #        int: Integer representation of ARFCN, zero if unable to convert.
-    #    """
-    #    try:
-    #        arfcn_int = int(arfcn)
-    #    except:
-    #        msg = "CgiCorrelator: Unable to convert ARFCN to int"
-    #        print(msg)
-    #        print(arfcn)
-    #        arfcn_int = 0
-    #    return arfcn_int
 
     @classmethod
     def should_skip_feed(cls, channel):
@@ -271,6 +290,9 @@ class CgiCorrelator(object):
             comparison_results.append(self.process_cell_zero(channel))
         for result in comparison_results:
             if result != ():
+                result[1]["site_name"] = channel["site_name"]
+                result[1]["sensor_name"] = channel["sensor_name"]
+                result[1]["sensor_id"] = channel["sensor_id"]
                 retval.append(result)
         if len(retval) == 0:
             if channel["cgi_str"] not in self.good_cgis:

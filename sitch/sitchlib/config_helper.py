@@ -19,12 +19,14 @@ class ConfigHelper:
         Args:
             sitch_var_base_dir (str): Base directory for feed and log data.
         """
+        self.base_event = utility.generate_base_event()
         self.detector = dd()
         self.print_devices_as_detected()
-        self.device_id = ConfigHelper.get_device_id()
+        self.device_id = self.base_event["sensor_id"]
         self.feed_radio_targets = self.get_list_from_env("FEED_RADIO_TARGETS")
-        self.site_name = os.getenv('LOCATION_NAME', 'SITCH_SITE')
-        self.platform_name = utility.get_platform_name()
+        self.site_name = self.base_event["site_name"]
+        self.sensor_name = self.base_event["sensor_name"]
+        self.platform_name = os.getenv('RESIN_DEVICE_TYPE', 'NOT_RESIN-MANAGED')  # NOQA
         self.log_prefix = os.path.join(sitch_var_base_dir, "log/")
         self.log_host = ConfigHelper.get_from_env("LOG_HOST")
         self.log_method = "local_file"
@@ -126,18 +128,6 @@ class ConfigHelper:
                 working_paths.append(os.path.join(log_prefix, w_path))
             prospector["paths"] = working_paths
         return filebeat_config
-
-    @classmethod
-    def get_device_id(cls):
-        """Get device ID from env var."""
-        device_id = "WHOKNOWS"
-        resin = os.getenv('RESIN_DEVICE_NAME_AT_INIT', '')
-        override = os.getenv('LOCATION_NAME', '')
-        for x in [resin, override]:
-            if x != '':
-                device_id = x
-                print("Configurator: Detected device_id: %s" % x)
-        return device_id
 
     def get_secret_from_vault(self):
         """Retrieve secrets from Vault."""

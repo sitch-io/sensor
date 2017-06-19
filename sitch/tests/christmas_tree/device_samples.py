@@ -1,5 +1,9 @@
 class DeviceSamples(object):
     gps_device_loc_a = {"scan_program": "gpsd",
+                        "event_type": "gps_scan",
+                        "site_name": "test_site",
+                        "sensor_id": "test_sensor_id",
+                        "sensor_name": "test_sensor",
                         "type": "Feature",
                         "sat_time": "2017-03-25T00:30:48.000Z",
                         "time_drift": 2,
@@ -10,6 +14,10 @@ class DeviceSamples(object):
                             "coordinates": [-122.431297, 37.773972]}}
 
     gps_device_loc_b = {"scan_program": "gpsd",
+                        "event_type": "gps_scan",
+                        "site_name": "test_site",
+                        "sensor_id": "test_sensor_id",
+                        "sensor_name": "test_sensor",
                         "type": "Feature",
                         "sat_time": "2017-03-25T00:30:48.000Z",
                         "time_drift": 2,
@@ -20,6 +28,7 @@ class DeviceSamples(object):
                             "coordinates": [-100.431297, 32.773972]}}
 
     geoip_loc_a = {"scan_program": "geoip",
+                   "event_type": "geoip_scan",
                    "event_timestamp": "2016-05-07 04:10:35",
                    "type": "Feature",
                    "geometry": {
@@ -27,6 +36,7 @@ class DeviceSamples(object):
                        "coordinates": [-122.431297, 37.773972]}}
 
     geoip_loc_b = {"scan_program": "geoip",
+                   "event_type": "geoip_scan",
                    "event_timestamp": "2016-05-07 04:10:35",
                    "type": "Feature",
                    "geometry": {
@@ -34,6 +44,7 @@ class DeviceSamples(object):
                        "coordinates": [-100.431297, 32.773972]}}
 
     gsm_modem_1 = {"platform": "PLATFORM-NAME",
+                   "event_type": "gsm_modem_scan",
                    "scan_results": [
                     {'bsic': '12', 'mcc': '310', 'rla': 0, 'lac': '178d',
                      'mnc': '411', 'txp': 05, 'rxl': 33, 'cell': 0,
@@ -58,17 +69,49 @@ class DeviceSamples(object):
                    "scan_finish": "2016-05-07 02:36:50",
                    "event_timestamp": '2016-05-07 04:10:35',
                    "scan_program": "gsm_modem",
-                   "scan_location": "SCAN_LOCATION",
-                   "site_name": "SITE_NAME",
+                   "site_name": "test_site",
+                   "sensor_id": "test_sensor_id",
+                   "sensor_name": "test_sensor",
                    "scanner_public_ip": "66.18.61.61",
-                   "band": "GSM850_MODE",
-                   "scanner_name": "DEVICE-ID"}
+                   "band": "GSM850_MODE"}
+
+    # This one triggers a no-neighbor alert
+    gsm_modem_2 = {"platform": "PLATFORM-NAME",
+                   "event_type": "gsm_modem_scan",
+                   "scan_results": [
+                    {'bsic': '12', 'mcc': '310', 'rla': 0, 'lac': '178d',
+                     'mnc': '411', 'txp': 05, 'rxl': 33, 'cell': 0,
+                     'rxq': 00, 'ta': 255, 'cellid': '000f', 'arfcn': 154},
+                    {'cell': 1, 'rxl': 31, 'lac': 0000, 'bsic': '00',
+                     'mnc': '', 'mcc': '', 'cellid': 'ffff', 'arfcn': 237},
+                    {'cell': 2, 'rxl': 23, 'lac': '0000', 'bsic': '00',
+                     'mnc': '', 'mcc': '', 'cellid': 'ffff', 'arfcn': 238},
+                    {'cell': 3, 'rxl': 23, 'lac': '0000', 'bsic': '00',
+                     'mnc': '', 'mcc': '', 'cellid': 'ffff', 'arfcn': 181},
+                    {'cell': 4, 'rxl': 31, 'lac': 0000, 'bsic': '00',
+                     'mnc': '', 'mcc': '', 'cellid': 'ffff', 'arfcn': 237},
+                    {'cell': 5, 'rxl': 23, 'lac': '0000', 'bsic': '00',
+                     'mnc': '', 'mcc': '', 'cellid': 'ffff', 'arfcn': 238},
+                    {'cell': 6, 'rxl': 23, 'lac': '0000', 'bsic': '00',
+                     'mnc': '', 'mcc': '', 'cellid': 'ffff', 'arfcn': 236}
+                          ],
+                   "scan_start": "",
+                   "scan_finish": "2016-05-07 02:36:50",
+                   "event_timestamp": '2016-05-07 04:10:35',
+                   "scan_program": "gsm_modem",
+                   "site_name": "test_site",
+                   "sensor_id": "test_sensor_id",
+                   "sensor_name": "test_sensor",
+                   "scanner_public_ip": "66.18.61.61",
+                   "band": "GSM850_MODE"}
 
     kal_scan_1 = {'platform': 'PLATFORM-NAME',
+                  'event_type': 'kalibrate_scan',
                   'scan_finish': '2016-05-07 04:14:30',
-                  'scan_location': 'SCAN_LOCATION',
-                  "site_name": "SITE_NAME",
+                  'site_name': 'SITE_NAME',
                   'scanner_public_ip': '0.0.0.0',
+                  'sensor_name': 'SENSOR_NAME',
+                  'sensor_id': 'SENSOR_ID',
                   'scan_results': [
                     {'channel_detect_threshold': '279392.605625',
                         'power': '5909624.47', 'final_freq': '869176168',
@@ -107,5 +150,4 @@ class DeviceSamples(object):
                         'channel': '242'}],
                   'scan_start': '2016-05-07 04:10:35',
                   'event_timestamp': '2016-05-07 04:10:35',
-                  'scan_program': 'kalibrate',
-                  'scanner_name': 'DEVICE-ID'}
+                  'scan_program': 'kalibrate'}

@@ -68,12 +68,18 @@ class ArfcnCorrelator(object):
                           scan["site_name"],
                           scan["power"])
                 alert = self.alerts.build_alert(200, message)
+                alert[1]["site_name"] = scan["site_name"]
+                alert[1]["sensor_name"] = scan["sensor_name"]
+                alert[1]["sensor_id"] = scan["sensor_id"]
                 retval.append(alert)
                 self.manage_arfcn_lists("in", arfcn, "threshold")
             else:
                 self.manage_arfcn_lists("out", arfcn, "threshold")
         feed_alerts = self.compare_arfcn_to_feed(arfcn)
         for feed_alert in feed_alerts:
+            feed_alert[1]["site_name"] = scan["site_name"]
+            feed_alert[1]["sensor_name"] = scan["sensor_name"]
+            feed_alert[1]["sensor_id"] = scan["sensor_id"]
             retval.append(feed_alert)
         self.observed_arfcn.append(arfcn)
         return retval
@@ -142,7 +148,7 @@ class ArfcnCorrelator(object):
         # If we can't compare geo, have ARFCN 0 or already been found in feed:
         if (str(arfcn) in ["0", None] or
                 arfcn in self.observed_arfcn or
-                self.geo_state == {"geometry": {"coordinates": [0, 0]}}):
+                self.geo_state["geometry"] == {"coordinates": [0, 0]}):
             return results
         else:
             msg = "ArfcnCorrelator: Cache miss on ARFCN %s" % str(arfcn)
@@ -191,6 +197,10 @@ class ArfcnCorrelator(object):
             return scan_doc["arfcn_int"]
         elif scan_type == "gsm_modem_channel":
             return scan_doc["arfcn"]
+        elif scan_type == "cell":
+            return None
+        elif scan_type == "scan":
+            return None
         elif scan_type == "gps":
             return None
         else:

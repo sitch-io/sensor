@@ -13,17 +13,39 @@ file, pathname, description = imp.find_module(modulename, [modulepath])
 sitchlib = imp.load_module(modulename, file, pathname, description)
 
 
-geo_state = {"geometry":
-              {"coordinates":
-                  [-122.431297, 37.773972]}}
+geo_state = {"scan_program": "gpsd",
+             "event_type": "gps_scan",
+             "site_name": "test_site",
+             "sensor_id": "test_sensor_id",
+             "sensor_name": "test_sensor",
+             "type": "Feature",
+             "sat_time": "2017-03-25T00:30:48.000Z",
+             "time_drift": 2,
+             "sys_time": "2017-03-25T00:32:48.416592",
+             "event_timestamp": "2016-05-07 04:10:35",
+             "geometry":
+             {"coordinates":
+                 [-122.431297, 37.773972]}}
 
-bad_geo_state = {"geometry":
-                  {"coordinates":
-                      [0, 0]}}
+bad_geo_state = {"scan_program": "gpsd",
+                 "event_type": "gps_scan",
+                 "site_name": "test_site",
+                 "sensor_id": "test_sensor_id",
+                 "sensor_name": "test_sensor",
+                 "type": "Feature",
+                 "sat_time": "2017-03-25T00:30:48.000Z",
+                 "time_drift": 2,
+                 "sys_time": "2017-03-25T00:32:48.416592",
+                 "event_timestamp": "2016-05-07 04:10:35",
+                 "geometry":
+                 {"coordinates":
+                     [0, 0]}}
 
 states = ["CA"]
 
 kal_channel = {"site_name": "sitch_testing",
+               "sensor_id": "test_sensor_id",
+               "sensor_name": "test_sensor",
                "power": 582752.95,
                "final_freq": "892019766",
                "band": "GSM-850",
@@ -41,6 +63,8 @@ kal_channel = {"site_name": "sitch_testing",
 
 gsm_modem_channel = {"cgi_str": "310:266:253:21553",
                      "site_name": "sitch_testing",
+                     "sensor_id": "test_sensor_id",
+                     "sensor_name": "test_sensor",
                      "mcc": "310",
                      "lac": "253",
                      "band": "ALL_BAND",
@@ -72,13 +96,13 @@ gsm_modem_channel = {"cgi_str": "310:266:253:21553",
 class TestIntegrationCorrelateArfcn:
     def instantiate_arfcn(self):
         arfcn_correlator = sitchlib.ArfcnCorrelator(states, feedpath,
-                                                   [], 1000000, "SENSOR_ID")
+                                                    [], 1000000, "SENSOR_ID")
         arfcn_correlator.correlate(("gps", geo_state))
         return arfcn_correlator
 
     def instantiate_arfcn_bad_geo_state(self):
         arfcn_correlator = sitchlib.ArfcnCorrelator(states, feedpath,
-                                                  [], 1000000, "SENSOR_ID")
+                                                    [], 1000000, "SENSOR_ID")
         arfcn_correlator.correlate(("gps", bad_geo_state))
         return arfcn_correlator
 
@@ -111,13 +135,13 @@ class TestIntegrationCorrelateArfcn:
         result = arfcn.correlate(("kal_channel", test_scan))
         print result
         assert len(result) == 1
-        assert result[0][1]["id"] == 400
+        assert result[0][1]["alert_id"] == 400
 
     def test_arfcn_gps_bad(self):
         """ If there is no usable GPS metric, we don't alarm"""
         arfcn = self.instantiate_arfcn_bad_geo_state()
         test_arfcn = self.build_scan_doc("kal", 99)
-        result = arfcn.compare_arfcn_to_feed(test_arfcn)
+        result = arfcn.compare_arfcn_to_feed(test_arfcn["arfcn_int"])
         print result
         assert len(result) == 0
 
@@ -128,12 +152,12 @@ class TestIntegrationCorrelateArfcn:
         results = arfcn.correlate(("kal_channel", test_scan))
         print results
         assert len(results) == 2
-        assert results[0][1]["id"] == 200
-        assert results[1][1]["id"] == 400
+        assert results[0][1]["alert_id"] == 200
+        assert results[1][1]["alert_id"] == 400
 
     def test_gsm_modem_channel_parse(self):
         arfcn = self.instantiate_arfcn()
         results = arfcn.correlate(("gsm_modem_channel", gsm_modem_channel))
         print results
         assert len(results) == 1
-        assert results[0][1]["id"] == 400
+        assert results[0][1]["alert_id"] == 400

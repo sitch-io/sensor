@@ -46,9 +46,6 @@ class TestConfigHelper:
     def test_unit_create_config_object(self):
         assert self.create_config()
 
-    def test_unit_config_helper_get_device_id(self):
-        assert sitchlib.ConfigHelper.get_device_id()
-
     def test_unit_config_helper_get_from_env(self):
         assert sitchlib.ConfigHelper.get_from_env("PATH")
 

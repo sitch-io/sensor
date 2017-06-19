@@ -32,10 +32,12 @@ class GsmDecomposer(object):
                 # Setting CGI identifiers
                 channel["cgi_str"] = GsmDecomposer.make_bts_friendly(channel)
                 channel["cgi_int"] = GsmDecomposer.get_cgi_int(channel)
+                channel["event_type"] = "gsm_modem_channel"
                 chan_enriched = ('gsm_modem_channel', channel)
                 results_set.append(chan_enriched)
             except Exception as e:
-                print("Exception caught in GsmDecomposer: %s for channel %s in %s" % (e, str(channel), str(scan_document)))  # NOQA
+                print("Exception caught in GsmDecomposer: %s for channel:\n %s\nin: %s" % (e, str(channel), str(scan_document)))  # NOQA
+                raise e
 
         return results_set
 
@@ -45,7 +47,8 @@ class GsmDecomposer(object):
         channel["band"] = scan_document["band"]
         channel["scan_finish"] = scan_document["scan_finish"]
         channel["site_name"] = scan_document["site_name"]
-        channel["scan_location"] = scan_document["scan_location"]
+        channel["sensor_id"] = scan_document["sensor_id"]
+        channel["sensor_name"] = scan_document["sensor_name"]
         channel["scanner_public_ip"] = scan_document["scanner_public_ip"]
         channel["event_timestamp"] = scan_document["scan_finish"]
         return channel
@@ -92,5 +95,5 @@ class GsmDecomposer(object):
         """Convert rxq and rxl to float."""
         for target in ['rxq', 'rxl']:
             if target in channel:
-                channel[target] = Utility.val_to_float(channel[target])
+                channel[target] = Utility.str_to_float(channel[target])
         return channel

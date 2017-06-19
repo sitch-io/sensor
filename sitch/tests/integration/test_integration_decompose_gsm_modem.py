@@ -15,7 +15,6 @@ sitchlib = imp.load_module(modulename, file, pathname, description)
 samp_sim = {'platform': u'AMLOGIC',
             'band': 'GSM850_MODE',
             'scan_finish': '2016-05-07 02:36:50',
-            'scan_location': "SCAN_LOCATION",
             'scanner_public_ip': '1.1.1.1',
             'scan_results': [
                 {'bsic': '12', 'mcc': '310', 'rla': 0, 'lac': '178d',
@@ -37,7 +36,9 @@ samp_sim = {'platform': u'AMLOGIC',
                 {'cell': 6, 'rxl': 23, 'lac': '0000', 'bsic': '00',
                  'mnc': '', 'mcc': '', 'cellid': 'ffff', 'arfcn': 236}],
             'scan_start': '',
-            "site_name": "SITE_NAME",
+            'site_name': 'test_site',
+            'sensor_id': 'test_sensor_id',
+            'sensor_name': 'test_sensor',
             'scan_program': 'gsm_modem'}
 
 
