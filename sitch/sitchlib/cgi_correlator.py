@@ -94,7 +94,7 @@ class CgiCorrelator(object):
         chan_1 = self.get_cell_by_id(scan_document, 1)
         chan_0_lai = self.get_lai_for_channel(chan_0)
         chan_1_lai = self.get_lai_for_channel(chan_1)
-        print("LAIs: %s\t%s" % (chan_0_lai, chan_1_lai))
+        # print("LAIs: %s\t%s" % (chan_0_lai, chan_1_lai))
         if chan_0_lai != chan_1_lai:
             message = "Serving cell has no neighbors! Serving cell LAI: %s Next neighbor LAI: %s" % (chan_0_lai, chan_1_lai)  # NOQA
             alert = self.alerts.build_alert(140, message)
