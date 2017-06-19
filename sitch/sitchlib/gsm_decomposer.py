@@ -32,10 +32,12 @@ class GsmDecomposer(object):
                 # Setting CGI identifiers
                 channel["cgi_str"] = GsmDecomposer.make_bts_friendly(channel)
                 channel["cgi_int"] = GsmDecomposer.get_cgi_int(channel)
+                channel["event_type"] = "gsm_modem_channel"
                 chan_enriched = ('gsm_modem_channel', channel)
                 results_set.append(chan_enriched)
-            except ValueError as e:
+            except Exception as e:
                 print("Exception caught in GsmDecomposer: %s for channel:\n %s\nin: %s" % (e, str(channel), str(scan_document)))  # NOQA
+                raise e
 
         return results_set
 

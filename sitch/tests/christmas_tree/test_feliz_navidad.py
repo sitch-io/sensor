@@ -24,12 +24,14 @@ class TestFelizNavidad:
         assert message[1]["site_name"]
         assert message[1]["sensor_id"]
         assert message[1]["sensor_name"]
+        assert message[1]["event_type"] != "base_event"
 
     def test_feliz_navidad(self):
         decomposer = sitchlib.Decomposer()
         gps_a_decomp = decomposer.decompose(samples.gps_device_loc_a)
         gps_b_decomp = decomposer.decompose(samples.gps_device_loc_b)
         gsm_decomp = decomposer.decompose(samples.gsm_modem_1)
+        gsm_decomp.extend(decomposer.decompose(samples.gsm_modem_2))
         kal_decomp = decomposer.decompose(samples.kal_scan_1)
         # First we light up the ARFCN correlator...
         arfcn_correlator = sitchlib.ArfcnCorrelator(states, feedpath,
@@ -63,12 +65,13 @@ class TestFelizNavidad:
         cgi_results = []
         for g in gsm_decomp:
             self.message_has_base_attributes(g)
+            # print g
             cgi_results.extend(cgi_correlator.correlate(g))
         print("CGI Results")
         for c in cgi_results:
             self.message_has_base_attributes(c)
             print c
-        assert len(cgi_results) == 4  # 4 of 6 are correlated and not in DB
+        assert len(cgi_results) == 5  # 4 of 6 are correlated and not in DB
         print("GEO Results")
         for g in geo_results:
             self.message_has_base_attributes(g)

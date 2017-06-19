@@ -13,6 +13,7 @@ class AlertManager(object):
             110: "Primary BTS metadata change.",
             120: "Tower not in feed DB.",
             130: "Bad MCC (Mobile Country Code) detected.",
+            140: "No neighbor for serving cell.",
             200: "ARFCN FCCH detected above power threshold.",
             300: "GPS geo drift over threshold.",
             310: "GPS time delta over threshold.",
@@ -37,11 +38,10 @@ class AlertManager(object):
             tuple: Position 0 contains the string 'sitch_alert'.  Position 1
                 contains the alert and metadata.
         """
-        message = {}
-        message["id"] = alert_id
-        message["device_id"] = self.device_id
+        message = Utility.generate_base_event()
+        message["alert_id"] = alert_id
         message["type"] = self.get_alert_type(alert_id)
+        message["event_type"] = "sitch_alert"
         message["details"] = alert_message
-        message["event_timestamp"] = Utility.get_now_string()
         retval = ("sitch_alert", message)
         return retval

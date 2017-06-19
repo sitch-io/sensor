@@ -197,6 +197,10 @@ class ArfcnCorrelator(object):
             return scan_doc["arfcn_int"]
         elif scan_type == "gsm_modem_channel":
             return scan_doc["arfcn"]
+        elif scan_type == "cell":
+            return None
+        elif scan_type == "scan":
+            return None
         elif scan_type == "gps":
             return None
         else:

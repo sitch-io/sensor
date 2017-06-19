@@ -180,7 +180,12 @@ class Utility:
     @classmethod
     def hex_to_dec(cls, hx):
         """Change hex to decimal."""
-        integer = int(hx, 16)
+        try:
+            integer = int(str(hx), 16)
+        except Exception as e:
+            print("Unable to convert %s to an integer" % str(hx))
+            print e
+            integer = 0
         return str(integer)
 
     @classmethod

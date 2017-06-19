@@ -26,6 +26,7 @@ class KalDecomposer(object):
             for result in scan_document["scan_results"]:
                 try:
                     msg = {}
+                    msg["event_type"] = "kalibrate_channel"
                     msg["band"] = result["band"]
                     msg["power"] = Utility.str_to_float(result["power"])
                     msg["sample_rate"] = result["sample_rate"]
