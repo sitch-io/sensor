@@ -34,8 +34,8 @@ class GsmDecomposer(object):
                 channel["cgi_int"] = GsmDecomposer.get_cgi_int(channel)
                 chan_enriched = ('gsm_modem_channel', channel)
                 results_set.append(chan_enriched)
-            except Exception as e:
-                print("Exception caught in GsmDecomposer: %s for channel %s in %s" % (e, str(channel), str(scan_document)))  # NOQA
+            except ValueError as e:
+                print("Exception caught in GsmDecomposer: %s for channel:\n %s\nin: %s" % (e, str(channel), str(scan_document)))  # NOQA
 
         return results_set
 
