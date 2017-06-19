@@ -27,7 +27,7 @@ class KalDecomposer(object):
                 try:
                     msg = {}
                     msg["band"] = result["band"]
-                    msg["power"] = Utility.val_to_float(result["power"])
+                    msg["power"] = Utility.str_to_float(result["power"])
                     msg["sample_rate"] = result["sample_rate"]
                     msg["final_freq"] = result["final_freq"]
                     msg["channel"] = result["channel"]
