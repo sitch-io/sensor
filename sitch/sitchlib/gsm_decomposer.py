@@ -93,5 +93,5 @@ class GsmDecomposer(object):
         """Convert rxq and rxl to float."""
         for target in ['rxq', 'rxl']:
             if target in channel:
-                channel[target] = Utility.val_to_float(channel[target])
+                channel[target] = Utility.str_to_float(channel[target])
         return channel
