@@ -14,6 +14,7 @@
 ## Getting Started
 
 ## Prerequisites
+
 * Accounts with the following providers:
   * Resin.io
   * Github
@@ -70,6 +71,7 @@ what the contents of that environment variable should look like:
 `310:411:11:22,310:411:11:23`.  This environment variable is not required.
 
 ## Testing
+
 Testing is done with pytest.  Coverage module optional.
 
 Testing requirements (local testing possible only on Linux):
@@ -86,13 +88,21 @@ python-geoip python-geoip-geolite2 pyudev gps3 LatLon python-dateutil
 * OR, offer a PR and let travis-ci build and run the tests for you.
 
 ## GSM modem device detection
+
 If you're using a GSM modem that's not recognized by the device detector,
 please add the output from running the `ATI` command against your GSM modem in
 the variable named `positive_match` in the `is_a_gsm_modem()` method, in the
 `sensor/sitch/sitchlib/device_detector.py` file.  Then send a pull request so
 that everyone can get the benefit of your discovery.
 
+## Included binaries
+
+This repository contains pre-built binaries for Filebeat and Kalibrate.  The
+licenses which apply to these two tools can be found
+[here](./filebeat-license.txt) and [here](./kalibrate-license.txt), respectively.
+
 ## Contributing
+
 * Please do PRs against the `test` branch.
 * To add an ID string to the device detector for GSM modems, add part of the
 ID string to the ```positive_match``` variable in the
