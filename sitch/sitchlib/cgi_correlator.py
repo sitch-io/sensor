@@ -78,7 +78,7 @@ class CgiCorrelator(object):
                 if channel["mcc"] not in self.mcc_list:
                     msg = ("MCC %s should not be observed by this sensor. ARFCN: %s CGI: %s Cell Priority: %s" %  # NOQA
                            (channel["mcc"], channel["arfcn"], channel["cgi_str"], channel["cell"]))  # NOQA
-                    alert = self.alerts.build_alert(130, msg)
+                    alert = self.alerts.build_alert(130, msg, self.state)
                     alert[1]["site_name"] = channel["site_name"]
                     alert[1]["sensor_name"] = channel["sensor_name"]
                     alert[1]["sensor_id"] = channel["sensor_id"]
@@ -103,7 +103,7 @@ class CgiCorrelator(object):
             return results
         if chan_0_lai != chan_1_lai:
             message = "Serving cell has no neighbors! Serving cell LAI: %s Next neighbor LAI: %s" % (chan_0_lai, chan_1_lai)  # NOQA
-            alert = self.alerts.build_alert(140, message)
+            alert = self.alerts.build_alert(140, message, self.state)
             alert[1]["site_name"] = scan_document["site_name"]
             alert[1]["sensor_name"] = scan_document["sensor_name"]
             alert[1]["sensor_id"] = scan_document["sensor_id"]
@@ -331,7 +331,7 @@ class CgiCorrelator(object):
                 bts_info, str(channel["site_name"]))
             if channel["cgi_str"] not in self.bad_cgis:
                 self.bad_cgis.append(channel["cgi_str"])
-            alert = self.alerts.build_alert(120, message)
+            alert = self.alerts.build_alert(120, message, self.state)
         return alert
 
     def check_channel_range(self, channel):
@@ -355,7 +355,7 @@ class CgiCorrelator(object):
                                                   channel["site_name"])
             if channel["cgi_str"] not in self.bad_cgis:
                 self.bad_cgis.append(channel["cgi_str"])
-            alert = self.alerts.build_alert(100, message)
+            alert = self.alerts.build_alert(100, message, self.state)
         return alert
 
     def process_cell_zero(self, channel):
@@ -377,7 +377,7 @@ class CgiCorrelator(object):
                     CgiCorrelator.make_bts_friendly(self.prior_bts),
                     CgiCorrelator.make_bts_friendly(current_bts),
                     channel["site_name"])
-            alert = self.alerts.build_alert(110, msg)
+            alert = self.alerts.build_alert(110, msg, self.state)
         self.prior_bts = dict(current_bts)
         return alert
 

@@ -67,7 +67,7 @@ class ArfcnCorrelator(object):
                           scan["channel"],
                           scan["site_name"],
                           scan["power"])
-                alert = self.alerts.build_alert(200, message)
+                alert = self.alerts.build_alert(200, message, self.geo_state)
                 alert[1]["site_name"] = scan["site_name"]
                 alert[1]["sensor_name"] = scan["sensor_name"]
                 alert[1]["sensor_id"] = scan["sensor_id"]
@@ -177,7 +177,7 @@ class ArfcnCorrelator(object):
             return results
         msg = "Unable to locate a license for ARFCN %s" % str(arfcn)
         self.manage_arfcn_lists("in", arfcn, "not_in_range")
-        alert = self.alerts.build_alert(400, msg)
+        alert = self.alerts.build_alert(400, msg, self.geo_state)
         results.append(alert)
         return results
 
