@@ -27,7 +27,7 @@ class AlertManager(object):
         alert_text = self.alert_map[fixed_id]
         return alert_text
 
-    def build_alert(self, alert_id, alert_message):
+    def build_alert(self, alert_id, alert_message, location=None):
         """Build the actual alert and returns it, formatted.
 
         DEPRECATION NOTICE:  The 'alert_id' field has been introduced for
@@ -42,11 +42,21 @@ class AlertManager(object):
             tuple: Position 0 contains the string 'sitch_alert'.  Position 1
                 contains the alert and metadata.
         """
+        if location is None:
+            print("No geo for alarm: %s" % str(alert_message))
+            location = {"type": "Point", "coordinates": [0, 0]}
+        elif Utility.validate_geojson(location) is False:
+            print("Invalid geojson %s for %s" % (location, alert_message))
+            location = {"type": "Point", "coordinates": [0, 0]}
+        lat = location["coordinates"][1]
+        lon = location["coordinates"][0]
+        gmaps_url = Utility.create_gmaps_link(lat, lon)
         message = Utility.generate_base_event()
         message["alert_id"] = alert_id
         message["id"] = alert_id
         message["type"] = self.get_alert_type(alert_id)
         message["event_type"] = "sitch_alert"
-        message["details"] = alert_message
+        message["details"] = ("%s  %s" % (alert_message, gmaps_url))
+        message["location"] = location
         retval = ("sitch_alert", message)
         return retval
