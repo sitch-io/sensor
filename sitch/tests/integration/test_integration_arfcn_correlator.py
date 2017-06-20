@@ -18,13 +18,13 @@ geo_state = {"scan_program": "gpsd",
              "site_name": "test_site",
              "sensor_id": "test_sensor_id",
              "sensor_name": "test_sensor",
-             "type": "Feature",
              "sat_time": "2017-03-25T00:30:48.000Z",
              "time_drift": 2,
              "sys_time": "2017-03-25T00:32:48.416592",
              "event_timestamp": "2016-05-07 04:10:35",
-             "geometry":
-             {"coordinates":
+             "location":
+             {"type": "Point",
+              "coordinates":
                  [-122.431297, 37.773972]}}
 
 bad_geo_state = {"scan_program": "gpsd",
@@ -32,13 +32,14 @@ bad_geo_state = {"scan_program": "gpsd",
                  "site_name": "test_site",
                  "sensor_id": "test_sensor_id",
                  "sensor_name": "test_sensor",
-                 "type": "Feature",
+                 "type": "Point",
                  "sat_time": "2017-03-25T00:30:48.000Z",
                  "time_drift": 2,
                  "sys_time": "2017-03-25T00:32:48.416592",
                  "event_timestamp": "2016-05-07 04:10:35",
-                 "geometry":
-                 {"coordinates":
+                 "location":
+                 {"type": "Point",
+                  "coordinates":
                      [0, 0]}}
 
 states = ["CA"]

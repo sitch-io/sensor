@@ -36,7 +36,7 @@ class GpsListener(object):
                                    "type": "Feature",
                                    "sat_time": self.data_stream.TPV["time"],
                                    "sys_time": Utility.get_now_string(),
-                                   "geometry": {
+                                   "location": {
                                        "type": "Point",
                                        "coordinates": [
                                            self.data_stream.TPV["lon"],

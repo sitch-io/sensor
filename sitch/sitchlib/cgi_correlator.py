@@ -24,13 +24,14 @@ class CgiCorrelator(object):
         self.feed_dir = feed_dir
         self.alerts = alert_manager.AlertManager(device_id)
         self.prior_bts = {}
-        self.state = {"geometry": {"coordinates": [0, 0]}}
+        self.state = {"coordinates": [0, 0]}
         self.feed_cache = []
         self.good_cgis = []
         self.bad_cgis = []
         self.mcc_list = mcc_list
         self.cgi_whitelist = cgi_whitelist
         self.cgi_db = os.path.join(feed_dir, "cgi.db")
+        self.alarm_140_cache = ""
         print(CgiCorrelator.cgi_whitelist_message(self.cgi_whitelist))
         return
 
@@ -51,7 +52,7 @@ class CgiCorrelator(object):
         """
         retval = []
         if scan_bolus[0] == "gps":
-            self.state = scan_bolus[1]
+            self.state = scan_bolus[1]["location"]
         elif scan_bolus[0] == "cell":
             retval = self.check_scan_document(scan_bolus[1])
         elif scan_bolus[0] != "gsm_modem_channel":
@@ -88,13 +89,18 @@ class CgiCorrelator(object):
         return retval
 
     def check_scan_document(self, scan_document):
-        """Check to see if there are no in-LAI neighbors for channel 0"""
+        """Check to see if there are no in-LAI neighbors for channel 0
+
+        """
         results = []
         chan_0 = self.get_cell_by_id(scan_document, 0)
         chan_1 = self.get_cell_by_id(scan_document, 1)
         chan_0_lai = self.get_lai_for_channel(chan_0)
         chan_1_lai = self.get_lai_for_channel(chan_1)
-        # print("LAIs: %s\t%s" % (chan_0_lai, chan_1_lai))
+        cache_compare = "%s  %s" % (chan_0_lai, chan_1_lai)
+        if cache_compare == self.alarm_140_cache:
+            # We've already flagged this, no need to alert every 2s
+            return results
         if chan_0_lai != chan_1_lai:
             message = "Serving cell has no neighbors! Serving cell LAI: %s Next neighbor LAI: %s" % (chan_0_lai, chan_1_lai)  # NOQA
             alert = self.alerts.build_alert(140, message)
@@ -102,6 +108,13 @@ class CgiCorrelator(object):
             alert[1]["sensor_name"] = scan_document["sensor_name"]
             alert[1]["sensor_id"] = scan_document["sensor_id"]
             results.append(alert)
+            self.alarm_140_cache = cache_compare
+        else:
+            # If we've gotten this far, we've established that we're not still
+            # in an identical alarm state (cache compare), and the LAIs
+            # of the primary and secondary cells are the same.  So we
+            # reset the alarm cache for this alert.
+            self.alarm_140_cache = ""
         return results
 
     @classmethod
@@ -179,8 +192,8 @@ class CgiCorrelator(object):
         try:
             chan["lat"] = channel["feed_info"]["lat"]
             chan["lon"] = channel["feed_info"]["lon"]
-            here["lat"] = state["geometry"]["coordinates"][1]
-            here["lon"] = state["geometry"]["coordinates"][0]
+            here["lat"] = state["coordinates"][1]
+            here["lon"] = state["coordinates"][0]
         except (TypeError, ValueError, KeyError) as e:
             print("CgiCorrelator: Incomplete geo info...")
             print("CgiCorrelator: Error: %s" % str(e))

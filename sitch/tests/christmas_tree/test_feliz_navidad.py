@@ -25,6 +25,8 @@ class TestFelizNavidad:
         assert message[1]["sensor_id"]
         assert message[1]["sensor_name"]
         assert message[1]["event_type"] != "base_event"
+        if message[1]["event_type"] == "sitch_alert":
+            assert "coordinates" in message[1]["location"]
 
     def test_feliz_navidad(self):
         decomposer = sitchlib.Decomposer()

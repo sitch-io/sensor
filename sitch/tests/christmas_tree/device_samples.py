@@ -9,7 +9,7 @@ class DeviceSamples(object):
                         "time_drift": 2,
                         "sys_time": "2017-03-25T00:32:48.416592",
                         "event_timestamp": "2016-05-07 04:10:35",
-                        "geometry": {
+                        "location": {
                             "type": "Point",
                             "coordinates": [-122.431297, 37.773972]}}
 
@@ -23,7 +23,7 @@ class DeviceSamples(object):
                         "time_drift": 2,
                         "sys_time": "2017-03-25T00:32:48.416592",
                         "event_timestamp": "2016-05-07 04:10:35",
-                        "geometry": {
+                        "location": {
                             "type": "Point",
                             "coordinates": [-100.431297, 32.773972]}}
 
@@ -31,7 +31,7 @@ class DeviceSamples(object):
                    "event_type": "geoip_scan",
                    "event_timestamp": "2016-05-07 04:10:35",
                    "type": "Feature",
-                   "geometry": {
+                   "location": {
                        "type": "Point",
                        "coordinates": [-122.431297, 37.773972]}}
 
@@ -39,7 +39,7 @@ class DeviceSamples(object):
                    "event_type": "geoip_scan",
                    "event_timestamp": "2016-05-07 04:10:35",
                    "type": "Feature",
-                   "geometry": {
+                   "location": {
                        "type": "Point",
                        "coordinates": [-100.431297, 32.773972]}}
 

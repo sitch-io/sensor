@@ -19,7 +19,7 @@ geo_state = {"scan_program": "gpsd",
              "site_name": "SITE_NAME",
              "sensor_name": "SENSOR_NAME",
              "sensor_id": "SENSOR_ID",
-             "geometry": {
+             "location": {
                  "type": "Point",
                  "coordinates": [-122.431297, 37.773972]}}
 geo_other_state = {"scan_program": "gpsd",
@@ -30,7 +30,7 @@ geo_other_state = {"scan_program": "gpsd",
                    "site_name": "SITE_NAME",
                    "sensor_name": "SENSOR_NAME",
                    "sensor_id": "SENSOR_ID",
-                   "geometry": {
+                   "location": {
                        "type": "Point",
                        "coordinates": [-100.431297, 32.773972]}}
 geo_time_alarm = {"scan_program": "gpsd",
@@ -41,7 +41,7 @@ geo_time_alarm = {"scan_program": "gpsd",
                   "site_name": "SITE_NAME",
                   "sensor_name": "SENSOR_NAME",
                   "sensor_id": "SENSOR_ID",
-                  "geometry": {
+                  "location": {
                       "type": "Point",
                       "coordinates": [-100.431297, 32.773972]}}
 

@@ -31,7 +31,7 @@ class ArfcnCorrelator(object):
                 determination on whether or not to fire an alarm.
         """
         self.alerts = alert_manager.AlertManager(device_id)
-        self.geo_state = {"geometry": {"coordinates": [0, 0]}}
+        self.geo_state = {"type": "Point", "coordinates": [0, 0]}
         self.feed_dir = feed_dir
         self.states = states
         self.power_threshold = float(power_threshold)
@@ -59,7 +59,7 @@ class ArfcnCorrelator(object):
         scan_type = scan_bolus[0]
         scan = scan_bolus[1]
         if scan_type == "gps":
-            self.geo_state = scan
+            self.geo_state = scan["location"]
         arfcn = ArfcnCorrelator.arfcn_from_scan(scan_type, scan)
         if scan_type == "kal_channel":
             if self.arfcn_over_threshold(scan["power"]):
@@ -148,7 +148,7 @@ class ArfcnCorrelator(object):
         # If we can't compare geo, have ARFCN 0 or already been found in feed:
         if (str(arfcn) in ["0", None] or
                 arfcn in self.observed_arfcn or
-                self.geo_state["geometry"] == {"coordinates": [0, 0]}):
+                self.geo_state["coordinates"] == [0, 0]):
             return results
         else:
             msg = "ArfcnCorrelator: Cache miss on ARFCN %s" % str(arfcn)
@@ -231,8 +231,8 @@ class ArfcnCorrelator(object):
     @classmethod
     def is_in_range(cls, item_gps, state_gps):
         """Return True if items are within 40km."""
-        state_gps_lat = state_gps["geometry"]["coordinates"][1]
-        state_gps_lon = state_gps["geometry"]["coordinates"][0]
+        state_gps_lat = state_gps["coordinates"][1]
+        state_gps_lon = state_gps["coordinates"][0]
         max_range = 40000  # 40km
         state_lon = state_gps_lon
         state_lat = state_gps_lat

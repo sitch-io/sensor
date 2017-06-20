@@ -51,7 +51,7 @@ class GeoIp(object):
             lat_lon = match.location
             self.geo = {"scan_program": "geo_ip",
                         "type": "Feature",
-                        "geometry": {
+                        "location": {
                            "type": "Point",
                            "coordinates": [
                                lat_lon[1],

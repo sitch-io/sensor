@@ -214,3 +214,19 @@ class Utility:
         retval["data_vol"] = psutil.disk_usage('/data/').percent
         retval["application_uptime_seconds"] = application_uptime_s
         return retval
+
+    @classmethod
+    def validate_geojson(cls, geojson):
+        """Ensure that geojson contains the right fields"""
+        valid = True
+        if len(geojson["coordinates"]) != 2:
+            valid = False
+        elif "type" not in geojson:
+            valid = False
+        elif geojson["type"] != "Point":
+            valid = False
+        return valid
+
+    @classmethod
+    def create_gmaps_link(cls, lat, lon):
+        return ("https://www.google.com/maps/search/?api=1&query=%s,%s" % (lat, lon))  # NOQA

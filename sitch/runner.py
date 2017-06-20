@@ -322,7 +322,7 @@ def arfcn_correlator(config):
             item = arfcn_correlator_queue.popleft()
             alarms = correlator.correlate(item)
             if len(alarms) > 0:
-                message_write_queue.extend(alarms)
+                message_write_queue.extend(alarms.copy())
         except IndexError:
             # Queue must be empty...
             time.sleep(1)
@@ -339,7 +339,7 @@ def cgi_correlator(config):
             item = cgi_correlator_queue.popleft()
             alarms = correlator.correlate(item)
             if len(alarms) > 0:
-                message_write_queue.extend(alarms)
+                message_write_queue.extend(alarms.copy())
         except IndexError:
             # Queue must be empty...
             time.sleep(1)

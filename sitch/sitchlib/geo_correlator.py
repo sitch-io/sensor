@@ -69,18 +69,18 @@ class GeoCorrelator(object):
             list: list of alerts (usually just one) or an empty list of there
                 are no alerts.
         """
-        lat_1 = geo_anchor["geometry"]["coordinates"][1]
-        lon_1 = geo_anchor["geometry"]["coordinates"][0]
-        lat_2 = gps_scan["geometry"]["coordinates"][1]
-        lon_2 = gps_scan["geometry"]["coordinates"][0]
+        lat_1 = geo_anchor["location"]["coordinates"][1]
+        lon_1 = geo_anchor["location"]["coordinates"][0]
+        lat_2 = gps_scan["location"]["coordinates"][1]
+        lon_2 = gps_scan["location"]["coordinates"][0]
         current_distance = Utility.calculate_distance(lon_1, lat_1,
                                                       lon_2, lat_2)
         if current_distance < threshold:
             return []
         else:
-            message = "Possible GPS spoofing attack! %d delta from anchor" % (
-                      current_distance)
-            alert = AlertManager(device_id).build_alert(300, message)
+            message = "Possible GPS spoofing attack! %d delta from anchor at %s !" % (current_distance, Utility.create_gmaps_link(lat_1, lon_1))  # NOQA
+            alert = AlertManager(device_id).build_alert(300, message,
+                                                        gps_scan["location"])
             return[alert]
 
     @classmethod
@@ -91,5 +91,6 @@ class GeoCorrelator(object):
             return []
         else:
             message = "Possible GPS time spoofing attack! %d delta from system" % (current_delta)  # NOQA
-            alert = AlertManager(device_id).build_alert(310, message)
+            alert = AlertManager(device_id).build_alert(310, message,
+                                                        gps_scan["location"])
             return[alert]

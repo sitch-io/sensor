@@ -13,15 +13,17 @@ sitchlib = imp.load_module(modulename, file, pathname, description)
 geo_state = {"site_name": "SITE_NAME",
              "sensor_name": "SENSOR_NAME",
              "sensor_id": "SENSOR_ID",
-             "geometry":
-             {"coordinates":
+             "location":
+             {"type": "Point",
+              "coordinates":
               [-122.431297, 37.773972]}}
 
 bad_geo_state = {"site_name": "SITE_NAME",
                  "sensor_name": "SENSOR_NAME",
                  "sensor_id": "SENSOR_ID",
-                 "geometry":
-                 {"coordinates":
+                 "location":
+                 {"type": "Point",
+                  "coordinates":
                   [0, 0]}}
 
 states = ["CA"]
