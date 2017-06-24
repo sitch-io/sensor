@@ -32,6 +32,7 @@ class FeedManager(object):
         self.newest_record_file = os.path.join(self.feed_dir, "newest_record")
         self.arfcn_db = os.path.join(self.feed_dir, "arfcn.db")
         self.no_feed_update = config.no_feed_update
+        self.db_schemas = config.db_schemas
 
     def update_feed_files(self):
         """Wrapper for feed file retrieval routines."""
@@ -57,10 +58,15 @@ class FeedManager(object):
         """Wrapper for feed file reconciliation against CGI DB."""
         last_timestamp = self.get_newest_record_time()
         print("FeedManager: Reconciling feed database.  Please be patient...")
-        this_timestamp = FeedManager.reconcile_cgi_db(self.cgi_feed_files,
-                                                      self.cgi_db,
-                                                      self.target_radios,
-                                                      last_timestamp)
+        this_timestamp = FeedManager.reconcile_db(self.cgi_feed_files,
+                                                  self.cgi_db,
+                                                  self.target_radios,
+                                                  last_timestamp)
+        self.set_newest_record_time(this_timestamp)
+        # this_timestamp = FeedManager.reconcile_db(self.arfcn_feed_files,
+        #                                          self.arfcn_db,
+        #                                          self.target_radios,
+        #                                          last_timestamp)
         self.set_newest_record_time(this_timestamp)
 
     def get_newest_record_time(self):
@@ -93,8 +99,9 @@ class FeedManager(object):
         return
 
     @classmethod
-    def reconcile_cgi_db(cls, feed_files, db_file, target_radios, last_update):
-        """Reconcile all feed files against the CGI DB.
+    def reconcile_db(cls, db_schema, feed_files, db_file, target_radios,
+                     last_update):
+        """Reconcile feed files against the target DB.
 
         Args:
             feed_files (list): List of paths to feed files.
@@ -105,19 +112,18 @@ class FeedManager(object):
             str: Epoch timestamp of most recently updated DB record.
         """
         db_exists = os.path.isfile(db_file)
-        schema = ["radio", "mcc", "net", "area", "cell",
-                  "unit", "lon", "lat", "range", "carrier"]
         # If DB file does not exist, create it, then rip the DB from file
         if not db_exists:
-            ts = cls.create_and_populate_cgi_db(schema, feed_files,
-                                                db_file, target_radios)
+            ts = cls.create_and_populate_db(db_schema, feed_files,
+                                            db_file, target_radios)
         else:
-            ts = cls.merge_feed_files_into_db(schema, feed_files, db_file,
+            ts = cls.merge_feed_files_into_db(db_schema, feed_files, db_file,
                                               target_radios, last_update)
         return ts
 
     @classmethod
-    def merge_feed_files_into_db(cls, schema, feed_files, db_file, target_radios, last_upd):  # NOQA
+    def merge_feed_files_into_db(cls, db_schema, feed_files, db_file,
+                                 target_radios, last_upd):
         """Wrapper for merging feed file data into CGI DB.
 
         Args:
@@ -136,17 +142,18 @@ class FeedManager(object):
             if not feed_file_exists:
                 print("FeedManager: Feed file does not exist: %s" % feed_file)
             else:
-                newest_ts = cls.cgi_csv_dump_to_db(schema, feed_file, db_file, target_radios, last_upd)  # NOQA
+                newest_ts = cls.dump_csv_to_db(db_schema, feed_file, db_file,
+                                               target_radios, last_upd)
                 if newest_ts > newest_ts_overall:
                     newest_ts_overall = float(newest_ts)
         return newest_ts_overall
 
     @classmethod
-    def create_and_populate_cgi_db(cls, schema, feed_files, db_file, target_radios):  # NOQA
+    def create_and_populate_db(cls, db_schema, feed_files, db_file, target_radios):  # NOQA
         """Create DB, then merge all records from file.
 
         Args:
-            schema (list): List of DB fields.
+            db_schema (list): List of DB fields.
             feed_files (list): List of feed files to be merged.
             db_file (str): Full path of CGI DB file.
 
@@ -154,14 +161,14 @@ class FeedManager(object):
             str: Most recent timestamp from merge.
         """
         newest_ts_overall = float(0)  # Newest timestamp
-        cls.create_cgi_db(db_file)
+        cls.create_db(db_file, db_schema)
         for feed_file in feed_files:
             feed_file_exists = os.path.isfile(feed_file)
             if not feed_file_exists:
                 print("FeedManager: Feed file does not exist: %s" % feed_file)
             else:
-                newest_ts = cls.cgi_csv_dump_to_db(schema, feed_file, db_file,
-                                                   target_radios)
+                newest_ts = cls.dump_csv_to_db(db_schema, feed_file,
+                                               db_file, target_radios)
                 if newest_ts > newest_ts_overall:
                     newest_ts_overall = float(newest_ts)
         return newest_ts_overall
@@ -176,11 +183,13 @@ class FeedManager(object):
         return result
 
     @classmethod
-    def cgi_csv_dump_to_db(cls, schema, feed_file, db_file, target_radios, last_upd=0):
+    def dump_csv_to_db(cls, db_schema, feed_file, db_file, target_radios,
+                       last_upd=0):
         """Merge CSV into DB, taking into account the record update time.
 
         Args:
-            schema (list): List of rows in DB.
+            db_schema (dict): Dictionary produced from feed_db_schema.yaml.
+                Only one key, ``cgi`` or ``arfcn``.
             feed_file (str): Path to feed CSV file.
             db_file (str): Path to sqlite DB file.
             last_upd (:obj:`int`, optional): Epoch time.  Records updated
@@ -191,6 +200,10 @@ class FeedManager(object):
         rows_written = 0
         rows_examined = 0
         latest_timestamp = float(0)
+        db_type = db_schema.items()[0][0]
+        print("DB Type: %s" % db_type)
+        db_fields = db_schema[db_type]["fields"]
+        print("DB Fields: %s" % str(db_fields))
         with gzip.open(feed_file, 'r') as f_file:
             feed = csv.DictReader(f_file)
             for row in feed:
@@ -204,15 +217,15 @@ class FeedManager(object):
                 if not rows_examined % 100000:
                     print("FeedManager: %s rows examined in %s" % (str(rows_examined), feed_file))  # NOQA
                 if len(proc_chunk) < 9999:
-                    proc_chunk.append(cls.tup_from_row(schema, row))
+                    proc_chunk.append(cls.tup_from_row(db_fields, row))
                 else:
-                    proc_chunk.append(cls.tup_from_row(schema, row))
-                    cls.cgi_mass_insert(schema, proc_chunk, db_file)
+                    proc_chunk.append(cls.tup_from_row(db_fields, row))
+                    cls.cgi_mass_insert(db_fields, proc_chunk, db_file)
                     rows_written += len(proc_chunk)
                     msg = "FeedManager: %s rows written to %s" % (str(rows_written), db_file)  # NOQA
                     print msg
                     proc_chunk = []
-        cls.cgi_mass_insert(schema, proc_chunk, db_file)
+        cls.cgi_mass_insert(db_fields, proc_chunk, db_file)
         rows_written += len(proc_chunk)
         msg = "FeedManager: %s rows examined in %s, %s written to %s. Done." % (str(rows_examined), feed_file, str(rows_written), db_file)  # NOQA
         print msg
@@ -252,23 +265,19 @@ class FeedManager(object):
         return tuple(retlst)
 
     @classmethod
-    def create_cgi_db(cls, cgi_db):
-        """Create a DB for CGIs.
+    def create_db(cls, db_file, db_schema):
+        """Create a DB.
 
-        This DB has only one table, named `cgi` and the mcc+mnc+lac+cellid is
-            unique.
+        This creates either the CGI or ARFCN database.
 
         Args:
-            cgi_db (str): Path to CGI DB.
+            db_file (str): Path to DB file.
+            db_schema (dict): One top-level k:v from feed_db_schema.yaml
         """
-        conn = sqlite3.connect(cgi_db)
-        print("FeedManager: Creating CGI DB at %s" % cgi_db)
-        create_table_str = ("create table cgi (radio varchar, mcc varchar, " +
-                            "net varchar, area varchar, cell varchar, " +
-                            "unit varchar, lon varchar, lat varchar, " +
-                            "range varchar, carrier varchar, " +
-                            "UNIQUE (mcc, net, area, cell) " +
-                            "ON CONFLICT REPLACE);")
+        conn = sqlite3.connect(db_file)
+        print("FeedManager: Creating %s DB" % db_file)
+        create_table_str = cls.create_db_init_string(db_schema)
+        print create_table_str
         conn.execute(create_table_str)
         conn.close()
 
@@ -311,3 +320,27 @@ class FeedManager(object):
         """
         src_url = "%s/%s.csv.gz" % (url_base, mcc)
         return src_url
+
+    @classmethod
+    def create_db_init_string(cls, db_schema):
+        """Create DB initialization string based on db_schema input.
+
+        Expects a dictionary like this:
+            {"table_name":
+                 {"fields": ["field_1",
+                             "field_2"
+                             "field_3"],
+                  "unique": ["field_1",
+                             "field_2"]}}
+
+        Args:
+            db_schema (dict): Dictionary describing the DB schema
+        """
+        table_name = db_schema.keys()[0]
+        fields = db_schema
+        create_table = "create table %s" % table_name
+        fields = " varchar, ".join(db_schema[table_name]["fields"]) + " varchar,"  # NOQA
+        unique = ", ".join(db_schema[table_name]["unique"])
+        result = "%s (%s UNIQUE (%s) ON CONFLICT REPLACE);" % (create_table,
+                                                               fields, unique)
+        return result

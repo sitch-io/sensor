@@ -104,6 +104,12 @@ class ConfigHelper:
         with open(filename, 'r') as template_file:
             return json.load(template_file)
 
+    @classmethod
+    def get_db_schemas(cls, filename="/etc/schemas/feed_db_schema.yaml"):
+        """Get the feed DB schemas from file."""
+        with open(filename, 'r') as schema_file:
+            return yaml.load(schema_file)
+
     def write_filebeat_config(self):
         """Write out filebeat config to file."""
         fb = self.filebeat_template

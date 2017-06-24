@@ -247,14 +247,18 @@ class ArfcnCorrelator(object):
 
     @classmethod
     def assemble_latlon(cls, item):
-        """Assemble feed lat/lon into a haversine-parseable format."""
+        """Assemble feed lat/lon into a haversine-parseable format.
+        Reclaim after feed overhaul...
+        """
         lat_tmpl = Template('$LOC_LAT_DEG $LOC_LAT_MIN $LOC_LAT_SEC $LOC_LAT_DIR')  # NOQA
         long_tmpl = Template('$LOC_LONG_DEG $LOC_LONG_MIN $LOC_LONG_SEC $LOC_LONG_DIR')  # NOQA
         return(lat_tmpl.substitute(item), long_tmpl.substitute(item))
 
     @classmethod
     def assemble_gps(cls, item):
-        """Assemble lat/lon into a format we can work with."""
+        """Assemble lat/lon into a format we can work with.
+        Reclaim after feed overhaul.
+        """
         latlon = {}
         try:
             lat, lon = ArfcnCorrelator.assemble_latlon(item)

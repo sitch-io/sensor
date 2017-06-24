@@ -1,0 +1,28 @@
+cgi:
+  fields:
+    - radio
+    - mcc
+    - net
+    - area
+    - cell
+    - unit
+    - lon
+    - lat
+    - range
+    - carrier
+  unique:
+    - mcc
+    - net
+    - area
+    - cell
+arfcn:
+  fields:
+    - arfcn
+    - carrier
+    - lon
+    - lat
+  unique:
+    - arfcn
+    - carrier
+    - lon
+    - lat
