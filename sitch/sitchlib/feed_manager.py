@@ -64,7 +64,6 @@ class FeedManager(object):
         this_timestamp = FeedManager.reconcile_db(self.db_schemas["cgi"],
                                                   self.db_translate_schemas["ocid"],  # NOQA
                                                   self.cgi_feed_files,
-                                                  self.db_translate_schemas,
                                                   self.cgi_db,
                                                   self.target_radios,
                                                   last_timestamp)
