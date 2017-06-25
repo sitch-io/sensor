@@ -61,7 +61,7 @@ class FeedManager(object):
         """Wrapper for feed file reconciliation against DBs."""
         last_timestamp = self.get_newest_record_time("cgi")
         print("FeedManager: Reconciling feed databases.  Please be patient...")
-        this_timestamp = FeedManager.reconcile_db(self.db_schemas["cgi"],
+        this_timestamp = FeedManager.reconcile_db({"cgi": self.db_schemas["cgi"]},  # NOQA
                                                   self.db_translate_schemas["ocid"],  # NOQA
                                                   self.cgi_feed_files,
                                                   self.cgi_db,
@@ -71,7 +71,7 @@ class FeedManager(object):
         # This is specifically for FCC feedds, but the underpinnings exist
         # for others
         last_timestamp = self.get_newest_record_time("arfcn")
-        this_timestamp = FeedManager.reconcile_db(self.db_schemas["arfcn"],
+        this_timestamp = FeedManager.reconcile_db({"arfcn": self.db_schemas["arfcn"]},  # NOQA
                                                   self.db_translate_schemas["fcc"],  # NOQA
                                                   self.arfcn_feed_files,
                                                   self.arfcn_db,
@@ -167,7 +167,8 @@ class FeedManager(object):
         """Create DB, then merge all records from file.
 
         Args:
-            db_schema (list): List of DB fields.
+            db_schema (list): One K:V set from the top level of
+                feed_db_schema.yaml
             feed_files (list): List of feed files to be merged.
             db_file (str): Full path of CGI DB file.
 
@@ -175,11 +176,12 @@ class FeedManager(object):
             str: Most recent timestamp from merge.
         """
         newest_ts_overall = float(0)  # Newest timestamp
+        db_type = db_schema.items()[0][0]
         cls.create_db(db_file, db_schema)
         for feed_file in feed_files:
             feed_file_exists = os.path.isfile(feed_file)
             if not feed_file_exists:
-                print("FeedManager: Feed file does not exist: %s" % feed_file)
+                print("FeedManager: Feed file for %s DB does not exist: %s" % (db_type, feed_file))  # NOQA
             else:
                 newest_ts = cls.dump_csv_to_db(db_schema, db_translate_schema,
                                                feed_file, db_file,
@@ -373,9 +375,9 @@ class FeedManager(object):
             db_schema (dict): Dictionary describing the DB schema
         """
         table_name = db_schema.keys()[0]
-        fields = db_schema
+        fields_list = db_schema[table_name]["fields"]
         create_table = "create table %s" % table_name
-        fields = " varchar, ".join(db_schema[table_name]["fields"]) + " varchar,"  # NOQA
+        fields = " varchar, ".join(fields_list) + " varchar,"  # NOQA
         unique = ", ".join(db_schema[table_name]["unique"])
         result = "%s (%s UNIQUE (%s) ON CONFLICT REPLACE);" % (create_table,
                                                                fields, unique)
