@@ -62,4 +62,4 @@ RUN pip install virtualenv==15.1.0 && \
     . ./venv/bin/activate && \
     pip install -r /requirements.txt
 
-CMD /app/sitch/venv/bin/python ./runner.py 2>&1 | tee /data/sitch/log/console.log
+CMD /app/sitch/venv/bin/python ./runner.py 2>&1 | tee -a /data/sitch/log/console.log
