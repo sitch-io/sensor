@@ -36,8 +36,8 @@ class TestFelizNavidad:
         gsm_decomp.extend(decomposer.decompose(samples.gsm_modem_2))
         kal_decomp = decomposer.decompose(samples.kal_scan_1)
         # First we light up the ARFCN correlator...
-        arfcn_correlator = sitchlib.ArfcnCorrelator(states, feedpath,
-                                                    [], 1000000, "DEVICE_ID")
+        arfcn_correlator = sitchlib.ArfcnCorrelator(feedpath, [], 1000000,
+                                                    "DEVICE_ID")
         # Now we light up the CGI correlator...
         cgi_correlator = sitchlib.CgiCorrelator(feedpath, [], ["310", "311"],
                                                 "DEVICE_ID")

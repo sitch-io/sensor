@@ -36,13 +36,18 @@ ADD https://raw.githubusercontent.com/elastic/beats/master/LICENSE /filebeat-lic
 # Get Kalibrate source for posterity
 ADD https://github.com/hainn8x/kalibrate-rtl/archive/master.zip /app/source
 
-
 # Place the Logstash init script
 # COPY init/logstash-forwarder /etc/init.d/
 
 # Place config templates
 RUN mkdir -p /etc/templates
 COPY configs/filebeat.json /etc/templates
+
+# Place schema file
+RUN mkdir /etc/schemas
+COPY configs/feed_db_mapping.yaml /etc/schemas
+COPY configs/feed_db_schema.yaml /etc/schemas
+
 
 # Get the scripts in place
 COPY sitch/ /app/sitch
@@ -56,4 +61,4 @@ RUN pip install virtualenv==15.1.0 && \
     . ./venv/bin/activate && \
     pip install -r /requirements.txt
 
-CMD /app/sitch/venv/bin/python ./runner.py 2>&1
+CMD /app/sitch/venv/bin/python ./runner.py 2>&1 | tee /data/sitch/log/console.log

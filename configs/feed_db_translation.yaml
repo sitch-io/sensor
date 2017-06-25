@@ -1,0 +1,16 @@
+ocid:
+  - radio: radio
+  - mcc: mcc
+  - net: net
+  - area: area
+  - cell: cell
+  - unit: unit
+  - lon: lon
+  - lat: lat
+  - range: range
+  - carrier: carrier
+fcc:
+  - lat: latlon_fcc
+  - lon: latlon_fcc
+  - arfcn: ARFCN
+  - carrier: COMMON_NAME
