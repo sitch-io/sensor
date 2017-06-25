@@ -9,6 +9,7 @@ ENV KAL_THRESHOLD="1000000"
 ENV MODE="full"
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
+    expect \
     git=1:2.1.4-2.1+deb8u3 \
     logrotate=3.8.7-1+b1 \
     gcc=4:4.9.2-2 \
@@ -62,4 +63,4 @@ RUN pip install virtualenv==15.1.0 && \
     . ./venv/bin/activate && \
     pip install -r /requirements.txt
 
-CMD /app/sitch/venv/bin/python ./runner.py 2>&1 | tee -a /data/sitch/log/console.log
+CMD unbuffer /app/sitch/venv/bin/python ./runner.py 2>&1 | tee -a /data/sitch/log/console.log
