@@ -222,16 +222,17 @@ class FeedManager(object):
             last_upd (:obj:`int`, optional): Epoch time.  Records updated
                 before this date will not be inserted into the DB.
         """
-        print("FeedManager: Reconciling %s against feed DB..." % feed_file)
+        print("FeedManager: Reconciling %s against %s..." % (feed_file,
+                                                             db_file))
         proc_chunk = []
         rows_written = 0
         rows_examined = 0
         latest_timestamp = float(0)
         db_type = db_schema.items()[0][0]
         translator = FeedSchemaTranslator(db_translate_schema)
-        print("DB Type: %s" % db_type)
+        print("FeedManager: DB Type: %s" % db_type)
         db_fields = db_schema[db_type]["fields"]
-        print("DB Fields: %s" % str(db_fields))
+        print("FeedManager: DB Fields: %s" % str(db_fields))
         with gzip.open(feed_file, 'r') as f_file:
             feed = csv.DictReader(f_file)
             for row in feed:
@@ -313,9 +314,8 @@ class FeedManager(object):
             db_schema (dict): One top-level k:v from feed_db_schema.yaml
         """
         conn = sqlite3.connect(db_file)
-        print("FeedManager: Creating %s DB" % db_file)
         create_table_str = cls.create_db_init_string(db_schema)
-        print create_table_str
+        print("FeedManager: Creating %s with %s" % (db_file, create_table_str))
         conn.execute(create_table_str)
         conn.close()
 
