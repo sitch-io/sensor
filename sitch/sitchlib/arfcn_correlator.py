@@ -210,7 +210,7 @@ class ArfcnCorrelator(object):
         conn = sqlite3.connect(self.arfcn_db)
         c = conn.cursor()
         clean_arfcn = str(arfcn)
-        c.execute("SELECT arfcn, carrier, lon, lat FROM arfcn WHERE arfcn=?", (clean_arfcn,))  # NOQA
+        c.execute("SELECT arfcn, carrier, lon, lat FROM arfcn WHERE arfcn=?", (clean_arfcn, ))  # NOQA
         for result in c.fetchall():
             test_set = {"arfcn": result[0], "carrier": result[1],
                         "lon": result[2], "lat": result[3]}

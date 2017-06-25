@@ -242,7 +242,7 @@ class FeedManager(object):
                 if latest_timestamp < row_timestamp:
                     latest_timestamp = row_timestamp
                 if not cls.should_update_record_epoch(last_upd, row_timestamp):  # NOQA
-                        continue
+                    continue
                 # Allow us to skip all but target radios for CGI DB
                 if "radio" in row:
                     if not row["radio"] in target_radios:
