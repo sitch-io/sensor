@@ -312,8 +312,7 @@ def kalibrate_consumer(config):
 
 def arfcn_correlator(config):
     """ARFCN correlator thread."""
-    correlator = sitchlib.ArfcnCorrelator(config.state_list,
-                                          config.feed_dir,
+    correlator = sitchlib.ArfcnCorrelator(config.feed_dir,
                                           config.arfcn_whitelist,
                                           config.kal_threshold,
                                           config.device_id)
