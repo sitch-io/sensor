@@ -61,12 +61,6 @@ class GsmModem(object):
                 else:
                     page.append(processed_line)
 
-#    def trigger_gps(self):
-#        """Trigger GPS"""
-#        self.serconn.write(self.gps_init)
-#        self.serconn.flush()
-#        return
-
     def eng_mode(self, status):
         """Set or unset engineering mode on the modem.
 
