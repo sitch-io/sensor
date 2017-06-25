@@ -21,6 +21,8 @@ class ConfigHelper:
         """
         self.base_event = utility.generate_base_event()
         self.detector = dd()
+        self.db_schemas = self.get_db_schemas()
+        self.db_translate_schemas = self.get_db_schema_translations()
         self.print_devices_as_detected()
         self.device_id = self.base_event["sensor_id"]
         self.feed_radio_targets = self.get_list_from_env("FEED_RADIO_TARGETS")
@@ -109,6 +111,12 @@ class ConfigHelper:
         """Get the feed DB schemas from file."""
         with open(filename, 'r') as schema_file:
             return yaml.load(schema_file)
+
+    @classmethod
+    def get_db_schema_translations(cls, filename="/etc/schemas/feed_db_translation.yaml"):  # NOQA
+        """Get the feed DB schema translations from file."""
+        with open(filename, 'r') as translate_file:
+            return yaml.load(translate_file)
 
     def write_filebeat_config(self):
         """Write out filebeat config to file."""

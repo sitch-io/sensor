@@ -18,6 +18,7 @@ tempdir = tempfile.mkdtemp()
 cgi_db = os.path.join(tempdir, "cgi.db")
 arfcn_db = os.path.join(tempdir, "arfcn.db")
 schemas = sitchlib.ConfigHelper.get_db_schemas(os.path.join(modulepath, "../configs/feed_db_schema.yaml"))  # NOQA
+translates = sitchlib.ConfigHelper.get_db_schema_translations(os.path.join(modulepath, "../configs/feed_db_translation.yaml"))  # NOQA
 
 
 class TestIntegrationFeedManager:
@@ -26,10 +27,25 @@ class TestIntegrationFeedManager:
         actual = 0
         print("Using temp directory %s" % tempdir)
         db_schema = {"cgi": schemas["cgi"]}
-        sitchlib.FeedManager.reconcile_db(db_schema, cgi_feed_files,
-                                          cgi_db, "GSM", 0)
+        db_translate_schema = translates["ocid"]
+        sitchlib.FeedManager.reconcile_db(db_schema, db_translate_schema,
+                                          cgi_feed_files, cgi_db, "GSM", 0)
         conn = sqlite3.connect(cgi_db)
         c = conn.cursor()
         for row in c.execute('SELECT * FROM cgi'):
+            actual += 1
+        assert expected == actual
+
+    def test_reconcile_arfcn_db_create(self):
+        expected = 61488
+        actual = 0
+        print("Using temp directory %s" % tempdir)
+        db_schema = {"arfcn": schemas["arfcn"]}
+        db_translate_schema = translates["fcc"]
+        sitchlib.FeedManager.reconcile_db(db_schema, db_translate_schema,
+                                          fcc_feed_files, arfcn_db, "GSM", 0)
+        conn = sqlite3.connect(arfcn_db)
+        c = conn.cursor()
+        for row in c.execute('SELECT * FROM arfcn'):
             actual += 1
         assert expected == actual
