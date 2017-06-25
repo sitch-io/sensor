@@ -46,6 +46,8 @@ COPY configs/filebeat.json /etc/templates
 # Place schema file
 RUN mkdir /etc/schemas
 COPY configs/feed_db_mapping.yaml /etc/schemas
+COPY configs/feed_db_schema.yaml /etc/schemas
+
 
 # Get the scripts in place
 COPY sitch/ /app/sitch
