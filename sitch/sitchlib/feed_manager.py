@@ -87,7 +87,7 @@ class FeedManager(object):
         if not os.path.isfile(target_file):
             print("FeedManager: No record of last update found at %s..." % target_file)  # NOQA
             return result
-        with open(self.newest_record_file, 'r') as u_file:
+        with open(target_file, 'r') as u_file:
             first_line = u_file.readline().replace('\n', '').replace('.0', '')
             if re.match(rx, first_line):
                 result = first_line
