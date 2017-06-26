@@ -92,7 +92,7 @@ class FeedManager(object):
                 result = first_line
                 print("FeedManager: Newest DB record timestamp is %s" % Utility.epoch_to_iso8601(result))  # NOQA
             else:
-                print("FeedManager: Unable to parse newest DB record timestamp!")  # NOQA
+                print("FeedManager: Unable to parse newest DB record timestamp: %s" % first_line)  # NOQA
         return result
 
     def set_newest_record_time(self, db_type, timestamp):
@@ -105,7 +105,7 @@ class FeedManager(object):
         """
         record_file = "%s.%s" % (self.newest_record_file, db_type)
         with open(record_file, 'w') as u_file:
-            print("FeedManager: Setting newest DB record to %s" % Utility.epoch_to_iso8601(timestamp))  # NOQA
+            print("FeedManager: Setting newest DB record to %s in %s" % (Utility.epoch_to_iso8601(timestamp), record_file))  # NOQA
             u_file.write(str(timestamp).replace('.0', ''))
         return
 
