@@ -22,7 +22,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libc6=2.19-18+deb8u10 \
     libudev1=215-17+deb8u7 \
     python-pip \
-    python-dev && \
+    python-dev \
+    tcl && \
     apt-get clean && \
     apt-get -y autoclean && \
     apt-get -y autoremove && \
