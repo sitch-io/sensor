@@ -83,8 +83,9 @@ class FeedManager(object):
         """Get the newest record time from file in feed dir."""
         result = 0
         rx = r'^\d{10}$'
-        if not os.path.isfile("%s.%s" % (self.newest_record_file, db_type)):
-            print("FeedManager: No record of last update found...")
+        target_file = "%s.%s" % (self.newest_record_file, db_type)
+        if not os.path.isfile(target_file):
+            print("FeedManager: No record of last update found at %s..." % target_file)  # NOQA
             return result
         with open(self.newest_record_file, 'r') as u_file:
             first_line = u_file.readline().replace('\n', '').replace('.0', '')
@@ -92,7 +93,7 @@ class FeedManager(object):
                 result = first_line
                 print("FeedManager: Newest DB record timestamp is %s" % Utility.epoch_to_iso8601(result))  # NOQA
             else:
-                print("FeedManager: Unable to parse newest DB record timestamp: %s" % first_line)  # NOQA
+                print("FeedManager: Unable to parse newest DB record timestamp: %s from %s" % (first_line, target_file))  # NOQA
         return result
 
     def set_newest_record_time(self, db_type, timestamp):
