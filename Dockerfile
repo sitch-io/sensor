@@ -8,22 +8,10 @@ ENV KAL_GAIN="60"
 ENV KAL_THRESHOLD="1000000"
 ENV MODE="full"
 
+COPY apt-install /
+
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    expect \
-    git=1:2.1.4-2.1+deb8u3 \
-    logrotate=3.8.7-1+b1 \
-    gcc=4:4.9.2-2 \
-    gpsd=3.11-3 \
-    gpsd-clients=3.11-3 \
-    kmod=18-3 \
-    lshw=02.17-1.1 \
-    libfftw3-double3=3.3.4-2 \
-    librtlsdr0=0.5.3-3 \
-    libc6=2.19-18+deb8u10 \
-    libudev1=215-17+deb8u7 \
-    python-pip \
-    python-dev \
-    tcl && \
+    `cat /apt-install` && \
     apt-get clean && \
     apt-get -y autoclean && \
     apt-get -y autoremove && \

@@ -18,6 +18,7 @@ install:
 script:
 - sudo mkdir /data/
 - py.test sitch/tests/ --cov sitchlib
+- docker build -t throwaway -f Dravisfile .
 - if [ $TRAVIS_BRANCH == 'test' ] && [ $TRAVIS_EVENT_TYPE != 'pull_request' ];
   then echo "Host git.resin.io" >> ~/.ssh/config;
   echo "    StrictHostKeyChecking no" >> ~/.ssh/config;
