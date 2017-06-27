@@ -4,9 +4,9 @@ MAINTAINER http://sitch.io
 ENV FEED_RADIO_TARGETS="GSM"
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    git=1:2.1.4-2.1+deb8u2 \
+    expect \
+    git=1:2.1.4-2.1+deb8u3 \
     logrotate=3.8.7-1+b1 \
-    cron=3.0pl1-127+deb8u1 \
     gcc=4:4.9.2-2 \
     gpsd=3.11-3 \
     gpsd-clients=3.11-3 \
@@ -14,13 +14,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     lshw=02.17-1.1 \
     libfftw3-double3=3.3.4-2 \
     librtlsdr0=0.5.3-3 \
-    libusb-1.0-0=2:1.0.19-1 \
-    libc6=2.19-18+deb8u9 \
-    libudev1=215-17+deb8u6 \
-    python=2.7.9-1 \
-    python-gps=3.11-3 \
-    python-pip=1.5.6-5 \
-    python-dev=2.7.9-1 && \
+    libc6=2.19-18+deb8u10 \
+    libudev1=215-17+deb8u7 \
+    python-pip \
+    python-dev \
+    tcl && \
     apt-get clean && \
     apt-get -y autoclean && \
     apt-get -y autoremove && \
