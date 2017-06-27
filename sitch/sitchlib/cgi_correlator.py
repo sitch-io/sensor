@@ -88,6 +88,15 @@ class CgiCorrelator(object):
                     retval.append(feed_alert)
         return retval
 
+    @classmethod
+    def make_bts_friendly(cls, bts_struct):
+        """Expect a dict with keys for mcc, mnc, lac, cellid."""
+        retval = "%s:%s:%s:%s" % (str(bts_struct["mcc"]),
+                                  str(bts_struct["mnc"]),
+                                  str(bts_struct["lac"]),
+                                  str(bts_struct["cellid"]))
+        return retval
+
     def check_scan_document(self, scan_document):
         """Check to see if there are no in-LAI neighbors for channel 0
 
@@ -97,12 +106,24 @@ class CgiCorrelator(object):
         chan_1 = self.get_cell_by_id(scan_document, 1)
         chan_0_lai = self.get_lai_for_channel(chan_0)
         chan_1_lai = self.get_lai_for_channel(chan_1)
+        chan_0_cgi = self.make_bts_friendly(self.get_cell_by_id(scan_document,
+                                                                0))
+        chan_1_cgi = self.make_bts_friendly(self.get_cell_by_id(scan_document,
+                                                                1))
         cache_compare = "%s  %s" % (chan_0_lai, chan_1_lai)
         if cache_compare == self.alarm_140_cache:
             # We've already flagged this, no need to alert every 2s
             return results
-        if chan_0_lai != chan_1_lai:
-            message = "Serving cell has no neighbors! Serving cell LAI: %s Next neighbor LAI: %s" % (chan_0_lai, chan_1_lai)  # NOQA
+        if "::" in chan_1_lai:
+            message = "Serving cell has no neighbor!  Serving cell: %s" % chan_0_cgi  # NOQA
+            alert = self.alerts.build_alert(141, message, self.state)
+            alert[1]["site_name"] = scan_document["site_name"]
+            alert[1]["sensor_name"] = scan_document["sensor_name"]
+            alert[1]["sensor_id"] = scan_document["sensor_id"]
+            results.append(alert)
+            self.alarm_141_cache = cache_compare
+        elif chan_0_lai != chan_1_lai:
+            message = "Preferred neighbor outside of LAI! Serving cell CGI: %s Next neighbor CGI: %s" % (chan_0_cgi, chan_1_cgi)  # NOQA
             alert = self.alerts.build_alert(140, message, self.state)
             alert[1]["site_name"] = scan_document["site_name"]
             alert[1]["sensor_name"] = scan_document["sensor_name"]
@@ -115,6 +136,7 @@ class CgiCorrelator(object):
             # of the primary and secondary cells are the same.  So we
             # reset the alarm cache for this alert.
             self.alarm_140_cache = ""
+            self.alarm_141_cache = ""
         return results
 
     @classmethod
