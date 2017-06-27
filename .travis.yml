@@ -19,9 +19,8 @@ install:
 - sudo mkdir /data/
 jobs:
   include:
-    - stage: test
-      - script: py.test sitch/tests/ --cov sitchlib
-      - script: docker build -t throwaway -f Dravisfile .
+    - script: py.test sitch/tests/ --cov sitchlib
+    - script: docker build -t throwaway -f Dravisfile .
     - stage: deploy
       script: if [ $TRAVIS_BRANCH == 'test' ] && [ $TRAVIS_EVENT_TYPE != 'pull_request' ];
               then echo "Host git.resin.io" >> ~/.ssh/config;
