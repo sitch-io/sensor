@@ -13,17 +13,19 @@ before_install:
 install:
 - sudo apt-get update && sudo apt-get install -y lshw
 - pip install pytest==3.0.4 pytest-cov pytest-pep8 python-coveralls codeclimate-test-reporter
-- pip install pyserial hvac kalibrate==1.1.2 haversine python-geoip python-geoip-geolite2
-  pyudev==0.21.0 gps3 LatLon psutil python-dateutil
-script:
+- pip install -r ./requirements.txt
 - sudo mkdir /data/
-- py.test sitch/tests/ --cov sitchlib
-- docker build -t throwaway -f Dravisfile .
-- if [ $TRAVIS_BRANCH == 'test' ] && [ $TRAVIS_EVENT_TYPE != 'pull_request' ];
-  then echo "Host git.resin.io" >> ~/.ssh/config;
-  echo "    StrictHostKeyChecking no" >> ~/.ssh/config;
-  echo "    IdentityFile ~/.ssh/resin_deploy" >> ~/.ssh/config;
-  git remote add testing ${RESIN_TESTING_REMOTE};
-  git push --force testing test:master; fi
+jobs:
+  include:
+    - stage: test
+      script: py.test sitch/tests/ --cov sitchlib
+      script: docker build -t throwaway -f Dravisfile .
+    - stage: deploy
+      script: if [ $TRAVIS_BRANCH == 'test' ] && [ $TRAVIS_EVENT_TYPE != 'pull_request' ];
+              then echo "Host git.resin.io" >> ~/.ssh/config;
+              echo "    StrictHostKeyChecking no" >> ~/.ssh/config;
+              echo "    IdentityFile ~/.ssh/resin_deploy" >> ~/.ssh/config;
+              git remote add testing ${RESIN_TESTING_REMOTE};
+              git push --force testing test:master; fi
 after_success:
 - codeclimate-test-reporter --token $CODECLIMATE_REPO_TOKEN
