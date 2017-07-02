@@ -6,6 +6,8 @@ ENV GSM_MODEM_BAND="ALL_BAND"
 ENV KAL_BAND="GSM850"
 ENV KAL_GAIN="60"
 ENV KAL_THRESHOLD="1000000"
+ENV FEED_URL_BASE="https://github.com/sitch-io/sensor_feed/raw/master/feed/"
+
 ENV MODE="full"
 
 COPY apt-install /
