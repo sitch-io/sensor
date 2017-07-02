@@ -7,13 +7,15 @@ The SITCH Sensor requires some environment variables to be set in order to opera
 +---------------------------+-------------------------------------------------------+
 | Environment Variable      | Purpose                                               |
 +===========================+=======================================================+
-| CGI_WHITELIST             | List of trusted CGIs.                                 |
+| CGI_WHITELIST             | (Optional) List of trusted CGIs.                      |
 +---------------------------+-------------------------------------------------------+
 | FEED_RADIO_TARGETS        | (Optional) Radio types to target for feed ingestion.  |
 |                           |                                                       |
 |                           | Defaults to ``GSM``                                   |
 +---------------------------+-------------------------------------------------------+
-| FEED_URL_BASE             | Base URL for Sensor feed.                             |
+| FEED_URL_BASE             | (Optional) Base URL for Sensor feed.                  |
+|                           |                                                       |
+|                           | Defaults to SITCH auto-built public feed              |
 +---------------------------+-------------------------------------------------------+
 | GSM_MODEM_BAND            | Restrict GSM modem to this band.  Options:            |
 |                           | (EGSM_MODE | PGSM_MODE | DCS_MODE | GSM850_MODE |     |
@@ -43,9 +45,10 @@ The SITCH Sensor requires some environment variables to be set in order to opera
 | LOG_HOST                  | Logstash endpoint.                                    |
 |                           | Formatted like this: ``hostname:port``                |
 +---------------------------+-------------------------------------------------------+
-| MCC_LIST                  | List of Mobile Country Codes to ingest from feed.     |
-|                           | USA is 310, 311, 312, 313, and 316                    |
-|                           | List is comma-separated: "310,311,316"                |
+| MCC_LIST                  | (Optional) List of Mobile Country Codes to ingest     |
+|                           | from feed.  List is comma-separated: ``310,311,316``  |
+|                           |                                                       |
+|                           | Defaults to ``310,311,312,313,316``                   |
 +---------------------------+-------------------------------------------------------+
 | MODE                      | Set to ``clutch`` to go into a wait loop on start.    |
 |                           | Useful for troubleshooting.                           |
