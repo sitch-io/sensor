@@ -55,6 +55,7 @@ class CgiCorrelator(object):
             self.state = scan_bolus[1]["location"]
         elif scan_bolus[0] == "cell":
             retval = self.check_scan_document(scan_bolus[1])
+            retval.append(scan_bolus)
         elif scan_bolus[0] != "gsm_modem_channel":
             print("CgiCorrelator: Unsupported scan type: %s" % str(scan_bolus[0]))  # NOQA
             pass
@@ -86,6 +87,7 @@ class CgiCorrelator(object):
                 feed_comparison_results = self.feed_comparison(channel)
                 for feed_alert in feed_comparison_results:
                     retval.append(feed_alert)
+            retval.append(scan_bolus)
         return retval
 
     @classmethod
