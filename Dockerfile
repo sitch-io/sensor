@@ -7,7 +7,7 @@ ENV KAL_BAND="GSM850"
 ENV KAL_GAIN="60"
 ENV KAL_THRESHOLD="1000000"
 ENV FEED_URL_BASE="https://github.com/sitch-io/sensor_feed/raw/master/feed/"
-ENV MCC_LIST="310,311,312,313,316"
+ENV MCC_LIST="310,311,312,316"
 
 ENV MODE="full"
 
