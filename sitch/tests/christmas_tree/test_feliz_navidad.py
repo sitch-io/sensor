@@ -73,7 +73,7 @@ class TestFelizNavidad:
         for c in cgi_results:
             self.message_has_base_attributes(c)
             print c
-        assert len(cgi_results) == 5  # 4 of 6 are correlated and not in DB
+        assert len(cgi_results) == 12
         print("GEO Results")
         for g in geo_results:
             self.message_has_base_attributes(g)
@@ -83,4 +83,4 @@ class TestFelizNavidad:
         for a in arfcn_results:
             self.message_has_base_attributes(a)
             print a
-        assert len(arfcn_results) == 3
+        assert len(arfcn_results) == 8
