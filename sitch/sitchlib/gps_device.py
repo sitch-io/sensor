@@ -39,8 +39,8 @@ class GpsListener(object):
                                    "location": {
                                        "type": "Point",
                                        "coordinates": [
-                                           self.data_stream.TPV["lon"],
-                                           self.data_stream.TPV["lat"]]}}
+                                           float(self.data_stream.TPV["lon"]),
+                                           float(self.data_stream.TPV["lat"])]}}  # NOQA
                         geojson["time_drift"] = self.get_time_delta(geojson["sat_time"],  # NOQA
                                                                     geojson["sys_time"])  # NOQA
                         geojson["event_timestamp"] = Utility.get_now_string()

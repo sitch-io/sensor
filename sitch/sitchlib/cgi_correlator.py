@@ -90,15 +90,6 @@ class CgiCorrelator(object):
             retval.append(scan_bolus)
         return retval
 
-    @classmethod
-    def make_bts_friendly(cls, bts_struct):
-        """Expect a dict with keys for mcc, mnc, lac, cellid."""
-        retval = "%s:%s:%s:%s" % (str(bts_struct["mcc"]),
-                                  str(bts_struct["mnc"]),
-                                  str(bts_struct["lac"]),
-                                  str(bts_struct["cellid"]))
-        return retval
-
     def check_scan_document(self, scan_document):
         """Check to see if there are no in-LAI neighbors for channel 0
 
@@ -214,17 +205,17 @@ class CgiCorrelator(object):
         chan = {}
         here = {}
         try:
-            chan["lat"] = channel["feed_info"]["lat"]
-            chan["lon"] = channel["feed_info"]["lon"]
+            chan["lat"] = float(channel["feed_info"]["lat"])
+            chan["lon"] = float(channel["feed_info"]["lon"])
             here["lat"] = state["coordinates"][1]
             here["lon"] = state["coordinates"][0]
         except (TypeError, ValueError, KeyError) as e:
             print("CgiCorrelator: Incomplete geo info...")
             print("CgiCorrelator: Error: %s" % str(e))
-            chan["lat"] = None
-            chan["lon"] = None
-            here["lat"] = None
-            here["lon"] = None
+            chan["lat"] = 0
+            chan["lon"] = 0
+            here["lat"] = 0
+            here["lon"] = 0
         return(chan, here)
 
     @classmethod
@@ -500,8 +491,8 @@ class CgiCorrelator(object):
         cache_item["mnc"] = feed_item["net"]
         cache_item["lac"] = feed_item["area"]
         cache_item["cellid"] = feed_item["cell"]
-        cache_item["lon"] = feed_item["lon"]
-        cache_item["lat"] = feed_item["lat"]
+        cache_item["lon"] = float(feed_item["lon"])
+        cache_item["lat"] = float(feed_item["lat"])
         cache_item["range"] = feed_item["range"]
         return cache_item
 

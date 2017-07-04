@@ -54,8 +54,8 @@ class GeoIp(object):
                         "location": {
                            "type": "Point",
                            "coordinates": [
-                               lat_lon[1],
-                               lat_lon[0]]}}
+                               float(lat_lon[1]),
+                               float(lat_lon[0])]}}
             return
         except:
             print("GeoIP: Unable to set geo by IP: %s" % self.ip)
