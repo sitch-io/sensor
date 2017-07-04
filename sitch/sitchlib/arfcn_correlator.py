@@ -57,6 +57,7 @@ class ArfcnCorrelator(object):
             self.geo_state = scan["location"]
         arfcn = ArfcnCorrelator.arfcn_from_scan(scan_type, scan)
         if scan_type == "kal_channel":
+            scan_bolus[1]["location"] = self.geo_state
             retval.append(scan_bolus)
             if self.arfcn_over_threshold(scan["power"]):
                 message = "ARFCN %s over threshold at %s.  Observed: %s" % (

@@ -55,6 +55,7 @@ class CgiCorrelator(object):
             self.state = scan_bolus[1]["location"]
         elif scan_bolus[0] == "cell":
             retval = self.check_scan_document(scan_bolus[1])
+            scan_bolus[1]["location"] = self.state
             retval.append(scan_bolus)
         elif scan_bolus[0] != "gsm_modem_channel":
             print("CgiCorrelator: Unsupported scan type: %s" % str(scan_bolus[0]))  # NOQA
@@ -73,6 +74,7 @@ class CgiCorrelator(object):
                                                              chan["lat"],
                                                              here["lon"],
                                                              here["lat"])
+            channel["location"] = self.state
             # In the event we have incomplete information, bypass comparison.
             skip_feed_comparison = CgiCorrelator.should_skip_feed(channel)
             if skip_feed_comparison is False:
