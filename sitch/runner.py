@@ -34,39 +34,39 @@ def main():
         while True:
             time.sleep(30)
             print("Runner: Mode is clutch.  Wait cycle...")
+    elif config.mode != 'solo':
+        print("Runner: Writing Filebeat key material...")
+        sitchlib.Utility.create_path_if_nonexistent(config.ls_crypto_base_path)
+        sitchlib.Utility.write_file(config.ls_ca_path,
+                                    config.vault_secrets["ca"])
+        sitchlib.Utility.write_file(config.ls_cert_path,
+                                    config.vault_secrets["crt"])
+        sitchlib.Utility.write_file(config.ls_key_path,
+                                    config.vault_secrets["key"])
+        sitchlib.Utility.write_file("/etc/ssl/certs/logstash-ca.pem",
+                                    config.vault_secrets["ca"])
+        # Write FB config
+        config.write_filebeat_config()
+        # Write logrotate config
+        sitchlib.Utility.write_file("/etc/logrotate.d/sitch",
+                                    config.build_logrotate_config())
+        # Give everything a few seconds to catch up (writing files, etc...)
+        time.sleep(5)
+        # Start cron
+        sitchlib.Utility.start_component("/etc/init.d/cron start")
+    elif config.mode == 'solo':
+        print("Runner: Sensor running in 'solo' mode."
+              "No feed updates, no logs to be shipped or rotated.")
 
     print("Runner: Verify paths for feed and logs...")
     sitchlib.Utility.create_path_if_nonexistent(config.feed_dir)
     sitchlib.Utility.create_path_if_nonexistent(config.log_prefix)
-
-    print("Runner: Writing Filebeat key material...")
-    sitchlib.Utility.create_path_if_nonexistent(config.ls_crypto_base_path)
-    sitchlib.Utility.write_file(config.ls_ca_path,
-                                config.vault_secrets["ca"])
-    sitchlib.Utility.write_file(config.ls_cert_path,
-                                config.vault_secrets["crt"])
-    sitchlib.Utility.write_file(config.ls_key_path,
-                                config.vault_secrets["key"])
-    sitchlib.Utility.write_file("/etc/ssl/certs/logstash-ca.pem",
-                                config.vault_secrets["ca"])
-
-    # Write FB config
-    config.write_filebeat_config()
-
-    # Write logrotate config
-    sitchlib.Utility.write_file("/etc/logrotate.d/sitch",
-                                config.build_logrotate_config())
 
     # Kill interfering driver
     try:
         sitchlib.Utility.start_component("modprobe -r dvb_usb_rtl28xxu")
     except:
         print("Runner: Error trying to unload stock driver")
-
-    # Give everything a few seconds to catch up (writing files, etc...)
-    time.sleep(5)
-    # Start cron
-    sitchlib.Utility.start_component("/etc/init.d/cron start")
 
     print("Runner: Instantiating feed manager...")
     feed_mgr = sitchlib.FeedManager(config)

@@ -36,12 +36,21 @@ class FeedManager(object):
         self.no_feed_update = config.no_feed_update
         self.db_schemas = config.db_schemas
         self.db_translate_schemas = config.db_translate_schemas
+        self.apply_mode(config.mode)
+
+    def apply_mode(self, mode):
+        """Adjust FeedManager behavior according to operating mode."""
+        if mode == 'solo':
+            self.no_feed_update = "SOLO_MODE"
+        return
 
     def update_feed_files(self):
         """Wrapper for feed file retrieval routines."""
-        if (os.path.isfile(self.cgi_db) and self.no_feed_update is not None):
+        if (os.path.isfile(self.cgi_db) and
+                self.no_feed_update is not None):
             # Skip the update process if db exists and config says no update.
-            print("FeedManager: DB exists. NO_FEED_UPDATE is set...")
+            print("FeedManager: DB exists. NO_FEED_UPDATE is set, "
+                  "or you're running in 'solo' mode...")
             print("FeedManager: Skipping feed update!")
             return
         for feed_id in self.mcc_list:
@@ -68,7 +77,7 @@ class FeedManager(object):
                                                   self.target_radios,
                                                   last_timestamp)
         self.set_newest_record_time("cgi", this_timestamp)
-        # This is specifically for FCC feedds, but the underpinnings exist
+        # This is specifically for FCC feeds, but the underpinnings exist
         # for others
         last_timestamp = self.get_newest_record_time("arfcn")
         this_timestamp = FeedManager.reconcile_db({"arfcn": self.db_schemas["arfcn"]},  # NOQA
