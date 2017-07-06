@@ -18,6 +18,7 @@ Version |release|
   data
   event_lifecycle
   troubleshooting
+  reference_images
   sensor_api
 
 
