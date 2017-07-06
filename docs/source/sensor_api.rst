@@ -11,7 +11,6 @@ SITCH Sensor Internal API
   config_helper
   decomposer
   device_detector
-  fcc_feed
   feed_manager
   geo_correlator
   geo_ip

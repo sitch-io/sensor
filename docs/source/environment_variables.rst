@@ -48,7 +48,7 @@ The SITCH Sensor requires some environment variables to be set in order to opera
 | MCC_LIST                  | (Optional) List of Mobile Country Codes to ingest     |
 |                           | from feed.  List is comma-separated: ``310,311,316``  |
 |                           |                                                       |
-|                           | Defaults to ``310,311,312,316``                   |
+|                           | Defaults to ``310,311,312,316``                       |
 +---------------------------+-------------------------------------------------------+
 | MODE                      | Set to ``clutch`` to go into a wait loop on start.    |
 |                           | Useful for troubleshooting.                           |
