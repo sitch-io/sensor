@@ -400,6 +400,9 @@ def decomposer(config):
                         arfcn_correlator_queue.append(result)
                         cgi_correlator_queue.append(result)
                         message_write_queue.append(result)
+                        #  If we're not in 'solo' mode, correlate geo drift
+                        if config.mode != 'solo':
+                            geo_correlator_queue.append(result)
                     elif s_type == "geo_ip":
                         message_write_queue.append(result)
                     else:
