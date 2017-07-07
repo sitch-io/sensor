@@ -24,7 +24,7 @@ class CgiCorrelator(object):
         self.feed_dir = feed_dir
         self.alerts = alert_manager.AlertManager(device_id)
         self.prior_bts = {}
-        self.state = {"coordinates": [0, 0]}
+        self.state = {"type": "Point", "coordinates": [0, 0]}
         self.feed_cache = []
         self.good_cgis = []
         self.bad_cgis = []

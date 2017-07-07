@@ -44,10 +44,11 @@ class AlertManager(object):
                 contains the alert and metadata.
         """
         if location is None:
-            print("No geo for alarm: %s" % str(alert_message))
+            print("AlertManager: No geo for alarm: %s" % str(alert_message))
             location = {"type": "Point", "coordinates": [0, 0]}
         elif Utility.validate_geojson(location) is False:
-            print("Invalid geojson %s for %s" % (location, alert_message))
+            print("AlertManager: Invalid geojson %s for: %s" % (location,
+                                                                alert_message))
             location = {"type": "Point", "coordinates": [0, 0]}
         lat = location["coordinates"][1]
         lon = location["coordinates"][0]

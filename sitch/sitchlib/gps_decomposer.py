@@ -18,6 +18,7 @@ class GpsDecomposer(object):
         """
         results_set = [("gps", scan_document)]
         if not GpsDecomposer.scan_document_is_valid(scan_document):
+            print("GpsDecomposer: Bad GPS fix: %s" % (scan_document))
             return []
         else:
             return results_set
