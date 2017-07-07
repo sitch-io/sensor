@@ -123,7 +123,12 @@ class Utility:
     def get_public_ip(cls):
         """Get public IP."""
         url = 'https://api.ipify.org/?format=json'
-        result = (requests.get(url).json())['ip']
+        try:
+            result = (requests.get(url).json())['ip']
+        except requests.exceptions.ConnectionError:
+            print("Utility: Unable to get public IP from ipify.org.  "
+                  "Set to 127.0.0.1")
+            result = "127.0.0.1"
         return result
 
     @classmethod
