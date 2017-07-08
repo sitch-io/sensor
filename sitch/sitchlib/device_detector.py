@@ -57,11 +57,11 @@ class DeviceDetector(object):
         return retval
 
     @classmethod
-    def get_devices_by_subsys(cls, type):
+    def get_devices_by_subsys(cls, subsys_type):
         """Get devices from udev, by type."""
         results = []
         ctx = pyudev.Context()
-        for device in ctx.list_devices(subsystem=type):
+        for device in ctx.list_devices(subsystem=subsys_type):
             dev_struct = {"sys_path": device.sys_path,
                           "sys_name": device.sys_name,
                           "dev_path": device.device_path,
