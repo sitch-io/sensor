@@ -185,6 +185,20 @@ In the case of the GSM modem you will also see that the following message has re
   > 22.04.17 08:53:33 (-0400) GSM: opening serial port: /dev/ttyUSB1
 
 
+GPS device not detected (U-Blox7)
+-----------------------
+
+The U-Blox7 USB GPS device registers as a ttyACM device.  If everything else
+(with respect to the sensor hardware stack) is built to spec, the U-Blox7 GPS
+will land at ``/dev/ttyACM0``.  Set the ``GSM_MODEM_PORT`` Sensor environment
+variable in resin.io to ``/dev/ttyACM0``.  The application on the sensor will
+then restart.  Open the terminal in resin.io and
+``tail -f /data/sitch/log/gps.log`` to confirm that the GPS is correctly
+configured and able to get a location fix.  You may have to wait for a few
+minutes.  If this does not work, you can also use the terminal to run
+``gpsmon`` to see if gpsd is able to communicate with the device.
+
+
 No events in Kibana
 -------------------
 
