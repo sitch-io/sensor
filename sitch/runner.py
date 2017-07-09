@@ -283,7 +283,7 @@ def kalibrate_consumer(config):
                              "scan_start": "",
                              "scan_finish": "",
                              "scan_program": "",
-                             "scan_location": {}}
+                             "scan_location": ""}
         band = config.kal_band
         if band == "nope":
             disable_scanner({"evt_cls": "kalibrate_consumer",
