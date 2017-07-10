@@ -234,6 +234,10 @@ def gsm_modem_consumer(config):
 
 def gps_consumer(config):
     """Take events from gpsd, put them in queue."""
+    if config.mode == "solo":
+        gps_delay = 5
+    else:
+        gps_delay = 120
     global gps_location
     print("Runner: Starting GPS Consumer")
     print("Runner: gpsd configured for %s" % config.gps_device_port)
@@ -244,7 +248,7 @@ def gps_consumer(config):
     time.sleep(10)
     while True:
         try:
-            gps_listener = sitchlib.GpsListener(delay=120)
+            gps_listener = sitchlib.GpsListener(delay=gps_delay)
             for fix in gps_listener:
                 fix["site_name"] = config.site_name
                 fix["sensor_id"] = config.device_id
