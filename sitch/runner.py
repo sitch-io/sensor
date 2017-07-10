@@ -236,6 +236,7 @@ def gps_consumer(config):
     """Take events from gpsd, put them in queue."""
     if config.mode == "solo":
         gps_delay = 5
+        print("Runner: Setting GPS delay to 5s for 'solo' mode operation.")
     else:
         gps_delay = 120
     global gps_location
