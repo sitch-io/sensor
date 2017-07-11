@@ -56,7 +56,7 @@ class AlertManager(object):
         message = Utility.generate_base_event()
         message["alert_id"] = alert_id
         message["id"] = alert_id
-        message["type"] = self.get_alert_type(alert_id)
+        message["alert_type"] = self.get_alert_type(alert_id)
         message["event_type"] = "sitch_alert"
         message["details"] = ("%s  %s" % (alert_message, gmaps_url))
         message["location"] = location
