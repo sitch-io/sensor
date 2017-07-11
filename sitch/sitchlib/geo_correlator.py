@@ -10,7 +10,7 @@ class GeoCorrelator(object):
     def __init__(self, device_id):
         """Initialize the Geographic Correlator."""
         self.geo_anchor = {}
-        self.threshold = 10
+        self.threshold = 100
         self.time_threshold = 10
         self.device_id = device_id
 
