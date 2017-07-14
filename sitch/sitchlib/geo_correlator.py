@@ -78,7 +78,7 @@ class GeoCorrelator(object):
         if current_distance < threshold:
             return []
         else:
-            message = "Possible GPS spoofing attack! %d delta from anchor at %s !" % (current_distance, Utility.create_gmaps_link(lat_1, lon_1))  # NOQA
+            message = "Possible GPS spoofing attack! %d delta from anchor at %s / %s %s !" % (current_distance, gps_scan["site_name"], gps_scan["sensor_name"], Utility.create_gmaps_link(lat_1, lon_1))  # NOQA
             alert = AlertManager(device_id).build_alert(300, message,
                                                         gps_scan["location"])
             return[alert]
@@ -90,7 +90,7 @@ class GeoCorrelator(object):
         if current_delta < threshold_mins:
             return []
         else:
-            message = "Possible GPS time spoofing attack! %d delta from system" % (current_delta)  # NOQA
+            message = "Possible GPS time spoofing attack! %d delta from system at %s / %s" % (current_delta, gps_scan["site_name"], gps_scan["sensor_name"])  # NOQA
             alert = AlertManager(device_id).build_alert(310, message,
                                                         gps_scan["location"])
             return[alert]

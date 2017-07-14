@@ -79,8 +79,10 @@ class CgiCorrelator(object):
             skip_feed_comparison = CgiCorrelator.should_skip_feed(channel)
             if skip_feed_comparison is False:
                 if channel["mcc"] not in self.mcc_list:
-                    msg = ("MCC %s should not be observed by this sensor. ARFCN: %s CGI: %s Cell Priority: %s" %  # NOQA
-                           (channel["mcc"], channel["arfcn"], channel["cgi_str"], channel["cell"]))  # NOQA
+                    msg = ("MCC %s should not be observed by sensor at %s / %s. ARFCN: %s CGI: %s Cell Priority: %s" %  # NOQA
+                           (channel["site_name"], channel["sensor_name"],
+                            channel["mcc"], channel["arfcn"],
+                            channel["cgi_str"], channel["cell"]))
                     alert = self.alerts.build_alert(130, msg, self.state)
                     alert[1]["site_name"] = channel["site_name"]
                     alert[1]["sensor_name"] = channel["sensor_name"]
@@ -110,7 +112,7 @@ class CgiCorrelator(object):
             # We've already flagged this, no need to alert every 2s
             return results
         if "::" in chan_1_lai:
-            message = "Serving cell has no neighbor!  Serving cell: %s" % chan_0_cgi  # NOQA
+            message = "Serving cell has no neighbor at %s / %s!  Serving cell: %s" % (scan_document["site_name"], scan_document["sensor_name"], chan_0_cgi)  # NOQA
             alert = self.alerts.build_alert(141, message, self.state)
             alert[1]["site_name"] = scan_document["site_name"]
             alert[1]["sensor_name"] = scan_document["sensor_name"]
@@ -118,7 +120,7 @@ class CgiCorrelator(object):
             results.append(alert)
             self.alarm_141_cache = cache_compare
         elif chan_0_lai != chan_1_lai:
-            message = "Preferred neighbor outside of LAI! Serving cell CGI: %s Next neighbor CGI: %s" % (chan_0_cgi, chan_1_cgi)  # NOQA
+            message = "Preferred neighbor outside of LAI at %s / %s! Serving cell CGI: %s Next neighbor CGI: %s" % (scan_document["site_name"], scan_document["sensor_name"], chan_0_cgi, chan_1_cgi)  # NOQA
             alert = self.alerts.build_alert(140, message, self.state)
             alert[1]["site_name"] = scan_document["site_name"]
             alert[1]["sensor_name"] = scan_document["sensor_name"]
@@ -344,8 +346,9 @@ class CgiCorrelator(object):
         if CgiCorrelator.channel_in_feed_db(channel) is False:
             bts_info = "ARFCN: %s CGI: %s" % (channel["arfcn"],
                                               channel["cgi_str"])
-            message = "BTS not in feed database! Info: %s Site: %s" % (
-                bts_info, str(channel["site_name"]))
+            message = "BTS not in feed database! Info: %s Sensor: %s / %s" % (
+                bts_info, str(channel["site_name"]),
+                str(channel["sensor_name"]))
             if channel["cgi_str"] not in self.bad_cgis:
                 self.bad_cgis.append(channel["cgi_str"])
             alert = self.alerts.build_alert(120, message, self.state)
@@ -365,11 +368,13 @@ class CgiCorrelator(object):
         alert = ()
         if CgiCorrelator.channel_out_of_range(channel):
             message = ("ARFCN: %s Expected range: %s Actual distance:" +
-                       " %s CGI: %s Site: %s") % (channel["arfcn"],
-                                                  str(channel["feed_info"]["range"]),  # NOQA
-                                                  str(channel["distance"]),
-                                                  channel["cgi_str"],
-                                                  channel["site_name"])
+                       " %s CGI: %s Sensor: %s / %s") % (
+                           channel["arfcn"],
+                           str(channel["feed_info"]["range"]),  # NOQA
+                           str(channel["distance"]),
+                           channel["cgi_str"],
+                           channel["site_name"],
+                           channel["sensor_name"])
             if channel["cgi_str"] not in self.bad_cgis:
                 self.bad_cgis.append(channel["cgi_str"])
             alert = self.alerts.build_alert(100, message, self.state)
@@ -390,10 +395,11 @@ class CgiCorrelator(object):
         if CgiCorrelator.primary_bts_changed(self.prior_bts, channel,
                                              self.cgi_whitelist):
             msg = ("Primary BTS was %s " +
-                   "now %s. Site: %s") % (
+                   "now %s. Sensor: %s / %s") % (
                     CgiCorrelator.make_bts_friendly(self.prior_bts),
                     CgiCorrelator.make_bts_friendly(current_bts),
-                    channel["site_name"])
+                    channel["site_name"],
+                    channel["sensor_name"])
             alert = self.alerts.build_alert(110, msg, self.state)
         self.prior_bts = dict(current_bts)
         return alert

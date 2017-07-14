@@ -60,9 +60,10 @@ class ArfcnCorrelator(object):
             scan_bolus[1]["location"] = self.geo_state
             retval.append(scan_bolus)
             if self.arfcn_over_threshold(scan["power"]):
-                message = "ARFCN %s over threshold at %s.  Observed: %s" % (
+                message = "ARFCN %s over threshold at %s / %s. Observed: %s" % (  # NOQA
                           scan["channel"],
                           scan["site_name"],
+                          scan["sensor_name"],
                           scan["power"])
                 alert = self.alerts.build_alert(200, message, self.geo_state)
                 alert[1]["site_name"] = scan["site_name"]
@@ -72,7 +73,8 @@ class ArfcnCorrelator(object):
                 self.manage_arfcn_lists("in", arfcn, "threshold")
             else:
                 self.manage_arfcn_lists("out", arfcn, "threshold")
-        feed_alerts = self.compare_arfcn_to_feed(arfcn)
+        feed_alerts = self.compare_arfcn_to_feed(arfcn, scan["site_name"],
+                                                 scan["sensor_name"])
         for feed_alert in feed_alerts:
             feed_alert[1]["site_name"] = scan["site_name"]
             feed_alert[1]["sensor_name"] = scan["sensor_name"]
@@ -126,7 +128,7 @@ class ArfcnCorrelator(object):
         else:
             return False
 
-    def compare_arfcn_to_feed(self, arfcn):
+    def compare_arfcn_to_feed(self, arfcn, site_name, sensor_name):
         """Wrap other functions that dig into the FCC license DB.
 
         This relies on the observed_arfcn instance variable for caching, to
@@ -150,10 +152,11 @@ class ArfcnCorrelator(object):
         else:
             msg = "ArfcnCorrelator: Cache miss on ARFCN %s" % str(arfcn)
             print(msg)
-        results.extend(self.feed_alert_generator(arfcn))
+        results.extend(self.feed_alert_generator(arfcn, site_name,
+                                                 sensor_name))
         return results
 
-    def feed_alert_generator(self, arfcn):
+    def feed_alert_generator(self, arfcn, site_name, sensor_name):
         """Wrap the yield_arfcn_from_feed function, and generates alerts.
 
         Args:
@@ -167,7 +170,8 @@ class ArfcnCorrelator(object):
         if arfcn is None:
             return results
         if not self.match_arfcn_against_feed(arfcn, self.geo_state):
-            msg = "Unable to locate a license for ARFCN %s" % str(arfcn)
+            msg = "Unable to locate a license for ARFCN %s at %s / %s" % (
+                str(arfcn), site_name, sensor_name)
             self.manage_arfcn_lists("in", arfcn, "not_in_range")
             alert = self.alerts.build_alert(400, msg, self.geo_state)
             results.append(alert)
