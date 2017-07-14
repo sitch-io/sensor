@@ -121,7 +121,8 @@ class TestIntegrationCorrelateArfcn:
     def test_compare_arfcn_to_feed(self):
         arfcn = self.instantiate_arfcn()
         test_scan = self.build_scan_doc("kal", 239)
-        result = arfcn.compare_arfcn_to_feed(test_scan["arfcn_int"])
+        result = arfcn.compare_arfcn_to_feed(test_scan["arfcn_int"], "Sitename",
+                                             "Sensorname")
         assert len(result) == 0
 
     def test_arfcn_good(self):
@@ -142,7 +143,8 @@ class TestIntegrationCorrelateArfcn:
         """ If there is no usable GPS metric, we don't alarm"""
         arfcn = self.instantiate_arfcn_bad_geo_state()
         test_arfcn = self.build_scan_doc("kal", 99)
-        result = arfcn.compare_arfcn_to_feed(test_arfcn["arfcn_int"])
+        result = arfcn.compare_arfcn_to_feed(test_arfcn["arfcn_int"],
+                                             "Sitename", "Sensorname")
         print result
         assert len(result) == 0
 
