@@ -121,7 +121,8 @@ class TestIntegrationCorrelateArfcn:
     def test_compare_arfcn_to_feed(self):
         arfcn = self.instantiate_arfcn()
         test_scan = self.build_scan_doc("kal", 239)
-        result = arfcn.compare_arfcn_to_feed(test_scan["arfcn_int"], "Sitename",
+        result = arfcn.compare_arfcn_to_feed(test_scan["arfcn_int"],
+                                             "Sitename",
                                              "Sensorname")
         assert len(result) == 0
 
