@@ -238,7 +238,7 @@ class Utility:
 
     @classmethod
     def hdmi_print(cls, message):
-        term = 'dev/tty1'
+        term = '/dev/tty1'
         with open(term, 'w') as myterm:
             myterm.write(message)
         return
