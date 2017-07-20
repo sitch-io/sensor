@@ -93,4 +93,8 @@ class LogHandler:
                                 self.get_log_file_name(log_file_type))
         with open(log_file, 'a') as lf:
             lf.write(str(str(message) + '\n'))
+        # Write alerts to HDMI
+        if log_file_type == 'sitch_alert':
+            with open('/dev/tty1', 'w') as screen_tty:
+                screen_tty.write(message)
         return
