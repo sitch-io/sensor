@@ -27,7 +27,7 @@ def main():
     geo_correlator_queue = deque([])
     sensor_version = sitchlib.__version__
     startup_string = "Starting SITCH Sensor v%s" % sensor_version
-    sitchlib.Utility.hdmi_print("\ec")
+    sitchlib.Utility.hdmi_print(r'\ec')
     print(startup_string)
     sitchlib.Utility.hdmi_print("%s\n" % startup_string)
     print("Runner: Setting config...")
