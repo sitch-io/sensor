@@ -235,3 +235,10 @@ class Utility:
     @classmethod
     def create_gmaps_link(cls, lat, lon):
         return ("https://www.google.com/maps/search/?api=1&query=%s,%s" % (lat, lon))  # NOQA
+
+    @classmethod
+    def hdmi_print(cls, message):
+        term = 'dev/tty1'
+        with open(term, 'w') as myterm:
+            myterm.write(message)
+        return
