@@ -9,6 +9,7 @@ import psutil
 import subprocess
 import requests
 from location_tool import LocationTool
+from __future__ import print_function
 
 
 class Utility:
@@ -238,5 +239,6 @@ class Utility:
 
     @classmethod
     def hdmi_print(cls, message):
-        print(message, file='/dev/tty1')
+        with open('/dev/tty1', 'w') as ttyfile:
+            print(message, file=ttyfile)
         return
