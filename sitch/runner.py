@@ -27,15 +27,22 @@ def main():
     geo_correlator_queue = deque([])
     sensor_version = sitchlib.__version__
     startup_string = "Starting SITCH Sensor v%s" % sensor_version
+    # sitchlib.Utility.hdmi_print(r'\033[9;0]')
+    # sitchlib.Utility.hdmi_print(r'\ec')
     print(startup_string)
+    # sitchlib.Utility.hdmi_print("%s\n" % startup_string)
     print("Runner: Setting config...")
     config = sitchlib.ConfigHelper()
     if config.mode == 'clutch':
         while True:
             time.sleep(30)
-            print("Runner: Mode is clutch.  Wait cycle...")
+            message = "Runner: Mode is clutch.  Wait cycle..."
+            print(message)
+            # sitchlib.Utility.hdmi_print("%s\n" % message)
     elif config.mode != 'solo':
-        print("Runner: Writing Filebeat key material...")
+        message = "Runner: Writing Filebeat key material..."
+        print(message)
+        # sitchlib.Utility.hdmi_print("%s\n" % message)
         sitchlib.Utility.create_path_if_nonexistent(config.ls_crypto_base_path)
         sitchlib.Utility.write_file(config.ls_ca_path,
                                     config.vault_secrets["ca"])
