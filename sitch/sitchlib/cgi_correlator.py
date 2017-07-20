@@ -24,13 +24,14 @@ class CgiCorrelator(object):
         self.feed_dir = feed_dir
         self.alerts = alert_manager.AlertManager(device_id)
         self.prior_bts = {}
-        self.state = {"geometry": {"coordinates": [0, 0]}}
+        self.state = {"type": "Point", "coordinates": [0, 0]}
         self.feed_cache = []
         self.good_cgis = []
         self.bad_cgis = []
         self.mcc_list = mcc_list
         self.cgi_whitelist = cgi_whitelist
         self.cgi_db = os.path.join(feed_dir, "cgi.db")
+        self.alarm_140_cache = ""
         print(CgiCorrelator.cgi_whitelist_message(self.cgi_whitelist))
         return
 
@@ -51,9 +52,13 @@ class CgiCorrelator(object):
         """
         retval = []
         if scan_bolus[0] == "gps":
-            self.state = scan_bolus[1]
+            self.state = scan_bolus[1]["location"]
+        elif scan_bolus[0] == "cell":
+            retval = self.check_scan_document(scan_bolus[1])
+            scan_bolus[1]["location"] = self.state
+            retval.append(scan_bolus)
         elif scan_bolus[0] != "gsm_modem_channel":
-            print("CgiCorrelator: Unsupported scan type: %s" % scan_bolus[0])
+            print("CgiCorrelator: Unsupported scan type: %s" % str(scan_bolus[0]))  # NOQA
             pass
         else:
             channel = scan_bolus[1]
@@ -69,17 +74,82 @@ class CgiCorrelator(object):
                                                              chan["lat"],
                                                              here["lon"],
                                                              here["lat"])
+            channel["location"] = self.state
             # In the event we have incomplete information, bypass comparison.
             skip_feed_comparison = CgiCorrelator.should_skip_feed(channel)
             if skip_feed_comparison is False:
                 if channel["mcc"] not in self.mcc_list:
-                    msg = ("MCC %s should not be observed by this sensor. ARFCN: %s CGI: %s Cell Priority: %s" %  # NOQA
-                           (channel["mcc"], channel["arfcn"], channel["cgi_str"], channel["cell"]))  # NOQA
-                    retval.append(self.alerts.build_alert(130, msg))
+                    msg = ("MCC %s should not be observed by sensor at %s / %s. ARFCN: %s CGI: %s Cell Priority: %s" %  # NOQA
+                           (channel["mcc"], channel["site_name"],
+                            channel["sensor_name"], channel["arfcn"],
+                            channel["cgi_str"], channel["cell"]))
+                    alert = self.alerts.build_alert(130, msg, self.state)
+                    alert[1]["site_name"] = channel["site_name"]
+                    alert[1]["sensor_name"] = channel["sensor_name"]
+                    alert[1]["sensor_id"] = channel["sensor_id"]
+                    retval.append(alert)
                 feed_comparison_results = self.feed_comparison(channel)
                 for feed_alert in feed_comparison_results:
                     retval.append(feed_alert)
+            retval.append(scan_bolus)
         return retval
+
+    def check_scan_document(self, scan_document):
+        """Check to see if there are no in-LAI neighbors for channel 0
+
+        """
+        results = []
+        chan_0 = self.get_cell_by_id(scan_document, 0)
+        chan_1 = self.get_cell_by_id(scan_document, 1)
+        chan_0_lai = self.get_lai_for_channel(chan_0)
+        chan_1_lai = self.get_lai_for_channel(chan_1)
+        chan_0_cgi = self.make_bts_friendly(self.get_cell_by_id(scan_document,
+                                                                0))
+        chan_1_cgi = self.make_bts_friendly(self.get_cell_by_id(scan_document,
+                                                                1))
+        cache_compare = "%s  %s" % (chan_0_lai, chan_1_lai)
+        if cache_compare == self.alarm_140_cache:
+            # We've already flagged this, no need to alert every 2s
+            return results
+        if "::" in chan_1_lai:
+            message = "Serving cell has no neighbor at %s / %s!  Serving cell: %s" % (scan_document["site_name"], scan_document["sensor_name"], chan_0_cgi)  # NOQA
+            alert = self.alerts.build_alert(141, message, self.state)
+            alert[1]["site_name"] = scan_document["site_name"]
+            alert[1]["sensor_name"] = scan_document["sensor_name"]
+            alert[1]["sensor_id"] = scan_document["sensor_id"]
+            results.append(alert)
+            self.alarm_141_cache = cache_compare
+        elif chan_0_lai != chan_1_lai:
+            message = "Preferred neighbor outside of LAI at %s / %s! Serving cell CGI: %s Next neighbor CGI: %s" % (scan_document["site_name"], scan_document["sensor_name"], chan_0_cgi, chan_1_cgi)  # NOQA
+            alert = self.alerts.build_alert(140, message, self.state)
+            alert[1]["site_name"] = scan_document["site_name"]
+            alert[1]["sensor_name"] = scan_document["sensor_name"]
+            alert[1]["sensor_id"] = scan_document["sensor_id"]
+            results.append(alert)
+            self.alarm_140_cache = cache_compare
+        else:
+            # If we've gotten this far, we've established that we're not still
+            # in an identical alarm state (cache compare), and the LAIs
+            # of the primary and secondary cells are the same.  So we
+            # reset the alarm cache for this alert.
+            self.alarm_140_cache = ""
+            self.alarm_141_cache = ""
+        return results
+
+    @classmethod
+    def get_lai_for_channel(cls, channel):
+        chan_clean = cls.convert_hex_targets(channel)
+        lai = ":".join([chan_clean["mcc"], chan_clean["mnc"],
+                        chan_clean["lac"]])
+        return lai
+
+    @classmethod
+    def get_cell_by_id(cls, scan_document, cell_no):
+        """Get cell from doc by ID"""
+        for cell in scan_document["scan_results"]:
+            if cell["cell"] == cell_no:
+                return cell
+        raise ValueError("CgiCorrelator: No cell by ID for %s in %s" % (cell_no, scan_document))  # NOQA
 
     @classmethod
     def cgi_whitelist_message(cls, cgi_wl):
@@ -94,25 +164,6 @@ class CgiCorrelator(object):
         wl_string = ",".join(cgi_wl)
         message = "CgiCorrelator: Initializing with CGI whitelist: %s" % wl_string  # NOQA
         return message
-
-    @classmethod
-    def arfcn_int(cls, arfcn):
-        """Attempt to derive an integer representation of ARFCN.
-
-        Args:
-            arfcn (str): String representation of ARFCN
-
-        Returns:
-            int: Integer representation of ARFCN, zero if unable to convert.
-        """
-        try:
-            arfcn_int = int(arfcn)
-        except:
-            msg = "CgiCorrelator: Unable to convert ARFCN to int"
-            print(msg)
-            print(arfcn)
-            arfcn_int = 0
-        return arfcn_int
 
     @classmethod
     def should_skip_feed(cls, channel):
@@ -158,17 +209,17 @@ class CgiCorrelator(object):
         chan = {}
         here = {}
         try:
-            chan["lat"] = channel["feed_info"]["lat"]
-            chan["lon"] = channel["feed_info"]["lon"]
-            here["lat"] = state["geometry"]["coordinates"][1]
-            here["lon"] = state["geometry"]["coordinates"][0]
+            chan["lat"] = float(channel["feed_info"]["lat"])
+            chan["lon"] = float(channel["feed_info"]["lon"])
+            here["lat"] = state["coordinates"][1]
+            here["lon"] = state["coordinates"][0]
         except (TypeError, ValueError, KeyError) as e:
             print("CgiCorrelator: Incomplete geo info...")
             print("CgiCorrelator: Error: %s" % str(e))
-            chan["lat"] = None
-            chan["lon"] = None
-            here["lat"] = None
-            here["lon"] = None
+            chan["lat"] = 0
+            chan["lon"] = 0
+            here["lat"] = 0
+            here["lon"] = 0
         return(chan, here)
 
     @classmethod
@@ -267,10 +318,13 @@ class CgiCorrelator(object):
                 channel["cgi_str"] not in self.good_cgis):
             comparison_results.append(self.check_channel_range(channel))
         # Test for primary BTS change
-        if channel["cell"] == '0':
+        if channel["cell"] == 0:
             comparison_results.append(self.process_cell_zero(channel))
         for result in comparison_results:
             if result != ():
+                result[1]["site_name"] = channel["site_name"]
+                result[1]["sensor_name"] = channel["sensor_name"]
+                result[1]["sensor_id"] = channel["sensor_id"]
                 retval.append(result)
         if len(retval) == 0:
             if channel["cgi_str"] not in self.good_cgis:
@@ -292,11 +346,12 @@ class CgiCorrelator(object):
         if CgiCorrelator.channel_in_feed_db(channel) is False:
             bts_info = "ARFCN: %s CGI: %s" % (channel["arfcn"],
                                               channel["cgi_str"])
-            message = "BTS not in feed database! Info: %s Site: %s" % (
-                bts_info, str(channel["site_name"]))
+            message = "BTS not in feed database! Info: %s Sensor: %s / %s" % (
+                bts_info, str(channel["site_name"]),
+                str(channel["sensor_name"]))
             if channel["cgi_str"] not in self.bad_cgis:
                 self.bad_cgis.append(channel["cgi_str"])
-            alert = self.alerts.build_alert(120, message)
+            alert = self.alerts.build_alert(120, message, self.state)
         return alert
 
     def check_channel_range(self, channel):
@@ -313,14 +368,16 @@ class CgiCorrelator(object):
         alert = ()
         if CgiCorrelator.channel_out_of_range(channel):
             message = ("ARFCN: %s Expected range: %s Actual distance:" +
-                       " %s CGI: %s Site: %s") % (channel["arfcn"],
-                                                  str(channel["feed_info"]["range"]),  # NOQA
-                                                  str(channel["distance"]),
-                                                  channel["cgi_str"],
-                                                  channel["site_name"])
+                       " %s CGI: %s Sensor: %s / %s") % (
+                           channel["arfcn"],
+                           str(channel["feed_info"]["range"]),  # NOQA
+                           str(channel["distance"]),
+                           channel["cgi_str"],
+                           channel["site_name"],
+                           channel["sensor_name"])
             if channel["cgi_str"] not in self.bad_cgis:
                 self.bad_cgis.append(channel["cgi_str"])
-            alert = self.alerts.build_alert(100, message)
+            alert = self.alerts.build_alert(100, message, self.state)
         return alert
 
     def process_cell_zero(self, channel):
@@ -338,11 +395,12 @@ class CgiCorrelator(object):
         if CgiCorrelator.primary_bts_changed(self.prior_bts, channel,
                                              self.cgi_whitelist):
             msg = ("Primary BTS was %s " +
-                   "now %s. Site: %s") % (
+                   "now %s. Sensor: %s / %s") % (
                     CgiCorrelator.make_bts_friendly(self.prior_bts),
                     CgiCorrelator.make_bts_friendly(current_bts),
-                    channel["site_name"])
-            alert = self.alerts.build_alert(110, msg)
+                    channel["site_name"],
+                    channel["sensor_name"])
+            alert = self.alerts.build_alert(110, msg, self.state)
         self.prior_bts = dict(current_bts)
         return alert
 
@@ -410,10 +468,11 @@ class CgiCorrelator(object):
             if result:
                 cell = {"mcc": result[0], "net": result[1], "area": result[2],
                         "cell": result[3], "lon": result[4], "lat": result[5],
-                        "range": result[6]}
+                        "range": int(result[6])}
             else:
                 cell = {"mcc": mcc, "net": mnc, "area": lac, "cell": cellid,
                         "lon": 0, "lat": 0, "range": 0}
+            conn.close()
         except sqlite3.OperationalError as e:
             print("CgiCorrelator: Unable to access CGI database! %s" % e)
             cell = {"mcc": mcc, "net": mnc, "area": lac, "cell": cellid,
@@ -440,8 +499,8 @@ class CgiCorrelator(object):
         cache_item["mnc"] = feed_item["net"]
         cache_item["lac"] = feed_item["area"]
         cache_item["cellid"] = feed_item["cell"]
-        cache_item["lon"] = feed_item["lon"]
-        cache_item["lat"] = feed_item["lat"]
+        cache_item["lon"] = float(feed_item["lon"])
+        cache_item["lat"] = float(feed_item["lat"])
         cache_item["range"] = feed_item["range"]
         return cache_item
 

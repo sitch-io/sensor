@@ -1,5 +1,6 @@
 from alert_manager import AlertManager  # NOQA
 from config_helper import ConfigHelper  # NOQA
+from feed_schema_translator import FeedSchemaTranslator  # NOQA
 from gps_device import GpsListener  # NOQA
 from gsm_modem import GsmModem  # NOQA
 from location_tool import LocationTool  # NOQA
@@ -14,4 +15,4 @@ from cgi_correlator import CgiCorrelator  # NOQA
 from geo_correlator import GeoCorrelator  # NOQA
 
 __author__ = "Ash Wilson"
-__version__ = "3.7.3"
+__version__ = "4.0"

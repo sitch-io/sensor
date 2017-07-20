@@ -9,8 +9,8 @@ from geoip_decomposer import GeoipDecomposer
 class Decomposer(object):
     """Decompose device messages into normalized log messages."""
 
-    decomp_ref = {"Kalibrate": KalDecomposer(),
-                  "GSM_MODEM": GsmDecomposer(),
+    decomp_ref = {"kalibrate": KalDecomposer(),
+                  "gsm_modem": GsmDecomposer(),
                   "gpsd": GpsDecomposer(),
                   "geo_ip": GeoipDecomposer()}
 
@@ -24,5 +24,4 @@ class Decomposer(object):
         except Exception as e:
             print("Decomposition error for scan: %s" % (str(scan)))
             print(e)
-
         return result

@@ -12,29 +12,38 @@ sitchlib = imp.load_module(modulename, file, pathname, description)
 
 
 geo_state = {"scan_program": "gpsd",
-                    "type": "Feature",
-                    "sat_time": "2017-03-25T00:30:48.000Z",
-                    "time_drift": 2,
-                    "sys_time": "2017-03-25T00:32:48.416592",
-                    "geometry": {
-                    "type": "Point",
-                    "coordinates": [-122.431297, 37.773972]}}
+             "type": "Feature",
+             "sat_time": "2017-03-25T00:30:48.000Z",
+             "time_drift": 2,
+             "sys_time": "2017-03-25T00:32:48.416592",
+             "site_name": "SITE_NAME",
+             "sensor_name": "SENSOR_NAME",
+             "sensor_id": "SENSOR_ID",
+             "location": {
+                 "type": "Point",
+                 "coordinates": [-122.431297, 37.773972]}}
 geo_other_state = {"scan_program": "gpsd",
-                    "type": "Feature",
-                    "sat_time": "2017-03-25T00:30:48.000Z",
-                    "time_drift": 2,
-                    "sys_time": "2017-03-25T00:32:48.416592",
-                    "geometry": {
-                    "type": "Point",
-                    "coordinates": [-100.431297, 32.773972]}}
+                   "type": "Feature",
+                   "sat_time": "2017-03-25T00:30:48.000Z",
+                   "time_drift": 2,
+                   "sys_time": "2017-03-25T00:32:48.416592",
+                   "site_name": "SITE_NAME",
+                   "sensor_name": "SENSOR_NAME",
+                   "sensor_id": "SENSOR_ID",
+                   "location": {
+                       "type": "Point",
+                       "coordinates": [-100.431297, 32.773972]}}
 geo_time_alarm = {"scan_program": "gpsd",
-                    "type": "Feature",
-                    "sat_time": "2017-03-25T00:30:48.000Z",
-                    "time_drift": 20,
-                    "sys_time": "2017-03-25T00:50:48.416592",
-                    "geometry": {
-                    "type": "Point",
-                    "coordinates": [-100.431297, 32.773972]}}
+                  "type": "Feature",
+                  "sat_time": "2017-03-25T00:30:48.000Z",
+                  "time_drift": 20,
+                  "sys_time": "2017-03-25T00:50:48.416592",
+                  "site_name": "SITE_NAME",
+                  "sensor_name": "SENSOR_NAME",
+                  "sensor_id": "SENSOR_ID",
+                  "location": {
+                      "type": "Point",
+                      "coordinates": [-100.431297, 32.773972]}}
 
 
 class TestIntegrationCorrelateGeo:
@@ -54,4 +63,4 @@ class TestIntegrationCorrelateGeo:
         correlator.correlate(("gps", geo_other_state))
         result = correlator.correlate(("gps", geo_time_alarm))
         assert len(result) == 1
-        assert result[0][1]["id"] == 310
+        assert result[0][1]["alert_id"] == 310

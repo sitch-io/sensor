@@ -29,4 +29,4 @@ class TestIntegrationGeoIp:
             if len(results) > 2:
                 break
         for g in results:
-            assert len(g["geometry"]["coordinates"]) == 2
+            assert len(g["location"]["coordinates"]) == 2

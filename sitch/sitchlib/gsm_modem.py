@@ -61,12 +61,6 @@ class GsmModem(object):
                 else:
                     page.append(processed_line)
 
-#    def trigger_gps(self):
-#        """Trigger GPS"""
-#        self.serconn.write(self.gps_init)
-#        self.serconn.flush()
-#        return
-
     def eng_mode(self, status):
         """Set or unset engineering mode on the modem.
 
@@ -232,18 +226,18 @@ class GsmModem(object):
             dict: Structured cell channel metadata.
 
         """
-        retval = {"cell": parts[0],
-                  "arfcn": parts[1],
-                  "rxl": parts[2],
-                  "rxq": parts[3],
+        retval = {"cell": int(parts[0]),
+                  "arfcn": int(parts[1]),
+                  "rxl": int(parts[2]),
+                  "rxq": int(parts[3]),
                   "mcc": parts[4],
                   "mnc": parts[5],
                   "bsic": parts[6],
                   "cellid": parts[7],
-                  "rla": parts[8],
-                  "txp": parts[9],
+                  "rla": int(parts[8]),
+                  "txp": int(parts[9]),
                   "lac": parts[10],
-                  "ta": parts[11]
+                  "ta": int(parts[11])
                   }
         return retval
 
@@ -257,9 +251,9 @@ class GsmModem(object):
         Returns:
             dict: Structured cell channel metadata.
         """
-        retval = {"cell": parts[0],
-                  "arfcn": parts[1],
-                  "rxl": parts[2],
+        retval = {"cell": int(parts[0]),
+                  "arfcn": int(parts[1]),
+                  "rxl": int(parts[2]),
                   "bsic": parts[3],
                   "cellid": parts[4],
                   "mcc": parts[5],
@@ -270,7 +264,7 @@ class GsmModem(object):
 
     @classmethod
     def process_7(cls, parts):
-        """Process a 12-part CENG message.
+        """Process a 7-part CENG message.
 
         In a 7-item line, cellid is not provided.  We set
             it to 0 to prevent barfing elsewhere.
@@ -281,9 +275,9 @@ class GsmModem(object):
         Returns:
             dict: Structured cell channel metadata.
         """
-        retval = {"cell": parts[0],
-                  "arfcn": parts[1],
-                  "rxl": parts[2],
+        retval = {"cell": int(parts[0]),
+                  "arfcn": int(parts[1]),
+                  "rxl": int(parts[2]),
                   "bsic": parts[3],
                   "mcc": parts[4],
                   "mnc": parts[5],

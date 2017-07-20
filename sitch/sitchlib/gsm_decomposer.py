@@ -23,8 +23,8 @@ class GsmDecomposer(object):
             try:
                 channel = GsmDecomposer.enrich_channel_with_scan(channel,
                                                                  scan_document)
-                channel["arfcn_int"] = GsmDecomposer.arfcn_int(channel["arfcn"])  # NOQA
-                if channel["arfcn_int"] == 0 and channel["cell"] != "0":
+                # channel["arfcn_int"] = GsmDecomposer.arfcn_int(channel["arfcn"])  # NOQA
+                if channel["arfcn"] == 0 and channel["cell"] != 0:
                     continue  # If the data is incomplete, we don't forward
                 # Now we bring the hex values to decimal...
                 channel = GsmDecomposer.convert_hex_targets(channel)
@@ -32,10 +32,12 @@ class GsmDecomposer(object):
                 # Setting CGI identifiers
                 channel["cgi_str"] = GsmDecomposer.make_bts_friendly(channel)
                 channel["cgi_int"] = GsmDecomposer.get_cgi_int(channel)
+                channel["event_type"] = "gsm_modem_channel"
                 chan_enriched = ('gsm_modem_channel', channel)
                 results_set.append(chan_enriched)
             except Exception as e:
-                print("Exception caught in GsmDecomposer: %s for channel %s in %s" % (e, str(channel), str(scan_document)))  # NOQA
+                print("Exception caught in GsmDecomposer: %s for channel:\n %s\nin: %s" % (e, str(channel), str(scan_document)))  # NOQA
+                raise e
 
         return results_set
 
@@ -45,23 +47,11 @@ class GsmDecomposer(object):
         channel["band"] = scan_document["band"]
         channel["scan_finish"] = scan_document["scan_finish"]
         channel["site_name"] = scan_document["site_name"]
-        channel["scan_location"] = scan_document["scan_location"]
+        channel["sensor_id"] = scan_document["sensor_id"]
+        channel["sensor_name"] = scan_document["sensor_name"]
         channel["scanner_public_ip"] = scan_document["scanner_public_ip"]
+        channel["event_timestamp"] = scan_document["scan_finish"]
         return channel
-
-    @classmethod
-    def arfcn_int(cls, arfcn):
-        """Attempt to derive an integer representation of ARFCN."""
-        if arfcn == "65535":  # This seems to be a default ARFCN on some modems
-            return 0
-        try:
-            arfcn_int = int(arfcn)
-        except:
-            msg = "GsmDecomposer: Unable to convert ARFCN to int"
-            print(msg)
-            print(arfcn)
-            arfcn_int = 0
-        return arfcn_int
 
     @classmethod
     def get_cgi_int(cls, channel):

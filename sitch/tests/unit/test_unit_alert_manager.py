@@ -22,6 +22,6 @@ class TestAlertManager:
         alert_body = "Hello World"
         alert_manager = sitchlib.AlertManager("DEVICE_ID")
         result = alert_manager.build_alert(alert_type, alert_body)
-        assert result[1]["id"] == alert_type
-        assert result[1]["type"] is not None
-        assert result[1]["details"] == alert_body
+        assert result[1]["alert_id"] == alert_type
+        assert result[1]["alert_type"] is not None
+        assert alert_body in result[1]["details"]
