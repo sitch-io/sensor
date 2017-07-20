@@ -1,5 +1,7 @@
 """General utilities."""
 
+from __future__ import print_function
+
 import datetime
 import dateutil.parser as du_parser
 import json
@@ -9,7 +11,6 @@ import psutil
 import subprocess
 import requests
 from location_tool import LocationTool
-from __future__ import print_function
 
 
 class Utility:
@@ -190,7 +191,7 @@ class Utility:
             integer = int(str(hx), 16)
         except Exception as e:
             print("Unable to convert %s to an integer" % str(hx))
-            print e
+            print(e)
             integer = 0
         return str(integer)
 
