@@ -95,5 +95,5 @@ class LogHandler:
             lf.write(str(str(message) + '\n'))
         # Write alerts to HDMI
         if log_file_type == 'sitch_alert':
-            utility.hdmi_print("%s\n" % message)
+            utility.hdmi_print("%s\n" % json.loads(message)["details"])
         return
