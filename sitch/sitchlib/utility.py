@@ -1,6 +1,6 @@
 """General utilities."""
 
-from __future__ import print_function
+# from __future__ import print_function
 
 import datetime
 import dateutil.parser as du_parser
@@ -238,8 +238,8 @@ class Utility:
     def create_gmaps_link(cls, lat, lon):
         return ("https://www.google.com/maps/search/?api=1&query=%s,%s" % (lat, lon))  # NOQA
 
-    @classmethod
-    def hdmi_print(cls, message):
-        with open('/dev/tty1', 'w') as ttyfile:
-            print(message, file=ttyfile)
-        return
+#     @classmethod
+#    def hdmi_print(cls, message):
+#        with open('/dev/tty1', 'w') as ttyfile:
+#            print(message, file=ttyfile)
+#        return
