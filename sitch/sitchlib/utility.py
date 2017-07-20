@@ -23,6 +23,16 @@ class Utility:
         return retval
 
     @classmethod
+    def generate_base_event(cls):
+        base_event = {"site_name": os.getenv('LOCATION_NAME', 'SITCH_SITE'),
+                      "sensor_name": os.getenv('RESIN_DEVICE_NAME_AT_INIT',
+                                               'NOT_RESIN-MANAGED'),
+                      "sensor_id": os.getenv('HOSTNAME', 'NO_HOSTNAME'),
+                      "event_timestamp": cls.get_now_string(),
+                      "event_type": "base_event"}
+        return base_event.copy()
+
+    @classmethod
     def dt_from_iso(cls, iso_time):
         """Exchange an ISO8601-formatted string for a datetime object."""
         return du_parser.parse(iso_time)
@@ -113,7 +123,12 @@ class Utility:
     def get_public_ip(cls):
         """Get public IP."""
         url = 'https://api.ipify.org/?format=json'
-        result = (requests.get(url).json())['ip']
+        try:
+            result = (requests.get(url).json())['ip']
+        except requests.exceptions.ConnectionError:
+            print("Utility: Unable to get public IP from ipify.org.  "
+                  "Set to 127.0.0.1")
+            result = "127.0.0.1"
         return result
 
     @classmethod
@@ -170,7 +185,12 @@ class Utility:
     @classmethod
     def hex_to_dec(cls, hx):
         """Change hex to decimal."""
-        integer = int(hx, 16)
+        try:
+            integer = int(str(hx), 16)
+        except Exception as e:
+            print("Unable to convert %s to an integer" % str(hx))
+            print e
+            integer = 0
         return str(integer)
 
     @classmethod
@@ -181,7 +201,7 @@ class Utility:
         return dest_file_name
 
     @classmethod
-    def get_performance_metrics(cls, queue_sizes={}):
+    def get_performance_metrics(cls, application_uptime_s, queue_sizes={}):
         """Get sensor hardware and os performance statistics."""
         retval = {}
         retval["queue_sizes"] = queue_sizes
@@ -197,4 +217,21 @@ class Utility:
                          "swap_percent_used": psutil.swap_memory().percent}
         retval["root_vol"] = psutil.disk_usage('/').percent
         retval["data_vol"] = psutil.disk_usage('/data/').percent
+        retval["application_uptime_seconds"] = application_uptime_s
         return retval
+
+    @classmethod
+    def validate_geojson(cls, geojson):
+        """Ensure that geojson contains the right fields"""
+        valid = True
+        if len(geojson["coordinates"]) != 2:
+            valid = False
+        elif "type" not in geojson:
+            valid = False
+        elif geojson["type"] != "Point":
+            valid = False
+        return valid
+
+    @classmethod
+    def create_gmaps_link(cls, lat, lon):
+        return ("https://www.google.com/maps/search/?api=1&query=%s,%s" % (lat, lon))  # NOQA

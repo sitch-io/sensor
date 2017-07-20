@@ -32,7 +32,9 @@ class GeoIp(object):
         while True:
             self.set_ip
             self.set_geo
-            yield copy.deepcopy(self.geo)
+            result = copy.deepcopy(self.geo)
+            result["event_timestamp"] = Utility.get_now_string()
+            yield result
             time.sleep(self.delay)
 
     def set_ip(self):
@@ -49,11 +51,11 @@ class GeoIp(object):
             lat_lon = match.location
             self.geo = {"scan_program": "geo_ip",
                         "type": "Feature",
-                        "geometry": {
+                        "location": {
                            "type": "Point",
                            "coordinates": [
-                               lat_lon[1],
-                               lat_lon[0]]}}
+                               float(lat_lon[1]),
+                               float(lat_lon[0])]}}
             return
         except:
             print("GeoIP: Unable to set geo by IP: %s" % self.ip)

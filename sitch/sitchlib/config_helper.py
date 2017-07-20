@@ -19,12 +19,16 @@ class ConfigHelper:
         Args:
             sitch_var_base_dir (str): Base directory for feed and log data.
         """
+        self.base_event = utility.generate_base_event()
         self.detector = dd()
+        self.db_schemas = self.get_db_schemas()
+        self.db_translate_schemas = self.get_db_schema_translations()
         self.print_devices_as_detected()
-        self.device_id = ConfigHelper.get_device_id()
+        self.device_id = self.base_event["sensor_id"]
         self.feed_radio_targets = self.get_list_from_env("FEED_RADIO_TARGETS")
-        self.site_name = os.getenv('LOCATION_NAME', 'SITCH_SITE')
-        self.platform_name = utility.get_platform_name()
+        self.site_name = self.base_event["site_name"]
+        self.sensor_name = self.base_event["sensor_name"]
+        self.platform_name = os.getenv('RESIN_DEVICE_TYPE', 'NOT_RESIN-MANAGED')  # NOQA
         self.log_prefix = os.path.join(sitch_var_base_dir, "log/")
         self.log_host = ConfigHelper.get_from_env("LOG_HOST")
         self.log_method = "local_file"
@@ -102,6 +106,18 @@ class ConfigHelper:
         with open(filename, 'r') as template_file:
             return json.load(template_file)
 
+    @classmethod
+    def get_db_schemas(cls, filename="/etc/schemas/feed_db_schema.yaml"):
+        """Get the feed DB schemas from file."""
+        with open(filename, 'r') as schema_file:
+            return yaml.load(schema_file)
+
+    @classmethod
+    def get_db_schema_translations(cls, filename="/etc/schemas/feed_db_translation.yaml"):  # NOQA
+        """Get the feed DB schema translations from file."""
+        with open(filename, 'r') as translate_file:
+            return yaml.load(translate_file)
+
     def write_filebeat_config(self):
         """Write out filebeat config to file."""
         fb = self.filebeat_template
@@ -109,7 +125,7 @@ class ConfigHelper:
         fb["output.logstash"]["ssl.key"] = self.ls_key_path
         fb["output.logstash"]["ssl.certificate"] = self.ls_cert_path
         fb["output.logstash"]["ssl.certificate_authorities"] = [self.ls_ca_path]  # NOQA
-        fb["filebeat.registry_file"] = os.path.join(self.log_prefix, "fb_registry")
+        fb["filebeat.registry_file"] = os.path.join(self.log_prefix, "fb_registry")  # NOQA
         fb = self.set_filebeat_logfile_paths(self.log_prefix, fb)
         with open(self.filebeat_config_file_path, 'w') as out_file:
             yaml.safe_dump(fb, out_file)
@@ -126,18 +142,6 @@ class ConfigHelper:
                 working_paths.append(os.path.join(log_prefix, w_path))
             prospector["paths"] = working_paths
         return filebeat_config
-
-    @classmethod
-    def get_device_id(cls):
-        """Get device ID from env var."""
-        device_id = "WHOKNOWS"
-        resin = os.getenv('RESIN_DEVICE_NAME_AT_INIT', '')
-        override = os.getenv('LOCATION_NAME', '')
-        for x in [resin, override]:
-            if x != '':
-                device_id = x
-                print("Configurator: Detected device_id: %s" % x)
-        return device_id
 
     def get_secret_from_vault(self):
         """Retrieve secrets from Vault."""

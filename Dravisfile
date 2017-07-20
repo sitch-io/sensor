@@ -1,0 +1,13 @@
+FROM debian:jessie
+MAINTAINER http://sitch.io
+
+# This is just to regularly test the package version pins
+
+COPY apt-install /apt-install
+COPY requirements.txt /requirements.txt
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    `cat /apt-install`
+
+RUN pip install -r /requirements.txt

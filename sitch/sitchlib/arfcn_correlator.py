@@ -1,9 +1,8 @@
 """ARFCN Correlator."""
 
-import LatLon
 import alert_manager
-from fcc_feed import FccFeed
-from string import Template
+import os
+import sqlite3
 from utility import Utility
 
 
@@ -14,13 +13,11 @@ class ArfcnCorrelator(object):
     instantiating the ArfcnCorrelator.
     """
 
-    def __init__(self, states, feed_dir, whitelist, power_threshold, device_id):
+    def __init__(self, feed_dir, whitelist, power_threshold, device_id):
         """Initializing the ArfcnCorrelator.
 
         Args:
-            states (list): A list of US state postal codes: ["CA", "TX"]
-            feed_dir (str): This is the directory path to the directory
-                containing the feed files.
+            arfcn_db (str): Full path to the ARFCN database.
             whitelist (list): This is a list of ARFCNs that should be
                 considered trustworthy enough to skip feed comparison.
                 This does not override comparison against threshold.
@@ -30,11 +27,10 @@ class ArfcnCorrelator(object):
                 determination on whether or not to fire an alarm.
         """
         self.alerts = alert_manager.AlertManager(device_id)
-        self.geo_state = {"geometry": {"coordinates": [0, 0]}}
+        self.geo_state = {"type": "Point", "coordinates": [0, 0]}
         self.feed_dir = feed_dir
-        self.states = states
+        self.arfcn_db = os.path.join(feed_dir, "arfcn.db")
         self.power_threshold = float(power_threshold)
-        self.fcc_feed = FccFeed(states, feed_dir)
         self.observed_arfcn = whitelist
         self.arfcn_threshold = []
         self.arfcn_range = []
@@ -58,21 +54,31 @@ class ArfcnCorrelator(object):
         scan_type = scan_bolus[0]
         scan = scan_bolus[1]
         if scan_type == "gps":
-            self.geo_state = scan
+            self.geo_state = scan["location"]
         arfcn = ArfcnCorrelator.arfcn_from_scan(scan_type, scan)
         if scan_type == "kal_channel":
+            scan_bolus[1]["location"] = self.geo_state
+            retval.append(scan_bolus)
             if self.arfcn_over_threshold(scan["power"]):
-                message = "ARFCN %s over threshold at %s.  Observed: %s" % (
+                message = "ARFCN %s over threshold at %s / %s. Observed: %s" % (  # NOQA
                           scan["channel"],
                           scan["site_name"],
+                          scan["sensor_name"],
                           scan["power"])
-                alert = self.alerts.build_alert(200, message)
+                alert = self.alerts.build_alert(200, message, self.geo_state)
+                alert[1]["site_name"] = scan["site_name"]
+                alert[1]["sensor_name"] = scan["sensor_name"]
+                alert[1]["sensor_id"] = scan["sensor_id"]
                 retval.append(alert)
                 self.manage_arfcn_lists("in", arfcn, "threshold")
             else:
                 self.manage_arfcn_lists("out", arfcn, "threshold")
-        feed_alerts = self.compare_arfcn_to_feed(arfcn)
+        feed_alerts = self.compare_arfcn_to_feed(arfcn, scan["site_name"],
+                                                 scan["sensor_name"])
         for feed_alert in feed_alerts:
+            feed_alert[1]["site_name"] = scan["site_name"]
+            feed_alert[1]["sensor_name"] = scan["sensor_name"]
+            feed_alert[1]["sensor_id"] = scan["sensor_id"]
             retval.append(feed_alert)
         self.observed_arfcn.append(arfcn)
         return retval
@@ -122,7 +128,7 @@ class ArfcnCorrelator(object):
         else:
             return False
 
-    def compare_arfcn_to_feed(self, arfcn):
+    def compare_arfcn_to_feed(self, arfcn, site_name, sensor_name):
         """Wrap other functions that dig into the FCC license DB.
 
         This relies on the observed_arfcn instance variable for caching, to
@@ -141,15 +147,16 @@ class ArfcnCorrelator(object):
         # If we can't compare geo, have ARFCN 0 or already been found in feed:
         if (str(arfcn) in ["0", None] or
                 arfcn in self.observed_arfcn or
-                self.geo_state == {"geometry": {"coordinates": [0, 0]}}):
+                self.geo_state["coordinates"] == [0, 0]):
             return results
         else:
             msg = "ArfcnCorrelator: Cache miss on ARFCN %s" % str(arfcn)
             print(msg)
-        results.extend(self.feed_alert_generator(arfcn))
+        results.extend(self.feed_alert_generator(arfcn, site_name,
+                                                 sensor_name))
         return results
 
-    def feed_alert_generator(self, arfcn):
+    def feed_alert_generator(self, arfcn, site_name, sensor_name):
         """Wrap the yield_arfcn_from_feed function, and generates alerts.
 
         Args:
@@ -160,18 +167,14 @@ class ArfcnCorrelator(object):
             list: This returns a list of alert tuples.
         """
         results = []
-        for item in ArfcnCorrelator.yield_arfcn_from_feed(arfcn, self.states,
-                                                          self.feed_dir):
-            item_gps = self.assemble_gps(item)
-            if self.is_in_range(item_gps, self.geo_state):
-                self.manage_arfcn_lists("out", arfcn, "not_in_range")
-                return results
         if arfcn is None:
             return results
-        msg = "Unable to locate a license for ARFCN %s" % str(arfcn)
-        self.manage_arfcn_lists("in", arfcn, "not_in_range")
-        alert = self.alerts.build_alert(400, msg)
-        results.append(alert)
+        if not self.match_arfcn_against_feed(arfcn, self.geo_state):
+            msg = "Unable to locate a license for ARFCN %s at %s / %s" % (
+                str(arfcn), site_name, sensor_name)
+            self.manage_arfcn_lists("in", arfcn, "not_in_range")
+            alert = self.alerts.build_alert(400, msg, self.geo_state)
+            results.append(alert)
         return results
 
     @classmethod
@@ -189,39 +192,45 @@ class ArfcnCorrelator(object):
         if scan_type == "kal_channel":
             return scan_doc["arfcn_int"]
         elif scan_type == "gsm_modem_channel":
-            return scan_doc["arfcn_int"]
+            return scan_doc["arfcn"]
+        elif scan_type == "cell":
+            return None
+        elif scan_type == "scan":
+            return None
         elif scan_type == "gps":
             return None
         else:
             print("ArfcnCorrelator: Unknown scan type: %s" % str(scan_type))
             return None
 
-    @classmethod
-    def yield_arfcn_from_feed(cls, arfcn, states, feed_dir):
-        """Iterate over the feed files, yielding licenses for target ARFCN.
+    def match_arfcn_against_feed(self, arfcn, state_gps):
+        """Get a match for the ARFCN within range of the sensor.
 
         Args:
-            arfcn (str): Target ARFCN.
-            states (list): List of US state postal codes, corresponding to
-                feed files.
-            feed_dir (str): Base directory for feed files.
+            arfcn (str): Absolute Radio Frequency Channel Number
 
-        Yields:
-            dict: Feed row for ARFCN
+        Returns:
+            bool: True if there is an ARFCN in range, False if not.
         """
-        fcc_feed = FccFeed(states, feed_dir)
-        for item in fcc_feed:
-            if str(item["ARFCN"]) != str(arfcn):
-                continue
-            else:
-                yield item
-        return
+        result = False
+        conn = sqlite3.connect(self.arfcn_db)
+        c = conn.cursor()
+        clean_arfcn = str(arfcn)
+        c.execute("SELECT arfcn, carrier, lon, lat FROM arfcn WHERE arfcn=?", (clean_arfcn, ))  # NOQA
+        for result in c.fetchall():
+            test_set = {"arfcn": result[0], "carrier": result[1],
+                        "lon": result[2], "lat": result[3]}
+            if self.is_in_range(test_set, state_gps):
+                result = True
+                conn.close()
+                break
+        return result
 
     @classmethod
     def is_in_range(cls, item_gps, state_gps):
         """Return True if items are within 40km."""
-        state_gps_lat = state_gps["geometry"]["coordinates"][1]
-        state_gps_lon = state_gps["geometry"]["coordinates"][0]
+        state_gps_lat = state_gps["coordinates"][1]
+        state_gps_lon = state_gps["coordinates"][0]
         max_range = 40000  # 40km
         state_lon = state_gps_lon
         state_lat = state_gps_lat
@@ -233,24 +242,3 @@ class ArfcnCorrelator(object):
             return False
         else:
             return True
-
-    @classmethod
-    def assemble_latlon(cls, item):
-        """Assemble feed lat/lon into a haversine-parseable format."""
-        lat_tmpl = Template('$LOC_LAT_DEG $LOC_LAT_MIN $LOC_LAT_SEC $LOC_LAT_DIR')  # NOQA
-        long_tmpl = Template('$LOC_LONG_DEG $LOC_LONG_MIN $LOC_LONG_SEC $LOC_LONG_DIR')  # NOQA
-        return(lat_tmpl.substitute(item), long_tmpl.substitute(item))
-
-    @classmethod
-    def assemble_gps(cls, item):
-        """Assemble lat/lon into a format we can work with."""
-        latlon = {}
-        try:
-            lat, lon = ArfcnCorrelator.assemble_latlon(item)
-            ll = LatLon.string2latlon(lat, lon, "d% %m% %S% %H")
-            latlon["lat"] = ll.to_string('D%')[0]
-            latlon["lon"] = ll.to_string('D%')[1]
-        except:
-            print("ArfcnCorrelator: Unable to compose lat/lon from:")
-            print(str(item))
-        return latlon

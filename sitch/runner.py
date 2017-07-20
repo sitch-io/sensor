@@ -1,5 +1,6 @@
 """This is the main process which runs all threads."""
 
+import datetime
 import sitchlib
 import kalibrate
 import threading
@@ -16,6 +17,8 @@ def main():
     global cgi_correlator_queue
     global geo_correlator_queue
     global gps_location
+    global app_start_time
+    app_start_time = datetime.datetime.now()
     gps_location = {}
     scan_results_queue = deque([])
     message_write_queue = deque([])
@@ -31,39 +34,39 @@ def main():
         while True:
             time.sleep(30)
             print("Runner: Mode is clutch.  Wait cycle...")
+    elif config.mode != 'solo':
+        print("Runner: Writing Filebeat key material...")
+        sitchlib.Utility.create_path_if_nonexistent(config.ls_crypto_base_path)
+        sitchlib.Utility.write_file(config.ls_ca_path,
+                                    config.vault_secrets["ca"])
+        sitchlib.Utility.write_file(config.ls_cert_path,
+                                    config.vault_secrets["crt"])
+        sitchlib.Utility.write_file(config.ls_key_path,
+                                    config.vault_secrets["key"])
+        sitchlib.Utility.write_file("/etc/ssl/certs/logstash-ca.pem",
+                                    config.vault_secrets["ca"])
+        # Write FB config
+        config.write_filebeat_config()
+        # Write logrotate config
+        sitchlib.Utility.write_file("/etc/logrotate.d/sitch",
+                                    config.build_logrotate_config())
+        # Give everything a few seconds to catch up (writing files, etc...)
+        time.sleep(5)
+        # Start cron
+        sitchlib.Utility.start_component("/etc/init.d/cron start")
+    elif config.mode == 'solo':
+        print("Runner: Sensor running in 'solo' mode."
+              "No feed updates, no logs to be shipped or rotated.")
 
     print("Runner: Verify paths for feed and logs...")
     sitchlib.Utility.create_path_if_nonexistent(config.feed_dir)
     sitchlib.Utility.create_path_if_nonexistent(config.log_prefix)
-
-    print("Runner: Writing Filebeat key material...")
-    sitchlib.Utility.create_path_if_nonexistent(config.ls_crypto_base_path)
-    sitchlib.Utility.write_file(config.ls_ca_path,
-                                config.vault_secrets["ca"])
-    sitchlib.Utility.write_file(config.ls_cert_path,
-                                config.vault_secrets["crt"])
-    sitchlib.Utility.write_file(config.ls_key_path,
-                                config.vault_secrets["key"])
-    sitchlib.Utility.write_file("/etc/ssl/certs/logstash-ca.pem",
-                                config.vault_secrets["ca"])
-
-    # Write FB config
-    config.write_filebeat_config()
-
-    # Write logrotate config
-    sitchlib.Utility.write_file("/etc/logrotate.d/sitch",
-                                config.build_logrotate_config())
 
     # Kill interfering driver
     try:
         sitchlib.Utility.start_component("modprobe -r dvb_usb_rtl28xxu")
     except:
         print("Runner: Error trying to unload stock driver")
-
-    # Give everything a few seconds to catch up (writing files, etc...)
-    time.sleep(5)
-    # Start cron
-    sitchlib.Utility.start_component("/etc/init.d/cron start")
 
     print("Runner: Instantiating feed manager...")
     feed_mgr = sitchlib.FeedManager(config)
@@ -137,8 +140,12 @@ def main():
                        "geo_correlator": len(geo_correlator_queue)}
         #  Heartbeat messages
         for item in active_threads:
-            message_write_queue.append(("heartbeat", sitchlib.Utility.heartbeat(item.name)))  # NOQA
-        message_write_queue.append(("health_check", sitchlib.Utility.get_performance_metrics(queue_sizes)))  # NOQA
+            message_write_queue.append(("heartbeat",
+                                        sitchlib.Utility.heartbeat(item.name)))
+        message_write_queue.append(
+            ("health_check",
+             sitchlib.Utility.get_performance_metrics(get_app_uptime(),
+                                                      queue_sizes)))
 
     return
 
@@ -147,6 +154,10 @@ def init_event_injector(init_event):
     """Pass the sitch init into this fn."""
     evt = [("sitch_init"), init_event]
     message_write_queue.append(evt)
+
+
+def get_app_uptime():
+    return ((datetime.datetime.now() - app_start_time).seconds)
 
 
 def gsm_modem_circuit_breaker(band, tty_port):
@@ -180,16 +191,19 @@ def gsm_modem_consumer(config):
         reg_info = consumer.get_reg_info()
         init_event_injector({"evt_cls": "gsm_consumer",
                              "evt_type": "registration",
+                             "event_timestamp": sitchlib.Utility.get_now_string(),  # NOQA
                              "evt_data": str(reg_info)})
         print("Runner: Dumping current GSM modem config...")
         dev_config = consumer.dump_config()
         init_event_injector({"evt_cls": "gsm_consumer",
                              "evt_type": "device_config",
+                             "event_timestamp": sitchlib.Utility.get_now_string(),  # NOQA
                              "evt_data": " | ".join(dev_config)})
         print("Runner: Getting IMSI from SIM...")
         imsi = consumer.get_imsi()
         init_event_injector({"evt_cls": "gsm_consumer",
                              "evt_type": "sim_imsi",
+                             "event_timestamp": sitchlib.Utility.get_now_string(),  # NOQA
                              "evt_data": str(imsi)})
         time.sleep(2)
         consumer.set_band(band)
@@ -207,17 +221,24 @@ def gsm_modem_consumer(config):
             retval = dict(scan_job_template)
             retval["scan_results"] = report
             retval["scan_finish"] = sitchlib.Utility.get_now_string()
-            retval["scan_location"] = str(config.device_id)
-            retval["scan_program"] = "GSM_MODEM"
+            retval["scan_program"] = "gsm_modem"
             retval["band"] = config.gsm_modem_band
             retval["scanner_public_ip"] = config.public_ip
             retval["site_name"] = config.site_name
+            retval["sensor_id"] = config.device_id
+            retval["sensor_name"] = config.sensor_name
+            retval["event_timestamp"] = retval["scan_finish"]
             processed = retval.copy()
             scan_results_queue.append(processed)
 
 
 def gps_consumer(config):
     """Take events from gpsd, put them in queue."""
+    if config.mode == "solo":
+        gps_delay = 5
+        print("Runner: Setting GPS delay to 5s for 'solo' mode operation.")
+    else:
+        gps_delay = 120
     global gps_location
     print("Runner: Starting GPS Consumer")
     print("Runner: gpsd configured for %s" % config.gps_device_port)
@@ -228,8 +249,11 @@ def gps_consumer(config):
     time.sleep(10)
     while True:
         try:
-            gps_listener = sitchlib.GpsListener(delay=120)
+            gps_listener = sitchlib.GpsListener(delay=gps_delay)
             for fix in gps_listener:
+                fix["site_name"] = config.site_name
+                fix["sensor_id"] = config.device_id
+                fix["sensor_name"] = config.sensor_name
                 scan_results_queue.append(fix)
         except IndexError:
             time.sleep(3)
@@ -264,7 +288,7 @@ def kalibrate_consumer(config):
                              "scan_start": "",
                              "scan_finish": "",
                              "scan_program": "",
-                             "scan_location": {}}
+                             "scan_location": ""}
         band = config.kal_band
         if band == "nope":
             disable_scanner({"evt_cls": "kalibrate_consumer",
@@ -279,19 +303,21 @@ def kalibrate_consumer(config):
         scan_document["scan_start"] = start_time
         scan_document["scan_finish"] = end_time
         scan_document["scan_results"] = kal_results
-        scan_document["scan_program"] = "Kalibrate"
-        scan_document["scanner_name"] = config.device_id
-        scan_document["scan_location"] = str(config.device_id)
-        scan_document["site_name"] = config.site_name,
+        scan_document["scan_program"] = "kalibrate"
+        # scan_document["scanner_name"] = config.device_id
+        # scan_document["scan_location"] = str(config.device_id)
+        scan_document["site_name"] = config.site_name
+        scan_document["sensor_id"] = config.device_id
+        scan_document["sensor_name"] = config.sensor_name
         scan_document["scanner_public_ip"] = config.public_ip
+        scan_document["event_timestamp"] = end_time
         scan_results_queue.append(scan_document.copy())
     return
 
 
 def arfcn_correlator(config):
     """ARFCN correlator thread."""
-    correlator = sitchlib.ArfcnCorrelator(config.state_list,
-                                          config.feed_dir,
+    correlator = sitchlib.ArfcnCorrelator(config.feed_dir,
                                           config.arfcn_whitelist,
                                           config.kal_threshold,
                                           config.device_id)
@@ -331,7 +357,7 @@ def geo_correlator(config):
             item = geo_correlator_queue.popleft()
             alarms = correlator.correlate(item)
             if len(alarms) > 0:
-                message_write_queue.extend(alarms.copy())
+                message_write_queue.extend(alarms)
         except IndexError:
             # Queue must be empty...
             time.sleep(1)
@@ -340,12 +366,18 @@ def geo_correlator(config):
 def decomposer(config):
     """Decompose all scans we get from devices.
 
-    Expected types:
-        * `scan` (Kalibrate)
-        * `kal_channel` (channel extracted from Kalibrate scan)
+    Expected input data structure types:
+        * `kalibrate`
+        * `gsm_modem`
+        * `geo_ip`
+        * `gpsd`
+    Output data structure types:
+        * `scan` (kalibrate)
+        * `kal_channel` (channel extracted from kalibrate scan)
         * `cell` (full scan from cellular radio)
         * `gsm_modem_channel` (channel extracted from GSM modem output)
         * `gps` (output from gpsd)
+        * `geo_ip` (Pass-through, pretty much unmodified)
     """
     d_composer = sitchlib.Decomposer
     while True:
@@ -361,17 +393,21 @@ def decomposer(config):
                         message_write_queue.append(result)
                     elif s_type == "kal_channel":
                         arfcn_correlator_queue.append(result)
-                        message_write_queue.append(result)
+                        # message_write_queue.append(result)
                     elif s_type == "cell":
-                        message_write_queue.append(result)
+                        # message_write_queue.append(result)
+                        cgi_correlator_queue.append(result)
                     elif s_type == "gsm_modem_channel":
                         cgi_correlator_queue.append(result)
                         arfcn_correlator_queue.append(result)
-                        message_write_queue.append(result)
+                        # message_write_queue.append(result)
                     elif s_type == "gps":
                         arfcn_correlator_queue.append(result)
                         cgi_correlator_queue.append(result)
                         message_write_queue.append(result)
+                        #  If we're not in 'solo' mode, correlate geo drift
+                        if config.mode != 'solo':
+                            geo_correlator_queue.append(result)
                     elif s_type == "geo_ip":
                         message_write_queue.append(result)
                     else:
