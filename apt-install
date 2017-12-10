@@ -1,5 +1,4 @@
 expect=5.45-6
-git=1:2.1.4-2.1+deb8u5
 logrotate=3.8.7-1+b1
 gcc=4:4.9.2-2
 gpsd=3.11-3
