@@ -25,10 +25,6 @@ COPY binaries/kal-linux-arm /usr/local/bin/
 
 # Place Filebeat
 COPY binaries/filebeat-linux-arm /usr/local/bin
-ADD https://raw.githubusercontent.com/elastic/beats/master/LICENSE /filebeat-lic
-
-# Get Kalibrate source for posterity
-ADD https://github.com/hainn8x/kalibrate-rtl/archive/master.zip /app/source
 
 # Place the Logstash init script
 # COPY init/logstash-forwarder /etc/init.d/
