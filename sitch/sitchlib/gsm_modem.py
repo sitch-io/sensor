@@ -51,6 +51,8 @@ class GsmModem(object):
             processed_line = self.process_line(line)
             if line is None:
                 pass
+            elif processed_line is None:
+                pass
             elif processed_line == {}:
                 pass
             elif "cell" in processed_line:
@@ -202,7 +204,7 @@ class GsmModem(object):
                 processed = GsmModem.process_8(line_parts)
             else:
                 print("GSM: Unrecognized GSM message format:")
-                print(line_parts)
+                print(line)
         elif line.startswith('AT+'):
             processed = {}
         elif re.match('^\s*$', line):

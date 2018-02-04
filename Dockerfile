@@ -26,9 +26,6 @@ COPY binaries/kal-linux-arm /usr/local/bin/
 # Place Filebeat
 COPY binaries/filebeat-linux-arm /usr/local/bin
 
-# Place the Logstash init script
-# COPY init/logstash-forwarder /etc/init.d/
-
 # Place config templates
 RUN mkdir -p /etc/templates
 COPY configs/filebeat.json /etc/templates
