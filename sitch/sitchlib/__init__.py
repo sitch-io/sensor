@@ -15,4 +15,4 @@ from cgi_correlator import CgiCorrelator  # NOQA
 from geo_correlator import GeoCorrelator  # NOQA
 
 __author__ = "Ash Wilson"
-__version__ = "3.7.3"
+__version__ = "4.0"
