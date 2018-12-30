@@ -1,4 +1,4 @@
-psutil==5.0.1
+psutil==5.4.8
 pyserial==3.2.1
 pyyaml==3.12
 gps3==0.33.3
