@@ -3,7 +3,7 @@ pyserial==3.2.1
 pyyaml==3.12
 gps3==0.33.3
 hvac==0.2.16
-kalibrate==1.1.2
+kalibrate==2.1.0
 haversine==0.4.5
 python-dateutil==2.6.0
 python-geoip==1.2
