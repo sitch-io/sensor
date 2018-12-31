@@ -27,6 +27,7 @@ jobs:
               echo "    StrictHostKeyChecking no" >> ~/.ssh/config;
               echo "    IdentityFile ~/.ssh/resin_deploy" >> ~/.ssh/config;
               git remote add testing ${RESIN_TESTING_REMOTE};
+              git fetch --unshallow origin;
               git push --force testing test:master; fi
 after_success:
 - codeclimate-test-reporter --token $CODECLIMATE_REPO_TOKEN
