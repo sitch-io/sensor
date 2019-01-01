@@ -2,7 +2,7 @@ psutil==5.0.1
 pyserial==3.2.1
 pyyaml==3.12
 gps3==0.33.3
-hvac==0.2.16
+hvac==0.7.2
 kalibrate==1.1.2
 haversine==0.4.5
 python-dateutil==2.6.0
