@@ -47,13 +47,13 @@ class TestIntegrationFeedSchemaTranslator:
     def test_feed_schema_translate_fcc(self):
         row = {"ARFCN": "12345",
                "COMMON_NAME": "Elseweyr Communications",
-               "LOC_LAT_DEG": "90",
-               "LOC_LAT_MIN": "90",
-               "LOC_LAT_SEC": "90",
+               "LOC_LAT_DEG": "35",
+               "LOC_LAT_MIN": "1",
+               "LOC_LAT_SEC": "6.2796",
                "LOC_LAT_DIR": "N",
-               "LOC_LONG_DEG": "45",
-               "LOC_LONG_MIN": "45",
-               "LOC_LONG_SEC": "45",
+               "LOC_LONG_DEG": "85",
+               "LOC_LONG_MIN": "1",
+               "LOC_LONG_SEC": "34.0032",
                "LOC_LONG_DIR": "W",
                "LEAVE_ME": "BEHIND"}
         schema = self.get_schemas_from_file()["fcc"]
@@ -61,4 +61,4 @@ class TestIntegrationFeedSchemaTranslator:
         result = translator.translate_row(row)
         assert "LEAVE_ME" not in result
         assert len(result) == 4
-        assert result["lat"] == "91.525"
+        assert result["lat"] == "35.018411"
