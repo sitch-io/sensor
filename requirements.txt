@@ -5,7 +5,6 @@ geopy==1.18.1
 gps3==0.33.3
 hvac==0.7.1
 kalibrate==2.1.0
-haversine==2.0.0
 python-dateutil==2.7.5
 python-geoip==1.2
 python-geoip-geolite2==2015.303
