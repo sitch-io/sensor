@@ -1,7 +1,7 @@
 """Location tools library."""
 
 from geoip import geolite2
-from haversine import haversine
+from geopy.distance import great_circle
 
 
 class LocationTool(object):
@@ -67,5 +67,5 @@ class LocationTool(object):
         else:
             point_1 = (float(point_1[0]), float(point_1[1]))
             point_2 = (float(point_2[0]), float(point_2[1]))
-            distance = haversine(point_1, point_2)
+            distance = great_circle(point_1, point_2).kilometers
         return distance
