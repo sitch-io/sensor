@@ -63,7 +63,7 @@ Testing is done with pytest.  Coverage module optional.
 Testing requirements (local testing possible only on Linux):
 * lshw
 * pip packages: pytest-cov pytest-pep8 pyserial hvac kalibrate haversine
-python-geoip python-geoip-geolite2 pyudev gps3 LatLon python-dateutil
+python-geoip python-geoip-geolite2 pyudev gps3 geopy python-dateutil
 
 
 1. Navigate to the base directory of the repository.
