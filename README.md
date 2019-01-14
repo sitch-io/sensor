@@ -87,6 +87,12 @@ This repository contains pre-built binaries for Filebeat and Kalibrate.  The
 licenses which apply to these two tools can be found
 [here](./filebeat-license.txt) and [here](./kalibrate-license.txt), respectively.
 
+Building the Docker container will cause the retrieval of the MaxMind GeoLite2
+database...
+
+This product includes GeoLite2 data created by MaxMind, available from
+https://www.maxmind.com
+
 ## Contributing
 
 * Please do PRs against the `test` branch.

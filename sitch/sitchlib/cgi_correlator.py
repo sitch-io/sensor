@@ -2,8 +2,8 @@
 
 import os
 import sqlite3
-import alert_manager
-from utility import Utility
+from . import alert_manager
+from .utility import Utility
 
 
 class CgiCorrelator(object):

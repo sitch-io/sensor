@@ -9,8 +9,8 @@ import requests
 import sqlite3
 import time
 from datetime import datetime
-from feed_schema_translator import FeedSchemaTranslator
-from utility import Utility
+from .feed_schema_translator import FeedSchemaTranslator
+from .utility import Utility
 
 
 class FeedManager(object):
@@ -186,7 +186,7 @@ class FeedManager(object):
             str: Most recent timestamp from merge.
         """
         newest_ts_overall = float(0)  # Newest timestamp
-        db_type = db_schema.items()[0][0]
+        db_type = list(db_schema.items())[0][0]
         cls.create_db(db_file, db_schema)
         for feed_file in feed_files:
             feed_file_exists = os.path.isfile(feed_file)
@@ -238,12 +238,12 @@ class FeedManager(object):
         rows_written = 0
         rows_examined = 0
         latest_timestamp = float(0)
-        db_type = db_schema.items()[0][0]
+        db_type = list(db_schema.items())[0][0]
         translator = FeedSchemaTranslator(db_translate_schema)
         print("FeedManager: DB Type: %s" % db_type)
         db_fields = db_schema[db_type]["fields"]
         print("FeedManager: DB Fields: %s" % str(db_fields))
-        with gzip.open(feed_file, 'r') as f_file:
+        with gzip.open(feed_file, 'rt') as f_file:
             feed = csv.DictReader(f_file)
             for row in feed:
                 rows_examined += 1
@@ -270,12 +270,12 @@ class FeedManager(object):
                     cls.mass_insert(db_type, db_fields, proc_chunk, db_file)
                     rows_written += len(proc_chunk)
                     msg = "FeedManager: %s rows written to %s" % (str(rows_written), db_file)  # NOQA
-                    print msg
+                    print(msg)
                     proc_chunk = []
         cls.mass_insert(db_type, db_fields, proc_chunk, db_file)
         rows_written += len(proc_chunk)
         msg = "FeedManager: %s rows examined in %s, %s written to %s. Done." % (str(rows_examined), feed_file, str(rows_written), db_file)  # NOQA
-        print msg
+        print(msg)
         return latest_timestamp
 
     @classmethod
@@ -290,7 +290,7 @@ class FeedManager(object):
 
         """
         conn = sqlite3.connect(db_file)
-        field_qmarks = ",".join(["?" for x in xrange(len(fields))])
+        field_qmarks = ",".join(["?" for x in range(len(fields))])
         insert_string = "INSERT INTO %s VALUES (%s)" % (table, field_qmarks)
         conn.executemany(insert_string, rows)
         conn.commit()
@@ -384,7 +384,7 @@ class FeedManager(object):
         Args:
             db_schema (dict): Dictionary describing the DB schema
         """
-        table_name = db_schema.keys()[0]
+        table_name = list(db_schema.keys())[0]
         fields_list = db_schema[table_name]["fields"]
         create_table = "create table %s" % table_name
         fields = " varchar, ".join(fields_list) + " varchar,"  # NOQA

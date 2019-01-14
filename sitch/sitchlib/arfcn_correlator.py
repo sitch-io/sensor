@@ -1,9 +1,9 @@
 """ARFCN Correlator."""
 
-import alert_manager
+from . import alert_manager
 import os
 import sqlite3
-from utility import Utility
+from .utility import Utility
 
 
 class ArfcnCorrelator(object):

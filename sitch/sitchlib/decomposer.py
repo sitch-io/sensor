@@ -1,9 +1,9 @@
 """Decomposer class wraps device message decomposers."""
 
-from gps_decomposer import GpsDecomposer
-from gsm_decomposer import GsmDecomposer
-from kal_decomposer import KalDecomposer
-from geoip_decomposer import GeoipDecomposer
+from .gps_decomposer import GpsDecomposer
+from .gsm_decomposer import GsmDecomposer
+from .kal_decomposer import KalDecomposer
+from .geoip_decomposer import GeoipDecomposer
 
 
 class Decomposer(object):

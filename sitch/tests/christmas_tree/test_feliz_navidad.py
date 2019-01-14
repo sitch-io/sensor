@@ -11,8 +11,8 @@ modulepath = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                           "../../")
 feedpath = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                         "../fixture/feed/")
-file, pathname, description = imp.find_module(modulename, [modulepath])
-sitchlib = imp.load_module(modulename, file, pathname, description)
+
+import sitchlib
 
 
 states = ["CA"]
@@ -67,20 +67,19 @@ class TestFelizNavidad:
         cgi_results = []
         for g in gsm_decomp:
             self.message_has_base_attributes(g)
-            # print g
             cgi_results.extend(cgi_correlator.correlate(g))
         print("CGI Results")
         for c in cgi_results:
             self.message_has_base_attributes(c)
-            print c
+            print(c)
         assert len(cgi_results) == 12
         print("GEO Results")
         for g in geo_results:
             self.message_has_base_attributes(g)
-            print g
+            print(g)
         assert len(geo_results) == 1  # 1 alert for delta being over threshold
         print("ARFCN Results")
         for a in arfcn_results:
             self.message_has_base_attributes(a)
-            print a
+            print(a)
         assert len(arfcn_results) == 8

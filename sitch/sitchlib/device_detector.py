@@ -3,7 +3,7 @@
 import pyudev
 import serial
 import time
-from utility import Utility
+from .utility import Utility
 
 
 class DeviceDetector(object):
