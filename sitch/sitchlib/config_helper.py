@@ -6,8 +6,8 @@ import os
 import pprint
 import sys
 import yaml
-from device_detector import DeviceDetector as dd
-from utility import Utility as utility
+from .device_detector import DeviceDetector as dd
+from .utility import Utility as utility
 
 
 class ConfigHelper:

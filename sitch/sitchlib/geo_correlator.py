@@ -1,7 +1,7 @@
 """Correlate based on geograpgic information."""
 
-from alert_manager import AlertManager
-from utility import Utility
+from .alert_manager import AlertManager
+from .utility import Utility
 
 
 class GeoCorrelator(object):

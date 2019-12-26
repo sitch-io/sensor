@@ -12,7 +12,7 @@ modulepath = os.path.join(os.path.dirname(os.path.abspath(__file__)),
 file, pathname, description = imp.find_module(modulename, [modulepath])
 sitchlib = imp.load_module(modulename, file, pathname, description)
 
-schemas = (os.path.join(modulepath, "../configs/feed_db_translation.yaml"))
+schemas = "/etc/schemas/feed_db_translation.yaml"
 
 
 class TestIntegrationFeedSchemaTranslator:

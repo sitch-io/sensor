@@ -1,7 +1,7 @@
 """GPS device wrapper."""
 
 from gps3 import gps3
-from utility import Utility
+from .utility import Utility
 import copy
 import time
 

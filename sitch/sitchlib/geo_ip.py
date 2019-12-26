@@ -2,9 +2,10 @@
 
 import copy
 import time
-from utility import Utility
-from geoip import geolite2
+from .utility import Utility
+import geoip2.database
 
+GEO_DB_LOCATION = "/var/mmdb//GeoLite2-City.mmdb"  # NOQA
 
 class GeoIp(object):
     """Generate GeoIP events."""
@@ -19,6 +20,7 @@ class GeoIp(object):
         self.ip = ""
         self.geo = {}
         self.delay = delay
+        self.reader = geoip2.database.Reader(GEO_DB_LOCATION)
         self.set_ip()
         self.set_geo()
         return
@@ -46,7 +48,7 @@ class GeoIp(object):
 
     def set_geo(self):
         """Use public IP to determine GeoIP."""
-        match = geolite2.lookup(self.ip)
+        match = self.reader.city(self.ip)
         try:
             lat_lon = match.location
             self.geo = {"scan_program": "geo_ip",
@@ -54,9 +56,11 @@ class GeoIp(object):
                         "location": {
                            "type": "Point",
                            "coordinates": [
-                               float(lat_lon[1]),
-                               float(lat_lon[0])]}}
+                               float(lat_lon.longitude),
+                               float(lat_lon.latitude)]}}
             return
-        except:
+        except TypeError as e:
+            print(e)
+            print(dir(lat_lon))
             print("GeoIP: Unable to set geo by IP: %s" % self.ip)
             return None

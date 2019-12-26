@@ -19,7 +19,7 @@ class FeedSchemaTranslator(object):
         """
         result = {}
         for field in self.field_maps:
-            sensor_field, feed_field = field.items()[0]
+            sensor_field, feed_field = list(field.items())[0]
             if sensor_field in self.translators:
                 result[sensor_field] = self.translators[sensor_field](row)[sensor_field]  # NOQA
             else:
@@ -31,7 +31,7 @@ class FeedSchemaTranslator(object):
         """Return dict of translators."""
         translators = {}
         for field in fields:
-            sensor_field, feed_field = field.items()[0]
+            sensor_field, feed_field = list(field.items())[0]
             if feed_field == "latlon_fcc":
                 translators[sensor_field] = cls.latlon_trans_fcc
         return translators

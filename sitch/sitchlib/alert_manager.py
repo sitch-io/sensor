@@ -1,5 +1,5 @@
 """Alert Manager."""
-from utility import Utility
+from .utility import Utility
 
 
 class AlertManager(object):

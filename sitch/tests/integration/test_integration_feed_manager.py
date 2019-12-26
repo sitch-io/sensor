@@ -17,8 +17,8 @@ fcc_feed_files = [os.path.join(modulepath, "tests/fixture/feed/CA.csv.gz")]
 tempdir = tempfile.mkdtemp()
 cgi_db = os.path.join(tempdir, "cgi.db")
 arfcn_db = os.path.join(tempdir, "arfcn.db")
-schemas = sitchlib.ConfigHelper.get_db_schemas(os.path.join(modulepath, "../configs/feed_db_schema.yaml"))  # NOQA
-translates = sitchlib.ConfigHelper.get_db_schema_translations(os.path.join(modulepath, "../configs/feed_db_translation.yaml"))  # NOQA
+schemas = sitchlib.ConfigHelper.get_db_schemas("/etc/schemas/feed_db_schema.yaml")  # NOQA
+translates = sitchlib.ConfigHelper.get_db_schema_translations("/etc/schemas/feed_db_translation.yaml")  # NOQA
 
 
 class TestIntegrationFeedManager:
