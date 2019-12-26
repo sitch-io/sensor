@@ -1,12 +1,12 @@
 expect=5.45-6
 logrotate=3.8.7-1+b1
 gcc
-gpsd=3.11-3
-gpsd-clients=3.11-3
+gpsd=3.11-3+deb8u1
+gpsd-clients=3.11-3+deb8u1
 kmod=18-3
 lshw=02.17-1.1
 libfftw3-double3=3.3.4-2
 librtlsdr0=0.5.3-3
-libudev1=215-17+deb8u8
+libudev1=215-17+deb8u13
 tcl=8.6.0+8
 libssl-dev
