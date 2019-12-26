@@ -6,7 +6,7 @@ from . import alert_manager
 from .utility import Utility
 
 
-class CgiCorrelator(object):
+class CgiCorrelator:
     """The CgiCorrelator compares CGI addressing against the OpenCellID DB.
 
     The feed data is put in place by the FeedManager class, prior to
@@ -33,7 +33,6 @@ class CgiCorrelator(object):
         self.cgi_db = os.path.join(feed_dir, "cgi.db")
         self.alarm_140_cache = ""
         print(CgiCorrelator.cgi_whitelist_message(self.cgi_whitelist))
-        return
 
     def correlate(self, scan_bolus):
         """Entrypoint for the CGI correlation component.

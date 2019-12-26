@@ -3,7 +3,7 @@
 from .utility import Utility
 
 
-class GsmDecomposer(object):
+class GsmDecomposer:
     """Decomposes GSM scans."""
 
     @classmethod

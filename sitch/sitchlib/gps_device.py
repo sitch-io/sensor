@@ -6,7 +6,7 @@ import copy
 import time
 
 
-class GpsListener(object):
+class GpsListener:
     """Wrap the GPS device with an iterator."""
 
     def __init__(self, delay=60):

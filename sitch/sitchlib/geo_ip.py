@@ -7,7 +7,7 @@ import geoip2.database
 
 GEO_DB_LOCATION = "/var/mmdb//GeoLite2-City.mmdb"  # NOQA
 
-class GeoIp(object):
+class GeoIp:
     """Generate GeoIP events."""
 
     def __init__(self, delay=60):
