@@ -6,7 +6,7 @@ from .kal_decomposer import KalDecomposer
 from .geoip_decomposer import GeoipDecomposer
 
 
-class Decomposer(object):
+class Decomposer:
     """Decompose device messages into normalized log messages."""
 
     decomp_ref = {"kalibrate": KalDecomposer(),

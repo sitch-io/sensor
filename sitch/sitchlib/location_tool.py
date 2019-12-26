@@ -2,7 +2,7 @@
 from geopy.distance import great_circle
 
 
-class LocationTool(object):
+class LocationTool:
     """Class with location-oriented functions."""
     @classmethod
     def validate_geo(cls, latlon):

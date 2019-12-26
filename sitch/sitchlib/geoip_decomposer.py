@@ -1,7 +1,7 @@
 """Decompose GeoIP Events."""
 
 
-class GeoipDecomposer(object):
+class GeoipDecomposer:
     """GeoIP Decomposer."""
 
     @classmethod

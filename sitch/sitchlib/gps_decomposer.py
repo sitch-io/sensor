@@ -1,7 +1,7 @@
 """Decompose GPS Events."""
 
 
-class GpsDecomposer(object):
+class GpsDecomposer:
     """GPS Decomposer."""
 
     @classmethod

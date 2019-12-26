@@ -1,12 +1,11 @@
 """Device Detector interrogates USB TTY devices."""
-
+import time
 import pyudev
 import serial
-import time
 from .utility import Utility
 
 
-class DeviceDetector(object):
+class DeviceDetector:
     """Interrogate all USB TTY ports.
 
     Attributes:

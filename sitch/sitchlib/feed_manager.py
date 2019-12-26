@@ -13,7 +13,7 @@ from .feed_schema_translator import FeedSchemaTranslator
 from .utility import Utility
 
 
-class FeedManager(object):
+class FeedManager:
     """Manage downloading the feed DB, and merging it into the sqlite DB."""
 
     def __init__(self, config):

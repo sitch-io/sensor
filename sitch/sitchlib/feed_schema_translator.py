@@ -3,7 +3,7 @@ from string import Template
 import geopy
 
 
-class FeedSchemaTranslator(object):
+class FeedSchemaTranslator:
     def __init__(self, schema):
         self.field_maps = schema
         self.translators = self.translators_from_schema(schema)
