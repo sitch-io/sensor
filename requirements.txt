@@ -4,7 +4,7 @@ pyyaml==4.2b1
 geopy==1.18.1
 gps3==0.33.3
 hvac==0.7.1
-kalibrate==2.1.0
+kalibrate==2.2.1
 python-dateutil==2.7.5
 geoip2==2.9.0
 pyudev==0.21.0

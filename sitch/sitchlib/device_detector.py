@@ -106,9 +106,9 @@ class DeviceDetector:
         time.sleep(2)
         serconn = serial.Serial(port, 4800, timeout=1)
         if test_command:
-            serconn.write(test_command)
+            serconn.write(test_command.encode("utf-8"))
         serconn.flush()
-        for i in xrange(10):
+        for i in range(10):
             line = None
             line = serconn.readline()
             if line is None:
@@ -137,6 +137,10 @@ class DeviceDetector:
         """
         match = False
         for m in matchers:
+            if not isinstance(m, bytes):
+                m = m.encode("utf-8")
+            if not isinstance(line, bytes):
+                line = line.encode("utf-8")
             if m in line:
                 match = True
         return match
@@ -177,17 +181,15 @@ class DeviceDetector:
         time.sleep(2)
         serconn = serial.Serial(port, 4800, timeout=1)
         cmd = "%s\r\n" % command
-        serconn.write(cmd)
+        serconn.write(cmd.encode("utf-8"))
         serconn.flush()
-        for i in xrange(10):
+        for i in range(10):
             line = None
             line = serconn.readline()
             if line is None:
                 time.sleep(1)
-                pass
-            elif command in line:
+            elif command.encode("utf-8") in line:
                 time.sleep(1)
-                pass
             else:
                 serconn.flush()
                 serconn.close()

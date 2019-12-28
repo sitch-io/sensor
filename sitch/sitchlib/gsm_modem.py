@@ -46,7 +46,7 @@ class GsmModem:
         page = []
         while True:
             line = None
-            line = self.serconn.readline()
+            line = self.serconn.readline().decode("utf-8")
             processed_line = self.process_line(line)
             if line is None:
                 pass
@@ -77,8 +77,8 @@ class GsmModem:
             print("GsmModem: Unsetting engineering mode, flushing")
             self.serial_write(self.unset_eng)
             while True:
-                output = self.serconn.readline()
-                if output == '':
+                output = self.serconn.readline().decode("utf-8")
+                if output:
                     break
                 else:
                     print(output)
@@ -87,7 +87,7 @@ class GsmModem:
             self.serial_write(self.eng_init)
         self.serconn.flush()
         time.sleep(2)
-        output = self.serconn.readline()
+        output = self.serconn.readline().decode("utf-8")
         print(output)
         self.serconn.flush()
 
@@ -96,9 +96,9 @@ class GsmModem:
         self.serial_write(self.reg_info)
         self.serconn.flush()
         time.sleep(2)
-        output = self.serconn.readline()
+        output = self.serconn.readline().decode("utf-8")
         if "AT+" in output:
-            output = GsmModem.clean_operator_string(self.serconn.readline())
+            output = GsmModem.clean_operator_string(self.serconn.readline().decode("utf-8"))
         print(output)
         self.serconn.flush()
         return output
@@ -110,7 +110,7 @@ class GsmModem:
         time.sleep(2)
         retval = []
         while True:
-            output = self.serconn.readline()
+            output = self.serconn.readline().decode("utf-8")
             if output == '':
                 break
             retval.append(str(output))
@@ -125,7 +125,7 @@ class GsmModem:
         time.sleep(2)
         retval = []
         while True:
-            output = self.serconn.readline()
+            output = self.serconn.readline().decode("utf-8")
             if output == '':
                 break
             if "AT+CIMI" in output:
@@ -163,7 +163,7 @@ class GsmModem:
             self.serial_write(term_command)
             self.serconn.flush()
             time.sleep(2)
-            output = self.serconn.readline()
+            output = self.serconn.readline().decode("utf-8")
             print(output)
             self.serconn.flush()
         else:
