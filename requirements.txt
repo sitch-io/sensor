@@ -1,4 +1,4 @@
-psutil==5.4.8
+psutil==5.7.2
 pyserial==3.4
 pyyaml==4.2b1
 geopy==1.18.1
