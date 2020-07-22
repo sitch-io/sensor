@@ -1,12 +1,12 @@
 """ARFCN Correlator."""
 
-import alert_manager
 import os
 import sqlite3
-from utility import Utility
+from . import alert_manager
+from .utility import Utility
 
 
-class ArfcnCorrelator(object):
+class ArfcnCorrelator:
     """The ArfcnCorrelator compares ARFCN metadata against feeds and threshold.
 
     The feed data is put in place by the FeedManager class, prior to
@@ -34,7 +34,6 @@ class ArfcnCorrelator(object):
         self.observed_arfcn = whitelist
         self.arfcn_threshold = []
         self.arfcn_range = []
-        return
 
     def correlate(self, scan_bolus):
         """Entrypoint for correlation, wraps individual checks.

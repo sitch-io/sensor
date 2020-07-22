@@ -1,0 +1,6 @@
+pytest~=3.6
+pytest-cov
+pytest-pep8
+mock
+codeclimate-test-reporter
+-r requirements.txt

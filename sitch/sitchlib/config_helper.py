@@ -6,8 +6,8 @@ import os
 import pprint
 import sys
 import yaml
-from device_detector import DeviceDetector as dd
-from utility import Utility as utility
+from .device_detector import DeviceDetector as dd
+from .utility import Utility as utility
 
 
 class ConfigHelper:
@@ -71,7 +71,6 @@ class ConfigHelper:
         pp.pprint(self.detector.gsm_radios)
         print("Configurator: Detected GPS devices:")
         pp.pprint(self.detector.gps_devices)
-        return
 
     def get_gsm_modem_port(self):
         """Get GSM modem port from detector, override with env var."""
@@ -129,7 +128,6 @@ class ConfigHelper:
         fb = self.set_filebeat_logfile_paths(self.log_prefix, fb)
         with open(self.filebeat_config_file_path, 'w') as out_file:
             yaml.safe_dump(fb, out_file)
-        return
 
     @classmethod
     def set_filebeat_logfile_paths(cls, log_prefix, filebeat_config):

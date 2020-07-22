@@ -10,7 +10,7 @@ import pprint
 import psutil
 import subprocess
 import requests
-from location_tool import LocationTool
+from .location_tool import LocationTool
 
 
 class Utility:

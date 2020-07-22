@@ -1,8 +1,8 @@
 """Alert Manager."""
-from utility import Utility
+from .utility import Utility
 
 
-class AlertManager(object):
+class AlertManager:
     """AlertManager is used to ensure alerts are consistently formatted."""
 
     def __init__(self, device_id):
@@ -20,7 +20,6 @@ class AlertManager(object):
             310: "GPS time delta over threshold.",
             400: "Failed to locate a valid license for ARFCN in this area."
         }
-        return
 
     def get_alert_type(self, alert_id):
         """Return the alert description for alert_id."""

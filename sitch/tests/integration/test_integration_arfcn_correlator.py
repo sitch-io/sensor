@@ -136,7 +136,7 @@ class TestIntegrationCorrelateArfcn:
         arfcn = self.instantiate_arfcn()
         test_scan = self.build_scan_doc("kal", 99)
         result = arfcn.correlate(("kal_channel", test_scan))
-        print result
+        print(result)
         assert len(result) == 2
         assert result[1][1]["alert_id"] == 400
 
@@ -146,7 +146,7 @@ class TestIntegrationCorrelateArfcn:
         test_arfcn = self.build_scan_doc("kal", 99)
         result = arfcn.compare_arfcn_to_feed(test_arfcn["arfcn_int"],
                                              "Sitename", "Sensorname")
-        print result
+        print(result)
         assert len(result) == 0
 
     def test_kal_channel_over_threshold(self):
@@ -154,7 +154,7 @@ class TestIntegrationCorrelateArfcn:
         test_scan = kal_channel.copy()
         test_scan["power"] = 1000001
         results = arfcn.correlate(("kal_channel", test_scan))
-        print results
+        print(results)
         assert len(results) == 3
         assert results[1][1]["alert_id"] == 200
         assert results[2][1]["alert_id"] == 400
@@ -162,6 +162,6 @@ class TestIntegrationCorrelateArfcn:
     def test_gsm_modem_channel_parse(self):
         arfcn = self.instantiate_arfcn()
         results = arfcn.correlate(("gsm_modem_channel", gsm_modem_channel))
-        print results
+        print(results)
         assert len(results) == 1
         assert results[0][1]["alert_id"] == 400

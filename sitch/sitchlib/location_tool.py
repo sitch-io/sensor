@@ -1,31 +1,9 @@
 """Location tools library."""
-
-from geoip import geolite2
-from haversine import haversine
+from geopy.distance import great_circle
 
 
-class LocationTool(object):
+class LocationTool:
     """Class with location-oriented functions."""
-
-    @classmethod
-    def get_geo_for_ip(cls, ip_address):
-        """Get geo coordinates for IP address.
-
-        Args:
-            ip_address (str): IP address.
-
-        """
-        match = geolite2.lookup(ip_address)
-        try:
-            lat_lon = match.location
-            coords = {"lat": lat_lon[0],
-                      "lon": lat_lon[1]}
-            return coords
-        except:
-            msg = "LocationTool: Can't get geo for %s" % ip_address
-            print(msg)
-            return None
-
     @classmethod
     def validate_geo(cls, latlon):
         """Validate that lon/lat are valid numbers for Planet Earth"""
@@ -67,5 +45,5 @@ class LocationTool(object):
         else:
             point_1 = (float(point_1[0]), float(point_1[1]))
             point_2 = (float(point_2[0]), float(point_2[1]))
-            distance = haversine(point_1, point_2)
+            distance = great_circle(point_1, point_2).kilometers
         return distance
