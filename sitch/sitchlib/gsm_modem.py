@@ -6,7 +6,7 @@ import sys
 import time
 
 
-class GsmModem(object):
+class GsmModem:
     """GSM Modem handler class.  Interfaces with device over serial.
 
     Calling GsmModem.set_eng_mode() causes the module to go into
@@ -40,14 +40,13 @@ class GsmModem(object):
             if ser_open_iter > 5:
                 print("GSM: Failed to open serial port %s!" % ser_port)
                 sys.exit(2)
-        return
 
     def __iter__(self):
         """Yield scans from GSM modem."""
         page = []
         while True:
             line = None
-            line = self.serconn.readline()
+            line = self.serconn.readline().decode("utf-8")
             processed_line = self.process_line(line)
             if line is None:
                 pass
@@ -63,6 +62,10 @@ class GsmModem(object):
                 else:
                     page.append(processed_line)
 
+    def serial_write(self, write_me):
+        """Convert string to bytes then write to serial."""
+        self.serconn.write(write_me.encode("utf-8"))
+
     def eng_mode(self, status):
         """Set or unset engineering mode on the modem.
 
@@ -72,43 +75,42 @@ class GsmModem(object):
         self.serconn.flush()
         if status is False:
             print("GsmModem: Unsetting engineering mode, flushing")
-            self.serconn.write(self.unset_eng)
+            self.serial_write(self.unset_eng)
             while True:
-                output = self.serconn.readline()
-                if output == '':
+                output = self.serconn.readline().decode("utf-8")
+                if output:
                     break
                 else:
                     print(output)
         else:
             print("GsmModem: Setting engineering mode")
-            self.serconn.write(self.eng_init)
+            self.serial_write(self.eng_init)
         self.serconn.flush()
         time.sleep(2)
-        output = self.serconn.readline()
+        output = self.serconn.readline().decode("utf-8")
         print(output)
         self.serconn.flush()
-        return
 
     def get_reg_info(self):
         """Get registration information from the modem."""
-        self.serconn.write(self.reg_info)
+        self.serial_write(self.reg_info)
         self.serconn.flush()
         time.sleep(2)
-        output = self.serconn.readline()
+        output = self.serconn.readline().decode("utf-8")
         if "AT+" in output:
-            output = GsmModem.clean_operator_string(self.serconn.readline())
+            output = GsmModem.clean_operator_string(self.serconn.readline().decode("utf-8"))
         print(output)
         self.serconn.flush()
         return output
 
     def dump_config(self):
         """Dump modem's configuration."""
-        self.serconn.write(self.config_dump)
+        self.serial_write(self.config_dump)
         self.serconn.flush()
         time.sleep(2)
         retval = []
         while True:
-            output = self.serconn.readline()
+            output = self.serconn.readline().decode("utf-8")
             if output == '':
                 break
             retval.append(str(output))
@@ -118,12 +120,12 @@ class GsmModem(object):
     def get_imsi(self):
         """Get the IMSI of the SIM installed in the modem."""
         rx = r'(?P<imsi>\S+)'
-        self.serconn.write(self.imsi_info)
+        self.serial_write(self.imsi_info)
         self.serconn.flush()
         time.sleep(2)
         retval = []
         while True:
-            output = self.serconn.readline()
+            output = self.serconn.readline().decode("utf-8")
             if output == '':
                 break
             if "AT+CIMI" in output:
@@ -158,10 +160,10 @@ class GsmModem(object):
                     "EGSM_PCS_MODE", "ALL_BAND"]:
             term_command = "AT+CBAND=\"%s\" \r\n" % band
             print("GSM: Setting GSM band with: %s" % term_command)
-            self.serconn.write(term_command)
+            self.serial_write(term_command)
             self.serconn.flush()
             time.sleep(2)
-            output = self.serconn.readline()
+            output = self.serconn.readline().decode("utf-8")
             print(output)
             self.serconn.flush()
         else:

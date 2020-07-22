@@ -1,9 +1,9 @@
 """Decompose GSM scans."""
 
-from utility import Utility
+from .utility import Utility
 
 
-class GsmDecomposer(object):
+class GsmDecomposer:
     """Decomposes GSM scans."""
 
     @classmethod

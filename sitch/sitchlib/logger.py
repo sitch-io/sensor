@@ -2,7 +2,7 @@
 
 import json
 import os
-from utility import Utility as utility
+from .utility import Utility as utility
 
 
 class LogHandler:

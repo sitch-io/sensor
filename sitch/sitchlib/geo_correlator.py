@@ -1,10 +1,10 @@
 """Correlate based on geograpgic information."""
 
-from alert_manager import AlertManager
-from utility import Utility
+from .alert_manager import AlertManager
+from .utility import Utility
 
 
-class GeoCorrelator(object):
+class GeoCorrelator:
     """Geographic correlator."""
 
     def __init__(self, device_id):

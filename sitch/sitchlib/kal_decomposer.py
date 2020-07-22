@@ -1,9 +1,9 @@
 """Decompose Kalibrate scans."""
 
-from utility import Utility
+from .utility import Utility
 
 
-class KalDecomposer(object):
+class KalDecomposer:
     """Decompose Kalibrate scans."""
 
     @classmethod

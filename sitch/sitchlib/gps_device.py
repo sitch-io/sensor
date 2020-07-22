@@ -1,12 +1,12 @@
 """GPS device wrapper."""
 
 from gps3 import gps3
-from utility import Utility
+from .utility import Utility
 import copy
 import time
 
 
-class GpsListener(object):
+class GpsListener:
     """Wrap the GPS device with an iterator."""
 
     def __init__(self, delay=60):

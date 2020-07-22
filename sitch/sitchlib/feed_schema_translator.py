@@ -1,9 +1,9 @@
 """This is the object that translates from source feed to sensor schema."""
 from string import Template
-import LatLon
+import geopy
 
 
-class FeedSchemaTranslator(object):
+class FeedSchemaTranslator:
     def __init__(self, schema):
         self.field_maps = schema
         self.translators = self.translators_from_schema(schema)
@@ -19,7 +19,7 @@ class FeedSchemaTranslator(object):
         """
         result = {}
         for field in self.field_maps:
-            sensor_field, feed_field = field.items()[0]
+            sensor_field, feed_field = list(field.items())[0]
             if sensor_field in self.translators:
                 result[sensor_field] = self.translators[sensor_field](row)[sensor_field]  # NOQA
             else:
@@ -31,7 +31,7 @@ class FeedSchemaTranslator(object):
         """Return dict of translators."""
         translators = {}
         for field in fields:
-            sensor_field, feed_field = field.items()[0]
+            sensor_field, feed_field = list(field.items())[0]
             if feed_field == "latlon_fcc":
                 translators[sensor_field] = cls.latlon_trans_fcc
         return translators
@@ -39,10 +39,10 @@ class FeedSchemaTranslator(object):
     @classmethod
     def latlon_trans_fcc(cls, row):
         """returns dict with lat, lon"""
-        latlon = {}
-        lat_pre = Template('$LOC_LAT_DEG $LOC_LAT_MIN $LOC_LAT_SEC $LOC_LAT_DIR').substitute(row)  # NOQA
-        lon_pre = Template('$LOC_LONG_DEG $LOC_LONG_MIN $LOC_LONG_SEC $LOC_LONG_DIR').substitute(row)  # NOQA
-        ll = LatLon.string2latlon(lat_pre, lon_pre, "d% %m% %S% %H")
-        latlon["lat"] = ll.to_string('D%')[0]
-        latlon["lon"] = ll.to_string('D%')[1]
+        lat_t = '$LOC_LAT_DEG ${LOC_LAT_MIN}m ${LOC_LAT_SEC}s $LOC_LAT_DIR'
+        lon_t = '$LOC_LONG_DEG ${LOC_LONG_MIN}m ${LOC_LONG_SEC}s $LOC_LONG_DIR'
+        lat = Template(lat_t).substitute(row)
+        lon = Template(lon_t).substitute(row)
+        point = geopy.point.Point(" ".join([lat, lon]))
+        latlon = {"lat": str(point.latitude), "lon": str(point.longitude)}
         return latlon
