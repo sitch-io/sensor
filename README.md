@@ -16,7 +16,7 @@
 ## Prerequisites
 
 * Accounts with the following providers:
-  * Resin.io
+  * Balena.io
   * Github
 * Access to the following services (See Service configuration for more
   information)
@@ -33,18 +33,18 @@
 
 ## Step by step...
 
-1. Create an application in Resin.
+1. Create an application in Balena.
 1. Fork this project and clone it on your workstation.  Or clone it directly...
 but forking makes modifications and PRs easier to deal with.
-1. Add the Resin application as a remote repo (`git remote add resin myusername@git.resin.io/myusername/myapplicationname.git`)
-1. Push to your Resin application: `git push resin master`
+1. Add the Balena application as a remote repo (`git remote add balena myusername@git.balena.io/myusername/myapplicationname.git`)
+1. Push to your Balena application: `git push balena master`
 
-We expect (at least) the following environment variables to be set in Resin:
+We expect (at least) the following environment variables to be set in Balena:
 
 
 | Variable              | Purpose                                                 |
 |-----------------------|---------------------------------------------------------|
-| LOCATION_NAME         | Override the default device name (Resin UUID)           |
+| LOCATION_NAME         | Override the default device name (Balena UUID)           |
 | LOG_HOST              |  hostname:port                                          |
 | STATE_LIST            | List of states (in caps) for FCC feed.  ex: "CA,TX"     |
 | VAULT_PATH            | Path to logstash cert/keys in Vault                     |
@@ -90,8 +90,8 @@ licenses which apply to these two tools can be found
 Building the Docker container will cause the retrieval of the MaxMind GeoLite2
 database...
 
-This product includes GeoLite2 data created by MaxMind, available from
-https://www.maxmind.com
+This tool includes the geoipupdate tool created by MaxMind, also available
+[here](https://github.com/maxmind/geoipupdate)
 
 ## Contributing
 

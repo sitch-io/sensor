@@ -2,8 +2,11 @@
 
 import copy
 import time
-from .utility import Utility
+
 import geoip2.database
+
+from .utility import Utility
+
 
 GEO_DB_LOCATION = "/var/mmdb//GeoLite2-City.mmdb"  # NOQA
 
@@ -20,10 +23,22 @@ class GeoIp:
         self.ip = ""
         self.geo = {}
         self.delay = delay
-        self.reader = geoip2.database.Reader(GEO_DB_LOCATION)
-        self.set_ip()
-        self.set_geo()
-        return
+        try:
+            self.reader = geoip2.database.Reader(GEO_DB_LOCATION)
+            self.set_ip()
+            self.set_geo()
+        except FileNotFoundError:
+            print("Missing MaxMind DB! No GeoIP correlation...")
+            self.reader = None
+            self.set_ip()
+            # Welcome to Null Island...
+            self.geo = {"scan_program": "geo_ip",
+                        "type": "Feature",
+                        "location": {
+                            "type": "Point",
+                            "coordinates": [
+                                float(0),
+                                float(0)]}}
 
     def __iter__(self):
         """Periodically yield GeoIP results.
@@ -31,9 +46,14 @@ class GeoIp:
         Yields:
             dict: GeoJSON representing GeoIP of sensor.
         """
+        while not self.reader:
+            print("No GeoIP DB.\nRebuild with MaxMind creds to enable GeoIP")
+            result = copy.deepcopy(self.geo)
+            yield result
+            time.sleep(self.delay)
         while True:
-            self.set_ip
-            self.set_geo
+            self.set_ip()
+            self.set_geo()
             result = copy.deepcopy(self.geo)
             result["event_timestamp"] = Utility.get_now_string()
             yield result
@@ -44,7 +64,6 @@ class GeoIp:
         print("GeoIp: Setting public IP address")
         ip = Utility.get_public_ip()
         self.ip = ip
-        return
 
     def set_geo(self):
         """Use public IP to determine GeoIP."""
@@ -54,13 +73,13 @@ class GeoIp:
             self.geo = {"scan_program": "geo_ip",
                         "type": "Feature",
                         "location": {
-                           "type": "Point",
-                           "coordinates": [
-                               float(lat_lon.longitude),
-                               float(lat_lon.latitude)]}}
+                            "type": "Point",
+                            "coordinates": [
+                                float(lat_lon.longitude),
+                                float(lat_lon.latitude)]}}
             return
-        except TypeError as e:
-            print(e)
+        except TypeError as err:
+            print(err)
             print(dir(lat_lon))
             print("GeoIP: Unable to set geo by IP: %s" % self.ip)
             return None
