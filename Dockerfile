@@ -1,15 +1,19 @@
 ARG ARCH=armv7hf
-FROM balenalib/${ARCH}-debian-python:3.6-jessie as mmdb
+FROM balenalib/${ARCH}-debian-golang:1.13.12-buster as mmdb
 
-ENV MMDB_URL="http://geolite.maxmind.com/download/geoip/database/GeoLite2-City.mmdb.gz"
+ENV MMDB_CONFIG_FILE=/usr/local/etc/GeoIP.conf
 
-WORKDIR /download
-RUN apt-get update && \
-    apt-get install -y \
-    wget
-RUN wget ${MMDB_URL}
-RUN gunzip GeoLite2-City.mmdb.gz
-RUN ls /download
+RUN env GO111MODULE=on go get -u github.com/maxmind/geoipupdate/v4/cmd/geoipupdate
+
+# MMDB Config
+RUN echo "AccountID ${MMDB_ACCOUNT_ID:-UNSET}" > ${MMDB_CONFIG_FILE} && \
+    echo "LicenseKey ${MMDB_LICENSE_KEY:-UNSET}" >> ${MMDB_CONFIG_FILE} && \
+    echo "EditionIDs GeoLite2-City" >> ${MMDB_CONFIG_FILE} && \
+    echo "DatabaseDirectory /var/mmdb/" >> ${MMDB_CONFIG_FILE}
+
+RUN mkdir -p /var/mmdb/
+
+RUN $GOPATH/bin/geoipupdate || echo "Unable to download GeoIP DB!!" && touch /var/mmdb/.placeholder
 
 #############################################
 ###### Build the unit test image
@@ -30,8 +34,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     apt-get -y autoremove && \
     rm -rf /var/lib/apt/lists/*
 
-# Bring forward the GeoLite2 DB
-COPY --from=mmdb /download/GeoLite2-City.mmdb /var/mmdb/
+
+
+# Copy forward the GeoLite2 DB
+COPY --from=mmdb /var/mmdb/* /var/mmdb/
 
 # Place Kalibrate
 COPY binaries/kal-linux-arm /usr/local/bin/
@@ -103,10 +109,8 @@ RUN mkdir /etc/schemas
 COPY configs/feed_db_translation.yaml /etc/schemas
 COPY configs/feed_db_schema.yaml /etc/schemas
 
-# Place the GeoIP DB
 # Bring forward the GeoLite2 DB
-COPY --from=mmdb /download/GeoLite2-City.mmdb /var/mmdb/
-
+COPY --from=mmdb /var/mmdb/* /var/mmdb/
 
 # Get the scripts in place
 COPY sitch/ /app/sitch
