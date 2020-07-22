@@ -1,0 +1,10 @@
+version: '2'
+services:
+  mega_service:
+    build:
+      context: ./
+      dockerfile: ./dockerfiles/Dockerfile.mega_service
+    volumes:
+      - 'resin-data:/data'
+volumes:
+  resin-data:
